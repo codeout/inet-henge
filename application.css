@@ -1,0 +1,23 @@
+.node rect {
+  stroke: #fff;
+  stroke-width: 1.5px;
+  cursor: move;
+}
+
+.node text {
+  font-size: 10px;
+  cursor: move;
+}
+
+.group rect {
+  stroke: #fff;
+  stroke-width: 1.5px;
+  cursor: move;
+  opacity: 0.7;
+}
+
+.link {
+  stroke: #7a4e4e;
+  stroke-width: 3px;
+  stroke-opacity: 1;
+}

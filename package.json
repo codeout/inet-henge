@@ -1,0 +1,29 @@
+{
+  "private": true,
+  "name": "inet-d3",
+  "version": "1.0.0",
+  "description": "Javascript based network diagram",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-preset-es2015": "^6.9.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.0.1",
+    "watchify": "^3.7.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./node_modules/.bin/browserify -t babelify src/application.js -o application.js",
+    "watch": "./node_modules/.bin/watchify -t babelify src/application.js -o application.js -v"
+  },
+  "author": {
+    "name": "Shintaro Kojima",
+    "email": "goodies@codeout.net",
+    "url": "http://github.com/codeout"
+  },
+  "license": "MIT",
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  }
+}
