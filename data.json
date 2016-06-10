@@ -4,7 +4,7 @@
     { "name": "POP01-bb02", "url": "./images/router.png" },
     { "name": "POP01-ag01", "url": "./images/switch.png" },
     { "name": "POP01-ag02", "url": "./images/switch.png" },
-    { "name": "POP02-bb01" },
+    { "name": "POP02-bb01", "meta": { "loopback": "10.0.0.1" } },
     { "name": "POP02-bb02" },
     { "name": "POP02-ag01" },
     { "name": "POP02-ag02" },

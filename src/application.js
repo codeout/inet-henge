@@ -6,7 +6,8 @@ class Diagram {
     this.height = height
   }
 
-  init() {
+  init(...meta) {
+    this.meta = meta
     this.color = d3.scale.category20()
     this.cola = this.init_cola()
     this.svg = this.init_svg()
@@ -113,6 +114,17 @@ class Diagram {
   }
 
   render_node(data) {
+    const meta_data = (meta)=> {
+      let data = []
+
+      this.meta.forEach((i)=> {
+        if(meta[i])
+          data.push({class: i, value: meta[i]})
+      })
+
+      return data
+    }
+
     const add_rect = (node)=> {
       d3.select(node).append('rect')
         .attr('width', (d)=> d.width - 2 * this.padding)
@@ -133,11 +145,29 @@ class Diagram {
     }
 
     const add_text = (node)=> {
-      d3.select(node).append('text')
+      const add_tspan = (meta)=> {
+        text.append('tspan')
+          .text((d)=> meta.value)
+          .attr('x', this.node_width/2)
+          .attr('dy', '1.1em')
+          .attr('class', meta.class)
+      }
+
+      const text = d3.select(node).append('text')
+            .attr('text-anchor', 'middle')
+            .attr('x', this.node_width/2)
+            .attr('y', this.node_height/2)
+      text.append('tspan')
         .text((d)=> d.name)
-        .attr('text-anchor', 'middle')
         .attr('x', this.node_width/2)
-        .attr('y', this.node_height/2)
+
+      text.each(function(d) {
+        if(d.meta) {
+          meta_data(d.meta).forEach((obj)=> {
+            add_tspan(obj)
+          })
+        }
+      })
     }
 
     const node = this.svg.selectAll('.node')
@@ -211,4 +241,4 @@ class Diagram {
   }
 }
 
-new Diagram('data.json', /^POP\d+/, 960, 600).init()
+new Diagram('data.json', /^POP\d+/, 960, 600).init('loopback')
