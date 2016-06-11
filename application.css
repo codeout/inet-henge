@@ -1,12 +1,14 @@
+.node {
+  cursor: move;
+}
+
 .node rect {
   stroke: #fff;
   stroke-width: 1.5px;
-  cursor: move;
 }
 
 .node text {
   font-size: 10px;
-  cursor: move;
 }
 
 .group rect {

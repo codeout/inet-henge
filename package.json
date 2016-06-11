@@ -12,8 +12,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/.bin/browserify -t babelify src/application.js -o application.js",
-    "watch": "./node_modules/.bin/watchify -t babelify src/application.js -o application.js -v"
+    "build": "./node_modules/.bin/browserify -t babelify src/diagram.js -o application.js",
+    "watch": "./node_modules/.bin/watchify src/*.js -t babelify src/diagram.js -o application.js -v"
   },
   "author": {
     "name": "Shintaro Kojima",
