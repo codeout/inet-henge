@@ -69,7 +69,7 @@ class Diagram {
 
   pop_groups(nodes) {
     let pops = {}
-    const make_groups = (objects)=> {
+    const create_groups = (objects)=> {
       return Object.keys(objects).map((v)=> {
         return {leaves: objects[v], name: v}
       })
@@ -84,7 +84,7 @@ class Diagram {
       pops[result[0]].push(d.id)
     })
 
-    return make_groups(pops)
+    return create_groups(pops)
   }
 
   render(data) {
