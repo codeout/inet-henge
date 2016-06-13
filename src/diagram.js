@@ -63,11 +63,11 @@ class Diagram {
       const group = Group.render(this.svg, groups).call(this.cola.drag)
       const link = Link.render_links(this.svg, links)
       const node = Node.render(this.svg, nodes).call(this.cola.drag)
-      const path = Link.render_paths(this.svg, links)
+      const [path, label] = Link.render_paths(this.svg, links)
 
       this.cola.on('tick', ()=> {
         Node.tick(node)
-        Link.tick(link, path)
+        Link.tick(link, path, label)
         Group.tick(group)
       })
 

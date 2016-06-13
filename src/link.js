@@ -33,6 +33,13 @@ class Link {
       return this.label_x_offset
   }
 
+  rotate(bbox) {
+    if (this.source.x>this.target.x)
+      return `rotate(180 ${bbox.x + bbox.width/2} ${bbox.y + bbox.height/2})`
+    else
+      return 'rotate(0)'
+  }
+
   split() {
     if(this.source_meta && this.target_meta) {
       const source = Object.assign(Object.create(this), this)
@@ -67,10 +74,10 @@ class Link {
 
     const split_labelled_links = Array.prototype.concat.apply([], labelled_links.map((l)=> l.split()))
           .filter((l)=> l.has_meta())
-    this.create_labels(svg, split_labelled_links)
+    const labels = this.create_labels(svg, split_labelled_links)
 
     Link.zoom()  // Initialize
-    return paths
+    return [paths, labels]
   }
 
   static create_paths(svg, links) {
@@ -83,13 +90,13 @@ class Link {
   }
 
   static create_labels(svg, links) {
-    const text_path = svg.selectAll(".path-label")
+    const text = svg.selectAll(".path-label")
           .data(links)
           .enter()
           .append('text')
           .attr('class', 'path-label')
           .attr('pointer-events', 'none')
-          .append('textPath')
+    const text_path = text.append('textPath')
           .attr('xlink:href', (d)=> `#${d.path_id()}`)
 
     text_path.each(function(d) {
@@ -100,7 +107,7 @@ class Link {
         Link.the_other_end(this)
     })
 
-    return text_path
+    return text
   }
 
   static the_other_end(container) {
@@ -120,13 +127,16 @@ class Link {
     })
   }
 
-  static tick(link, path) {
+  static tick(link, path, label) {
     link.attr('x1', (d)=> d.source.x)
       .attr('y1', (d)=> d.source.y)
       .attr('x2', (d)=> d.target.x)
       .attr('y2', (d)=> d.target.y)
 
     path.attr('d', (d)=> d.d())
+    label.attr('transform', function(d) {
+      return d.rotate(this.getBBox())
+    })
   }
 
   static zoom(scale) {
