@@ -73,6 +73,7 @@ class Link {
           .filter((l)=> l.has_meta())
     this.create_labels(svg, split_labelled_links)
 
+    Link.zoom()  // Initialize
     return paths
   }
 
@@ -102,6 +103,8 @@ class Link {
       if(d.is_reverse_path())
         Link.the_other_end(this)
     })
+
+    return text_path
   }
 
   static the_other_end(container) {
@@ -128,6 +131,15 @@ class Link {
       .attr('y2', (d)=> d.target.y)
 
     path.attr('d', (d)=> d.d())
+  }
+
+  static zoom(scale) {
+    let visibility = 'hidden'
+    if(scale && scale > 1.5)
+      visibility = 'visible'
+
+    d3.selectAll('.path-label')
+      .style('visibility', visibility)
   }
 }
 

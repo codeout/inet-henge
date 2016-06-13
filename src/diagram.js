@@ -29,9 +29,17 @@ class Diagram {
   }
 
   init_svg() {
-    return d3.select('body').append('svg')
+    const container = d3.select('body').append('svg')
       .attr('width', this.width)
       .attr('height', this.height)
+      .append('g')
+      .call(
+        d3.behavior.zoom()
+          .on('zoom', ()=> this.zoom_callback(container))
+      )
+      .append('g')
+
+    return container
   }
 
   render() {
@@ -64,6 +72,11 @@ class Diagram {
         this.cola.tick()
       this.cola.stop()
     })
+  }
+
+  zoom_callback(container) {
+    Link.zoom(d3.event.scale)
+    container.attr('transform', `translate(${d3.event.translate}) scale(${d3.event.scale})`)
   }
 }
 
