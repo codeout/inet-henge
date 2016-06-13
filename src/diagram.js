@@ -11,9 +11,18 @@ class Diagram {
     this.width = options.width || 960
     this.height = options.height || 600
 
-    this.distance = options.distance || 150
+    this.set_distance = this.link_distance(options.distance || 150)
     this.color = d3.scale.category20()
-    this.ticks = 10000
+    this.ticks = 1000
+
+    console.log(this.set_distance)
+  }
+
+  link_distance(distance) {
+    if(typeof(distance) == 'function')
+      return distance
+    else
+      return (cola)=> cola.linkDistance(distance)
   }
 
   init(...meta) {
@@ -57,8 +66,8 @@ class Diagram {
       this.cola.nodes(nodes)
         .links(links)
         .groups(groups)
-        .linkDistance(this.distance)
-        .start()
+      this.set_distance(this.cola)
+      this.cola.start()
 
       const group = Group.render(this.svg, groups).call(this.cola.drag)
       const link = Link.render_links(this.svg, links)
