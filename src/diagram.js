@@ -65,15 +65,25 @@ class Diagram {
       const node = Node.render(this.svg, nodes).call(this.cola.drag)
       const [path, label] = Link.render_paths(this.svg, links)
 
-      this.cola.on('tick', ()=> {
-        Node.tick(node)
-        Link.tick(link, path, label)
-        Group.tick(group)
-      })
+      this.configure_tick(group, node, link) // without path calculation
 
       for(let i = 0; i < this.ticks; i++)
         this.cola.tick()
       this.cola.stop()
+
+      // render path
+      this.configure_tick(group, node, link, path, label)
+      this.cola.start()
+      this.cola.tick()
+      this.cola.stop()
+    })
+  }
+
+  configure_tick(group, node, link, path, label) {
+    this.cola.on('tick', ()=> {
+      Node.tick(node)
+      Link.tick(link, path, label)
+      Group.tick(group)
     })
   }
 

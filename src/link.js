@@ -133,10 +133,12 @@ class Link {
       .attr('x2', (d)=> d.target.x)
       .attr('y2', (d)=> d.target.y)
 
-    path.attr('d', (d)=> d.d())
-    label.attr('transform', function(d) {
-      return d.rotate(this.getBBox())
-    })
+    if(path)
+      path.attr('d', (d)=> d.d())
+    if(label)
+      label.attr('transform', function(d) {
+        return d.rotate(this.getBBox())
+      })
   }
 
   static zoom(scale) {
