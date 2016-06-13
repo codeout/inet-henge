@@ -80,8 +80,7 @@ class Node {
       .attr('x', (d)=> d.x_for_text())
 
     text.each(function(d) {
-      if(d.meta)
-          Node.append_tspans(text, d.meta)
+      Node.append_tspans(text, d.meta)
     })
   }
 

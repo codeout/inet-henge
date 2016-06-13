@@ -1,22 +1,15 @@
-.node {
-  cursor: move;
-}
+.group rect { opacity: 0.5; }
 
-.node rect {
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
+.node,
+.group rect { cursor: move; }
 
-.node text {
-  font-size: 10px;
-}
-
+.node rect,
 .group rect {
   stroke: #fff;
   stroke-width: 1.5px;
-  cursor: move;
-  opacity: 0.7;
 }
+
+.node text { font-size: 10px; }
 
 .link {
   stroke: #7a4e4e;
@@ -24,6 +17,8 @@
   stroke-opacity: 1;
 }
 
-.loopback {
-  fill: #888;
-}
+.path-label { font-size: 5px; }
+
+
+.loopback,
+.interface { fill: #888; }

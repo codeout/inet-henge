@@ -1,12 +1,31 @@
 class MetaData {
-  constructor(data) {
+  constructor(data, extra_key) {
     this.data = data
+    this.extra_key = extra_key
   }
 
   slice(keys) {
     if(!this.data)
-      return
+      return []
 
+    if(this.extra_key)
+      return this.slice_with_extra_key(keys)
+    else
+      return this.slice_without_extra_key(keys)
+  }
+
+  slice_with_extra_key(keys) {
+    const data = []
+
+    keys.forEach((k)=> {
+      if(this.data[k] && this.data[k][this.extra_key])
+        data.push({class: k, value: this.data[k][this.extra_key]})
+    })
+
+    return data
+  }
+
+  slice_without_extra_key(keys) {
     let data = []
 
     keys.forEach((k)=> {

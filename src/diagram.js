@@ -13,7 +13,7 @@ class Diagram {
   init(...meta) {
     this.color = d3.scale.category20()
     this.meta = meta
-    this.ticks = 10000
+    this.ticks = 100
     this.cola = this.init_cola()
     this.svg = this.init_svg()
 
@@ -40,21 +40,23 @@ class Diagram {
         console.error(error)
 
       const nodes = data.nodes.map((n, i)=> new Node(n, i, this.meta, this.color))
-      const links = data.links.map((l)=> new Link(l))
+      const links = data.links.map((l, i)=> new Link(l, i, this.meta))
       const groups = Group.divide(nodes, this.group_pattern, this.color)
 
       this.cola.nodes(nodes)
         .links(links)
         .groups(groups)
+        .linkDistance(150)
         .start()
 
       const group = Group.render(this.svg, groups).call(this.cola.drag)
-      const link = Link.render(this.svg, links)
+      const link = Link.render_links(this.svg, links)
       const node = Node.render(this.svg, nodes).call(this.cola.drag)
+      const path = Link.render_paths(this.svg, links)
 
       this.cola.on('tick', ()=> {
         Node.tick(node)
-        Link.tick(link)
+        Link.tick(link, path)
         Group.tick(group)
       })
 
