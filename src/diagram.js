@@ -13,7 +13,7 @@ class Diagram {
   init(...meta) {
     this.color = d3.scale.category20()
     this.meta = meta
-    this.ticks = 100
+    this.ticks = 10000
     this.cola = this.init_cola()
     this.svg = this.init_svg()
 
