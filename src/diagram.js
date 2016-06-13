@@ -3,17 +3,21 @@ import Link from './link'
 import Node from './node'
 
 class Diagram {
-  constructor(url, pattern, width, height) {
+  constructor(url, options) {
+    options = options || {}
+
     this.url = url
-    this.group_pattern = pattern
-    this.width = width
-    this.height = height
+    this.group_pattern = options.pop || /^([^\s-]+)-/
+    this.width = options.width || 960
+    this.height = options.height || 600
+
+    this.distance = options.distance || 150
+    this.color = d3.scale.category20()
+    this.ticks = 10000
   }
 
   init(...meta) {
-    this.color = d3.scale.category20()
     this.meta = meta
-    this.ticks = 10000
     this.cola = this.init_cola()
     this.svg = this.init_svg()
 
@@ -53,7 +57,7 @@ class Diagram {
       this.cola.nodes(nodes)
         .links(links)
         .groups(groups)
-        .linkDistance(150)
+        .linkDistance(this.distance)
         .start()
 
       const group = Group.render(this.svg, groups).call(this.cola.drag)

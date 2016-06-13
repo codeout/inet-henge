@@ -9,10 +9,6 @@ class Link {
     this.source_meta = new MetaData(data.meta, 'source').slice(meta_keys)
     this.target_meta = new MetaData(data.meta, 'target').slice(meta_keys)
 
-    this.init()
-  }
-
-  init() {
     this.label_x_offset = 30
     this.label_y_offset = '1.1em'
   }

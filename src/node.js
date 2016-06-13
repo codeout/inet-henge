@@ -8,15 +8,12 @@ class Node {
     this.meta = new MetaData(data.meta).slice(meta_keys)
     this.color = color
 
-    this.init()
-    this.register(id, data.name)
-  }
-
-  init() {
     this.width = 60
     this.height = 40
     this.padding = 3
     this.tspan_offset = '1.1em'
+
+    this.register(id, data.name)
   }
 
   register(id, name) {
@@ -47,6 +44,8 @@ class Node {
   }
 
   static id_by_name(name) {
+    if(Node.all[name]==undefined)
+      throw `Unknown node "${name}"`
     return Node.all[name]
   }
 
