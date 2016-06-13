@@ -73,6 +73,10 @@ class Diagram {
     })
   }
 
+  destroy() {
+    d3.select('body svg').remove()
+  }
+
   zoom_callback(container) {
     Link.zoom(d3.event.scale)
     container.attr('transform', `translate(${d3.event.translate}) scale(${d3.event.scale})`)
