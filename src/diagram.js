@@ -22,7 +22,6 @@ class Diagram {
 
   init_cola() {
     return cola.d3adaptor()
-      .linkDistance(100)
       .avoidOverlaps(true)
       .handleDisconnected(false)
       .size([this.width, this.height])

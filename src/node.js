@@ -8,8 +8,8 @@ class Node {
     this.meta = new MetaData(data.meta).slice(meta_keys)
     this.color = color
 
-    this.register(id, data.name)
     this.init()
+    this.register(id, data.name)
   }
 
   init() {
@@ -20,8 +20,7 @@ class Node {
   }
 
   register(id, name) {
-    if(!Node.all)
-      Node.all = {}
+    Node.all = Node.all || {}
     Node.all[name] = id
   }
 
