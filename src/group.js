@@ -26,9 +26,10 @@ class Group {
 
     nodes.forEach((node)=> {
       const result = node.name.match(pattern)
+      const name = result[1] || result[0]
 
-      groups[result[0]] = groups[result[0]] || new Group(result[0], color)
-      groups[result[0]].push(node)
+      groups[name] = groups[name] || new Group(name, color)
+      groups[name].push(node)
     })
 
     return this.array(groups)
