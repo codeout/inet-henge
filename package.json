@@ -1,8 +1,28 @@
 {
   "private": true,
-  "name": "inet-d3",
+  "name": "inet-henge",
   "version": "1.0.0",
-  "description": "Javascript based network diagram",
+  "description": "Generate d3.js based Network Diagram from JSON data.",
+  "license": "MIT",
+  "keywords": [
+    "network",
+    "diagram",
+    "d3.js",
+    "cola.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/codeout/inet-henge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/codeout/inet-henge/issues"
+  },
+  "author": {
+    "name": "Shintaro Kojima",
+    "email": "goodies@codeout.net",
+    "url": "http://github.com/codeout"
+  },
+  "main": "index.js",
   "dependencies": {},
   "devDependencies": {
     "babel-preset-es2015": "^6.9.0",
@@ -12,15 +32,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/.bin/browserify -t babelify src/diagram.js -o application.js",
-    "watch": "./node_modules/.bin/watchify src/*.js -t babelify src/diagram.js -o application.js -v"
+    "build": "./node_modules/.bin/browserify -t babelify src/diagram.js -o index.js",
+    "watch": "./node_modules/.bin/watchify src/*.js -t babelify src/diagram.js -o index.js -v"
   },
-  "author": {
-    "name": "Shintaro Kojima",
-    "email": "goodies@codeout.net",
-    "url": "http://github.com/codeout"
-  },
-  "license": "MIT",
   "babel": {
     "presets": [
       "es2015"

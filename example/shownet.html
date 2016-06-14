@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link href="style.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
+    <script src="../vendor/cola.3.1.3.min.js"></script>
+    <script src="../index.js"></script>
+  </head>
+
+  <body>
+    <div id="diagram"></div>
+  </body>
+
+  <script>
+   var distance = function(force) { force.jaccardLinkLengths(100, 0.2) }
+   var diagram = new Diagram('#diagram', 'shownet.json', {distance: distance})
+   diagram.init('interface');
+  </script>
+</html>

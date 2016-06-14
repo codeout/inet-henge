@@ -3,9 +3,10 @@ import Link from './link'
 import Node from './node'
 
 class Diagram {
-  constructor(url, options) {
+  constructor(container, url, options) {
     options = options || {}
 
+    this.selector = container
     this.url = url
     this.group_pattern = options.pop || /^([^\s-]+)-/
     this.width = options.width || 960
@@ -14,8 +15,6 @@ class Diagram {
     this.set_distance = this.link_distance(options.distance || 150)
     this.color = d3.scale.category20()
     this.ticks = 1000
-
-    console.log(this.set_distance)
   }
 
   link_distance(distance) {
@@ -41,7 +40,7 @@ class Diagram {
   }
 
   init_svg() {
-    const container = d3.select('body').append('svg')
+    const container = d3.select(this.selector).append('svg')
       .attr('width', this.width)
       .attr('height', this.height)
       .append('g')

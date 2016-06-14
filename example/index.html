@@ -2,12 +2,11 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <link href="application.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
-    <script src="cola.3.1.3.min.js"></script>
+    <script src="../vendor/cola.3.1.3.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
-    <script src="application.js"></script>
-
+    <script src="../index.js"></script>
   </head>
 
   <body>
@@ -17,13 +16,14 @@
         loopback
       </label>
     </form>
+    <div id="diagram"></div>
   </body>
 
   <script>
    $(function() {
      $('#loopback').on('change', function(e, data) {
        diagram.destroy();
-       diagram = new Diagram('data.json', {distance: distance})
+       diagram = new Diagram('#diagram', 'index.json')
 
        if($('#loopback:checked').length>0)
          diagram.init('loopback', 'interface');
@@ -32,8 +32,7 @@
      });
    })
 
-   var distance = function(cola) { cola.jaccardLinkLengths(100, 0.2) }
-   var diagram = new Diagram('shownet.json', {distance: distance})
+   var diagram = new Diagram('#diagram', 'index.json')
    diagram.init('loopback', 'interface');
   </script>
 </html>
