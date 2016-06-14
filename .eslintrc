@@ -61,7 +61,7 @@ rules:
   key-spacing: [2, {mode: "minimum"}]
   keyword-spacing: 2
   linebreak-style: [2, "unix"]
-  max-len: [2, 80, 2]
+  max-len: [2, 110, 2]
   new-parens: 2
   no-mixed-spaces-and-tabs: 2
   no-multiple-empty-lines: [2, {max: 2}]
