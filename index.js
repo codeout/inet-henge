@@ -94,9 +94,9 @@ var Diagram = function () {
         _this2.set_distance(_this2.cola);
         _this2.cola.start();
 
-        var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag);
+        var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback));
         var link = _link2.default.render_links(_this2.svg, links);
-        var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag);
+        var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback));
 
         var _Link$render_paths = _link2.default.render_paths(_this2.svg, links);
 
@@ -105,18 +105,17 @@ var Diagram = function () {
         var path = _Link$render_paths2[0];
         var label = _Link$render_paths2[1];
 
+        // without path calculation
 
-        _this2.configure_tick(group, node, link); // without path calculation
-
-        for (var i = 0; i < _this2.ticks; i++) {
-          _this2.cola.tick();
-        }_this2.cola.stop();
+        _this2.configure_tick(group, node, link);
+        _this2.ticks_forward(_this2.ticks);
 
         // render path
         _this2.configure_tick(group, node, link, path, label);
         _this2.cola.start();
-        _this2.cola.tick();
-        _this2.cola.stop();
+        _this2.ticks_forward(1);
+
+        _this2.freeze(node);
       });
     }
   }, {
@@ -129,6 +128,20 @@ var Diagram = function () {
       });
     }
   }, {
+    key: 'ticks_forward',
+    value: function ticks_forward(count) {
+      for (var i = 0; i < count; i++) {
+        this.cola.tick();
+      }this.cola.stop();
+    }
+  }, {
+    key: 'freeze',
+    value: function freeze(container) {
+      container.each(function (d) {
+        return d.fixed = true;
+      });
+    }
+  }, {
     key: 'destroy',
     value: function destroy() {
       d3.select('body svg').remove();
@@ -138,6 +151,11 @@ var Diagram = function () {
     value: function zoom_callback(container) {
       _link2.default.zoom(d3.event.scale);
       container.attr('transform', 'translate(' + d3.event.translate + ') scale(' + d3.event.scale + ')');
+    }
+  }, {
+    key: 'dragstart_callback',
+    value: function dragstart_callback() {
+      d3.event.sourceEvent.stopPropagation();
     }
   }]);
 
@@ -636,4 +654,4 @@ var Node = function () {
 
 module.exports = Node;
 
-},{"./meta_data":4}]},{},[1]);
+},{"./meta_data":4}]},{},[1,2,3,4,5]);

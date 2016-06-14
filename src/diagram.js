@@ -45,10 +45,8 @@ class Diagram {
       .attr('height', this.height)
       .append('g')
       .call(
-        d3.behavior.zoom()
-          .on('zoom', ()=> this.zoom_callback(container))
-      )
-      .append('g')
+        d3.behavior.zoom().on('zoom', ()=> this.zoom_callback(container))
+      ).append('g')
 
     return container
   }
@@ -68,22 +66,25 @@ class Diagram {
       this.set_distance(this.cola)
       this.cola.start()
 
-      const group = Group.render(this.svg, groups).call(this.cola.drag)
+      const group = Group.render(this.svg, groups).call(
+        this.cola.drag().on('dragstart', this.dragstart_callback)
+      )
       const link = Link.render_links(this.svg, links)
-      const node = Node.render(this.svg, nodes).call(this.cola.drag)
+      const node = Node.render(this.svg, nodes).call(
+        this.cola.drag().on('dragstart', this.dragstart_callback)
+      )
       const [path, label] = Link.render_paths(this.svg, links)
 
-      this.configure_tick(group, node, link) // without path calculation
-
-      for(let i = 0; i < this.ticks; i++)
-        this.cola.tick()
-      this.cola.stop()
+      // without path calculation
+      this.configure_tick(group, node, link)
+      this.ticks_forward(this.ticks)
 
       // render path
       this.configure_tick(group, node, link, path, label)
       this.cola.start()
-      this.cola.tick()
-      this.cola.stop()
+      this.ticks_forward(1)
+
+      this.freeze(node)
     })
   }
 
@@ -95,6 +96,16 @@ class Diagram {
     })
   }
 
+  ticks_forward(count) {
+    for(let i = 0; i < count; i++)
+      this.cola.tick()
+    this.cola.stop()
+  }
+
+  freeze(container) {
+    container.each((d)=> d.fixed = true)
+  }
+
   destroy() {
     d3.select('body svg').remove()
   }
@@ -102,6 +113,10 @@ class Diagram {
   zoom_callback(container) {
     Link.zoom(d3.event.scale)
     container.attr('transform', `translate(${d3.event.translate}) scale(${d3.event.scale})`)
+  }
+
+  dragstart_callback() {
+    d3.event.sourceEvent.stopPropagation()
   }
 }
 
