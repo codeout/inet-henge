@@ -96,6 +96,9 @@ rules:
   no-deepEqual: 2
   no-definegetter-definesetter: 2
 
+parserOptions:
+  sourceType: module
+
 # Global scoped method and vars
 globals:
   DTRACE_HTTP_CLIENT_REQUEST           : false
