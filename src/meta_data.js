@@ -1,40 +1,40 @@
 class MetaData {
   constructor(data, extra_key) {
-    this.data = data
-    this.extra_key = extra_key
+    this.data = data;
+    this.extra_key = extra_key;
   }
 
   slice(keys) {
-    if(!this.data)
-      return []
+    if (!this.data)
+      return [];
 
-    if(this.extra_key)
-      return this.slice_with_extra_key(keys)
+    if (this.extra_key)
+      return this.slice_with_extra_key(keys);
     else
-      return this.slice_without_extra_key(keys)
+      return this.slice_without_extra_key(keys);
   }
 
   slice_with_extra_key(keys) {
-    const data = []
+    const data = [];
 
-    keys.forEach((k)=> {
-      if(this.data[k] && this.data[k][this.extra_key])
-        data.push({class: k, value: this.data[k][this.extra_key]})
-    })
+    keys.forEach((k) => {
+      if (this.data[k] && this.data[k][this.extra_key])
+        data.push({class: k, value: this.data[k][this.extra_key]});
+    });
 
-    return data
+    return data;
   }
 
   slice_without_extra_key(keys) {
-    let data = []
+    const data = [];
 
-    keys.forEach((k)=> {
-      if(this.data[k])
-        data.push({class: k, value: this.data[k]})
-    })
+    keys.forEach((k) => {
+      if (this.data[k])
+        data.push({class: k, value: this.data[k]});
+    });
 
-    return data
+    return data;
   }
 }
 
-module.exports = MetaData
+module.exports = MetaData;

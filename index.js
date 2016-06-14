@@ -209,7 +209,7 @@ var Group = function () {
         var result = node.name.match(pattern);
         if (!result) return;
 
-        name = result[1] || result[0];
+        var name = result[1] || result[0];
 
         groups[name] = groups[name] || new Group(name, color);
         groups[name].push(node);
@@ -375,7 +375,7 @@ var Link = function () {
   }, {
     key: 'create_paths',
     value: function create_paths(svg, links) {
-      return svg.selectAll(".path").data(links).enter().append('path').attr('d', function (d) {
+      return svg.selectAll('.path').data(links).enter().append('path').attr('d', function (d) {
         return d.d();
       }).attr('id', function (d) {
         return d.path_id();
@@ -384,7 +384,7 @@ var Link = function () {
   }, {
     key: 'create_labels',
     value: function create_labels(svg, links) {
-      var text = svg.selectAll(".path-label").data(links).enter().append('text').attr('class', 'path-label').attr('pointer-events', 'none');
+      var text = svg.selectAll('.path-label').data(links).enter().append('text').attr('class', 'path-label').attr('pointer-events', 'none');
       var text_path = text.append('textPath').attr('xlink:href', function (d) {
         return '#' + d.path_id();
       });
@@ -654,4 +654,4 @@ var Node = function () {
 
 module.exports = Node;
 
-},{"./meta_data":4}]},{},[1,2,3,4,5]);
+},{"./meta_data":4}]},{},[1]);
