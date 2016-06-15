@@ -23,16 +23,17 @@ class Group {
 
   static divide(nodes, pattern, color) {
     const groups = {};
-
-    nodes.forEach((node) => {
-      const result = node.name.match(pattern);
-      if (!result)
-        return;
-
-      const name = result[1] || result[0];
-
+    const register = (name, node) => {
       groups[name] = groups[name] || new Group(name, color);
       groups[name].push(node);
+    };
+
+    nodes.forEach((node) => {
+      node.groups.forEach((name) => register(name, node));
+
+      const result = node.name.match(pattern);
+      if (result)
+        register(result[1] || result[0], node);
     });
 
     return this.array(groups);

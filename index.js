@@ -204,15 +204,18 @@ var Group = function () {
     key: 'divide',
     value: function divide(nodes, pattern, color) {
       var groups = {};
-
-      nodes.forEach(function (node) {
-        var result = node.name.match(pattern);
-        if (!result) return;
-
-        var name = result[1] || result[0];
-
+      var register = function register(name, node) {
         groups[name] = groups[name] || new Group(name, color);
         groups[name].push(node);
+      };
+
+      nodes.forEach(function (node) {
+        node.groups.forEach(function (name) {
+          return register(name, node);
+        });
+
+        var result = node.name.match(pattern);
+        if (result) register(result[1] || result[0], node);
       });
 
       return this.array(groups);
@@ -523,6 +526,7 @@ var Node = function () {
 
     this.id = id;
     this.name = data.name;
+    this.groups = typeof data.group == 'string' ? [data.group] : data.group || [];
     this.url = data.url;
     this.meta = new _meta_data2.default(data.meta).slice(meta_keys);
     this.color = color;
@@ -654,4 +658,4 @@ var Node = function () {
 
 module.exports = Node;
 
-},{"./meta_data":4}]},{},[1]);
+},{"./meta_data":4}]},{},[1,2,3,4,5]);
