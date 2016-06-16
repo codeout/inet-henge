@@ -14,7 +14,7 @@ class Diagram {
 
     this.set_distance = this.link_distance(options.distance || 150);
     this.color = d3.scale.category20();
-    this.ticks = 1000;
+    this.max_ticks = 1000;
   }
 
   link_distance(distance) {
@@ -77,7 +77,7 @@ class Diagram {
 
       // without path calculation
       this.configure_tick(group, node, link);
-      this.ticks_forward(this.ticks);
+      this.ticks_forward(this.max_ticks);
 
       // render path
       this.configure_tick(group, node, link, path, label);
