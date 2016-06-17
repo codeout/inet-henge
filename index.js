@@ -108,7 +108,7 @@ var Diagram = function () {
         // without path calculation
 
         _this2.configure_tick(group, node, link);
-        _this2.ticks_forward(_this2.max_ticks);
+        _this2.ticks_forward();
 
         // render path
         _this2.configure_tick(group, node, link, path, label);
@@ -130,6 +130,8 @@ var Diagram = function () {
   }, {
     key: 'ticks_forward',
     value: function ticks_forward(count) {
+      count = count || this.max_ticks;
+
       for (var i = 0; i < count; i++) {
         this.cola.tick();
       }this.cola.stop();
@@ -658,4 +660,4 @@ var Node = function () {
 
 module.exports = Node;
 
-},{"./meta_data":4}]},{},[1]);
+},{"./meta_data":4}]},{},[1,2,3,4,5]);

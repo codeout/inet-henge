@@ -77,7 +77,7 @@ class Diagram {
 
       // without path calculation
       this.configure_tick(group, node, link);
-      this.ticks_forward(this.max_ticks);
+      this.ticks_forward();
 
       // render path
       this.configure_tick(group, node, link, path, label);
@@ -97,6 +97,8 @@ class Diagram {
   }
 
   ticks_forward(count) {
+    count = count || this.max_ticks;
+
     for (let i = 0; i < count; i++)
       this.cola.tick();
     this.cola.stop();
