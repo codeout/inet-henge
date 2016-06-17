@@ -4,7 +4,7 @@ class Node {
   constructor(data, id, meta_keys, color) {
     this.id = id;
     this.name = data.name;
-    this.groups = typeof data.group == 'string' ? [data.group] : (data.group || []);
+    this.group = typeof data.group == 'string' ? [data.group] : (data.group || []);
     this.url = data.url;
     this.meta = new MetaData(data.meta).slice(meta_keys);
     this.color = color;

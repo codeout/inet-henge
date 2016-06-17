@@ -225,7 +225,7 @@ var Group = function () {
       };
 
       nodes.forEach(function (node) {
-        node.groups.forEach(function (name) {
+        node.group.forEach(function (name) {
           return register(name, node);
         });
 
@@ -541,7 +541,7 @@ var Node = function () {
 
     this.id = id;
     this.name = data.name;
-    this.groups = typeof data.group == 'string' ? [data.group] : data.group || [];
+    this.group = typeof data.group == 'string' ? [data.group] : data.group || [];
     this.url = data.url;
     this.meta = new _meta_data2.default(data.meta).slice(meta_keys);
     this.color = color;

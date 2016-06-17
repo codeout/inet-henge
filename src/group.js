@@ -29,7 +29,7 @@ class Group {
     };
 
     nodes.forEach((node) => {
-      node.groups.forEach((name) => register(name, node));
+      node.group.forEach((name) => register(name, node));
 
       const result = node.name.match(pattern);
       if (result)
