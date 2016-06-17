@@ -79,6 +79,8 @@ var Diagram = function () {
     value: function render() {
       var _this2 = this;
 
+      this.display_load_message();
+
       d3.json(this.url, function (error, data) {
         if (error) console.error(error);
 
@@ -109,6 +111,7 @@ var Diagram = function () {
 
         _this2.configure_tick(group, node, link);
         _this2.ticks_forward();
+        _this2.hide_load_message();
 
         // render path
         _this2.configure_tick(group, node, link, path, label);
@@ -158,6 +161,16 @@ var Diagram = function () {
     key: 'dragstart_callback',
     value: function dragstart_callback() {
       d3.event.sourceEvent.stopPropagation();
+    }
+  }, {
+    key: 'display_load_message',
+    value: function display_load_message() {
+      this.indicator = this.svg.append('text').attr('x', this.width / 2).attr('y', this.height / 2).attr('dy', '.35em').style('text-anchor', 'middle').text('Simulating. Just a moment ...');
+    }
+  }, {
+    key: 'hide_load_message',
+    value: function hide_load_message() {
+      if (this.indicator) this.indicator.remove();
     }
   }]);
 

@@ -52,6 +52,8 @@ class Diagram {
   }
 
   render() {
+    this.display_load_message();
+
     d3.json(this.url, (error, data) => {
       if (error)
         console.error(error);
@@ -78,6 +80,7 @@ class Diagram {
       // without path calculation
       this.configure_tick(group, node, link);
       this.ticks_forward();
+      this.hide_load_message();
 
       // render path
       this.configure_tick(group, node, link, path, label);
@@ -119,6 +122,20 @@ class Diagram {
 
   dragstart_callback() {
     d3.event.sourceEvent.stopPropagation();
+  }
+
+  display_load_message() {
+    this.indicator = this.svg.append('text')
+      .attr('x', this.width / 2)
+      .attr('y', this.height / 2)
+      .attr('dy', '.35em')
+      .style('text-anchor', 'middle')
+      .text('Simulating. Just a moment ...');
+  }
+
+  hide_load_message() {
+    if (this.indicator)
+      this.indicator.remove();
   }
 }
 
