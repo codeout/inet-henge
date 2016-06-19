@@ -8,7 +8,7 @@ class Diagram {
 
     this.selector = container;
     this.url = url;
-    this.group_pattern = options.pop || /^([^\s-]+)-/;
+    this.group_pattern = options.pop;
     this.width = options.width || 960;
     this.height = options.height || 600;
 

@@ -8,7 +8,11 @@ To be updated
 
 * Requirements: [cola.js](http://marvl.infotech.monash.edu/webcola/)
 
-### Usage
+## Demo
+
+[Shownet 2016 Network](https://inet-henge.herokuapp.com/)
+
+## Usage
 
 In example [here](example/shownet.html), load related assets first:
 
@@ -46,12 +50,21 @@ and render your network diagram:
 </html>
 ```
 
-inet-henge.js renders your network diagram as SVG within ```<div id="diagram"></div>```. The diagram also displays metadata labelled ```'loopback'``` and ```'interface'``` which defined in JSON data.
+inet-henge.js renders your network diagram as SVG within ```<div id="diagram"></div>```. In this example the diagram also displays metadata labelled ```'loopback'``` and ```'interface'``` which defined in JSON data.
 
 ![Shownet2016 example](example/images/shownet.png)
 
+### Node Group
 
-#### JSON Data
+Nodes can be grouped when a regular expression for node name is specified to determine which node belongs to which group.
+
+When the first three characters describe POP name, you can group nodes by doing this:
+
+``` javascript
+var diagram = new Diagram('#diagram', 'data.json', {pop: /^.{3}/})
+```
+
+### JSON Data
 
 Minimal json looks like:
 

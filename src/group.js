@@ -28,13 +28,14 @@ class Group {
       groups[name].push(node);
     };
 
-    nodes.forEach((node) => {
-      node.group.forEach((name) => register(name, node));
+    if (pattern)
+      nodes.forEach((node) => {
+        node.group.forEach((name) => register(name, node));
 
-      const result = node.name.match(pattern);
-      if (result)
-        register(result[1] || result[0], node);
-    });
+        const result = node.name.match(pattern);
+        if (result)
+          register(result[1] || result[0], node);
+      });
 
     return this.array(groups);
   }
