@@ -50,7 +50,7 @@ and render your network diagram:
 </html>
 ```
 
-inet-henge.js renders your network diagram as SVG within ```<div id="diagram"></div>```. In this example the diagram also displays metadata labelled ```'loopback'``` and ```'interface'``` which defined in JSON data.
+inet-henge.js renders your network diagram as SVG within ```<div id="diagram"></div>```. In this example the diagram also displays metadata labelled ```'interface'``` which defined in JSON data.
 
 ![Shownet2016 example](example/images/shownet.png)
 
