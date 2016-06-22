@@ -86,7 +86,7 @@ You can specify icon for each node:
 ```json
 {
   "nodes": [
-    { "name": "dceast-ne40e", "url": "./images/router.png" },
+    { "name": "dceast-ne40e", "icon": "./images/router.png" },
 ```
 
 Or metadata to display on network diagrams.

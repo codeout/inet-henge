@@ -5,7 +5,7 @@ class Node {
     this.id = id;
     this.name = data.name;
     this.group = typeof data.group == 'string' ? [data.group] : (data.group || []);
-    this.url = data.url;
+    this.icon = data.icon;
     this.meta = new MetaData(data.meta).slice(meta_keys);
     this.color = color;
 
@@ -58,7 +58,7 @@ class Node {
           .attr('transform', (d) => d.transform());
 
     container.each(function(d) {
-      if (d.url)
+      if (d.icon)
         Node.append_image(this);
       else
         Node.append_rect(this);
@@ -96,7 +96,7 @@ class Node {
   static append_image(container) {
     d3.select(container).attr('class', 'node image')
       .append('image')
-      .attr('xlink:href', (d) => d.url)
+      .attr('xlink:href', (d) => d.icon)
       .attr('width', (d) => d.node_width())
       .attr('height', (d) => d.node_height());
   }

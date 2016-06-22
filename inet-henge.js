@@ -542,7 +542,7 @@ var Node = function () {
     this.id = id;
     this.name = data.name;
     this.group = typeof data.group == 'string' ? [data.group] : data.group || [];
-    this.url = data.url;
+    this.icon = data.icon;
     this.meta = new _meta_data2.default(data.meta).slice(meta_keys);
     this.color = color;
 
@@ -601,7 +601,7 @@ var Node = function () {
       });
 
       container.each(function (d) {
-        if (d.url) Node.append_image(this);else Node.append_rect(this);
+        if (d.icon) Node.append_image(this);else Node.append_rect(this);
 
         Node.append_text(this);
       });
@@ -641,7 +641,7 @@ var Node = function () {
     key: 'append_image',
     value: function append_image(container) {
       d3.select(container).attr('class', 'node image').append('image').attr('xlink:href', function (d) {
-        return d.url;
+        return d.icon;
       }).attr('width', function (d) {
         return d.node_width();
       }).attr('height', function (d) {
