@@ -219,18 +219,19 @@ var Group = function () {
     key: 'divide',
     value: function divide(nodes, pattern, color) {
       var groups = {};
-      var register = function register(name, node) {
-        groups[name] = groups[name] || new Group(name, color);
-        groups[name].push(node);
+      var register = function register(name, node, parent) {
+        var key = parent + ':' + name;
+        groups[key] = groups[key] || new Group(name, color);
+        groups[key].push(node);
       };
 
       if (pattern) nodes.forEach(function (node) {
-        node.group.forEach(function (name) {
-          return register(name, node);
-        });
-
         var result = node.name.match(pattern);
         if (result) register(result[1] || result[0], node);
+
+        node.group.forEach(function (name) {
+          return register(name, node, result);
+        });
       });
 
       return this.array(groups);
@@ -673,4 +674,4 @@ var Node = function () {
 
 module.exports = Node;
 
-},{"./meta_data":4}]},{},[1]);
+},{"./meta_data":4}]},{},[1,2,3,4,5]);
