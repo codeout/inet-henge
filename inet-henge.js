@@ -72,6 +72,9 @@ var Diagram = function () {
         return _this.zoom_callback(container);
       })).append('g');
 
+      container.append('rect').attr('width', this.width * 10) // 10 is huge enough
+      .attr('height', this.height * 10).attr('transform', 'translate(-' + this.width * 5 + ', -' + this.height * 5 + ')').style('opacity', 0);
+
       return container;
     }
   }, {
