@@ -1,6 +1,9 @@
 # inet-henge.js
 
-Generate d3.js based Network Diagram from JSON data.
+Generate d3.js based Network Diagram from JSON data.  
+Place nodes automatically and you don't need to know how.
+
+![stone-henge](https://c3.staticflickr.com/6/5480/11307043746_b3b36ccf34_h.jpg)
 
 ## Getting Started
 
