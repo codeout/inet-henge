@@ -30,7 +30,7 @@ In example [here](example/shownet.html), load related assets first:
     <meta charset="utf-8" />
     <link href="style.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
-    <script src="../vendor/cola.3.1.3.min.js"></script>
+    <script src="../vendor/cola.min.js"></script>
     <script src="../inet-henge.js"></script>
   </head>
 ```
