@@ -121,6 +121,9 @@ var Diagram = function () {
         _this2.cola.start();
         _this2.ticks_forward(1);
 
+        path.attr('d', function (d) {
+          return d.d();
+        }); // make sure path calculation is done
         _this2.freeze(node);
       });
     }

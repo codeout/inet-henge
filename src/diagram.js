@@ -93,6 +93,7 @@ class Diagram {
       this.cola.start();
       this.ticks_forward(1);
 
+      path.attr('d', (d) => d.d());  // make sure path calculation is done
       this.freeze(node);
     });
   }
