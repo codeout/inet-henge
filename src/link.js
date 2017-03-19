@@ -72,7 +72,7 @@ class Link {
     const labelled_links = links.filter((l) => l.has_meta());
     const paths = Link.create_paths(svg, labelled_links);
 
-    const split_labelled_links = Array.prototype.concat.apply([], labelled_links.map((l) => l.split()))
+    const split_labelled_links = labelled_links.map((l) => l.split()).reduce((x, y) => x.concat(y))
           .filter((l) => l.has_meta());
     const labels = this.create_labels(svg, split_labelled_links);
 
