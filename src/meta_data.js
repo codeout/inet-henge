@@ -4,7 +4,7 @@ class MetaData {
     this.extra_key = extra_key;
   }
 
-  slice(keys) {
+  get(keys) {
     if (!this.data)
       return [];
 

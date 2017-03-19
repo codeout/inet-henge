@@ -6,8 +6,8 @@ class Link {
     this.id = id;
     this.source = Node.id_by_name(data.source);
     this.target = Node.id_by_name(data.target);
-    this.source_meta = new MetaData(data.meta, 'source').slice(meta_keys);
-    this.target_meta = new MetaData(data.meta, 'target').slice(meta_keys);
+    this.source_meta = new MetaData(data.meta, 'source').get(meta_keys);
+    this.target_meta = new MetaData(data.meta, 'target').get(meta_keys);
 
     this.label_x_offset = 20;
     this.label_y_offset = '1.1em';

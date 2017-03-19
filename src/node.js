@@ -6,7 +6,7 @@ class Node {
     this.name = data.name;
     this.group = typeof data.group == 'string' ? [data.group] : (data.group || []);
     this.icon = data.icon;
-    this.meta = new MetaData(data.meta).slice(meta_keys);
+    this.meta = new MetaData(data.meta).get(meta_keys);
     this.color = color;
 
     this.width = 60;
