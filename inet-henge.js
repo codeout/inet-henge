@@ -318,7 +318,7 @@ var Link = function () {
     this.target_meta = new _meta_data2.default(data.meta, 'target').get(meta_keys);
 
     this.label_x_offset = 20;
-    this.label_y_offset = 1.1; // em
+    this.label_y_offset = 1.5; // em
   }
 
   _createClass(Link, [{

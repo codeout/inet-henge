@@ -11,7 +11,7 @@ class Link {
     this.target_meta = new MetaData(data.meta, 'target').get(meta_keys);
 
     this.label_x_offset = 20;
-    this.label_y_offset = 1.1; // em
+    this.label_y_offset = 1.5; // em
   }
 
   is_named_path() {
