@@ -90,44 +90,49 @@ var Diagram = function () {
           _this2.show_message('Failed to load "' + _this2.url + '"');
         }
 
-        var nodes = data.nodes.map(function (n, i) {
-          return new _node2.default(n, i, _this2.meta, _this2.color);
-        });
-        var links = data.links.map(function (l, i) {
-          return new _link2.default(l, i, _this2.meta);
-        });
-        var groups = _group2.default.divide(nodes, _this2.group_pattern, _this2.color);
+        try {
+          var nodes = data.nodes.map(function (n, i) {
+            return new _node2.default(n, i, _this2.meta, _this2.color);
+          });
+          var links = data.links.map(function (l, i) {
+            return new _link2.default(l, i, _this2.meta);
+          });
+          var groups = _group2.default.divide(nodes, _this2.group_pattern, _this2.color);
 
-        _this2.cola.nodes(nodes).links(links).groups(groups);
-        _this2.set_distance(_this2.cola);
-        _this2.cola.start();
+          _this2.cola.nodes(nodes).links(links).groups(groups);
+          _this2.set_distance(_this2.cola);
+          _this2.cola.start();
 
-        var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback));
-        var link = _link2.default.render_links(_this2.svg, links);
-        var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback));
+          var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback));
+          var link = _link2.default.render_links(_this2.svg, links);
+          var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback));
 
-        var _Link$render_paths = _link2.default.render_paths(_this2.svg, links);
+          var _Link$render_paths = _link2.default.render_paths(_this2.svg, links);
 
-        var _Link$render_paths2 = _slicedToArray(_Link$render_paths, 2);
+          var _Link$render_paths2 = _slicedToArray(_Link$render_paths, 2);
 
-        var path = _Link$render_paths2[0];
-        var label = _Link$render_paths2[1];
+          var path = _Link$render_paths2[0];
+          var label = _Link$render_paths2[1];
 
-        // without path calculation
+          // without path calculation
 
-        _this2.configure_tick(group, node, link);
-        _this2.ticks_forward();
-        _this2.hide_load_message();
+          _this2.configure_tick(group, node, link);
+          _this2.ticks_forward();
+          _this2.hide_load_message();
 
-        // render path
-        _this2.configure_tick(group, node, link, path, label);
-        _this2.cola.start();
-        _this2.ticks_forward(1);
+          // render path
+          _this2.configure_tick(group, node, link, path, label);
+          _this2.cola.start();
+          _this2.ticks_forward(1);
 
-        path.attr('d', function (d) {
-          return d.d();
-        }); // make sure path calculation is done
-        _this2.freeze(node);
+          path.attr('d', function (d) {
+            return d.d();
+          }); // make sure path calculation is done
+          _this2.freeze(node);
+        } catch (e) {
+          _this2.show_message(e);
+          throw e;
+        }
       });
     }
   }, {

@@ -66,37 +66,42 @@ class Diagram {
         this.show_message(`Failed to load "${this.url}"`);
       }
 
-      const nodes = data.nodes.map((n, i) => new Node(n, i, this.meta, this.color));
-      const links = data.links.map((l, i) => new Link(l, i, this.meta));
-      const groups = Group.divide(nodes, this.group_pattern, this.color);
+      try{
+        const nodes = data.nodes.map((n, i) => new Node(n, i, this.meta, this.color));
+        const links = data.links.map((l, i) => new Link(l, i, this.meta));
+        const groups = Group.divide(nodes, this.group_pattern, this.color);
 
-      this.cola.nodes(nodes)
-        .links(links)
-        .groups(groups);
-      this.set_distance(this.cola);
-      this.cola.start();
+        this.cola.nodes(nodes)
+          .links(links)
+          .groups(groups);
+        this.set_distance(this.cola);
+        this.cola.start();
 
-      const group = Group.render(this.svg, groups).call(
-        this.cola.drag().on('dragstart', this.dragstart_callback)
-      );
-      const link = Link.render_links(this.svg, links);
-      const node = Node.render(this.svg, nodes).call(
-        this.cola.drag().on('dragstart', this.dragstart_callback)
-      );
-      const [path, label] = Link.render_paths(this.svg, links);
+        const group = Group.render(this.svg, groups).call(
+          this.cola.drag().on('dragstart', this.dragstart_callback)
+        );
+        const link = Link.render_links(this.svg, links);
+        const node = Node.render(this.svg, nodes).call(
+          this.cola.drag().on('dragstart', this.dragstart_callback)
+        );
+        const [path, label] = Link.render_paths(this.svg, links);
 
-      // without path calculation
-      this.configure_tick(group, node, link);
-      this.ticks_forward();
-      this.hide_load_message();
+        // without path calculation
+        this.configure_tick(group, node, link);
+        this.ticks_forward();
+        this.hide_load_message();
 
-      // render path
-      this.configure_tick(group, node, link, path, label);
-      this.cola.start();
-      this.ticks_forward(1);
+        // render path
+        this.configure_tick(group, node, link, path, label);
+        this.cola.start();
+        this.ticks_forward(1);
 
-      path.attr('d', (d) => d.d());  // make sure path calculation is done
-      this.freeze(node);
+        path.attr('d', (d) => d.d());  // make sure path calculation is done
+        this.freeze(node);
+      }catch(e){
+        this.show_message(e);
+        throw e;
+      }
     });
   }
 
