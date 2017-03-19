@@ -1,15 +1,41 @@
 # inet-henge.js
 
-Generate d3.js based Network Diagram from JSON data.  
-Place nodes automatically and you don't need to know how.
+inet-henge.js generates d3.js based Auto Layout Network Diagram from JSON data.  
+inet-henge helps you draw it by calculating coordinates automatically, placing nodes and links in SVG format.
+
+Each object is draggable and zoomable.
 
 ![stone-henge](https://c3.staticflickr.com/6/5480/11307043746_b3b36ccf34_h.jpg)
 
+All you have to do are:
+
+1. Define nodes identified by name
+2. Define links by specifying both end nodes
+3. Show in browser. That's it.
+
+JSON example:
+
+```json
+{
+  "nodes": [
+    { "name": "A" },
+    { "name": "B" }
+  ],
+
+  "links": [
+    { "source": "A", "target": "B" }
+  ]
+}
+```
+
 ## Getting Started
 
-To be updated
+```zsh
+git clone https://github.com/codeout/inet-henge.git
+```
 
-* Requirements: [cola.js](http://marvl.infotech.monash.edu/webcola/)
+Then host the ```/example``` directory in your favorite web server, or CSP agnostic browser, like Safari, can render it locally in your computer.
+
 
 ## Demo
 
@@ -17,10 +43,11 @@ To be updated
 
 ## Usage
 
-In example [here](example/shownet.html), load related assets first:
+In example [here](example/shownet.html), load related assets at first:
 
-* d3.js
+* d3.js v3
 * cola.js
+  * :warning: **It doesn't support d3.js v4** :warning:
 * inet-henge.js
 
 ```html
@@ -28,7 +55,10 @@ In example [here](example/shownet.html), load related assets first:
 <html>
   <head>
     <meta charset="utf-8" />
+
+    <!-- You can customize a style of network diagram by CSS -->
     <link href="style.css" rel="stylesheet" />
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
     <script src="../vendor/cola.min.js"></script>
     <script src="../inet-henge.js"></script>
@@ -53,13 +83,13 @@ and render your network diagram:
 </html>
 ```
 
-inet-henge.js renders your network diagram as SVG within ```<div id="diagram"></div>```. In this example the diagram also displays metadata labelled ```'interface'``` which defined in JSON data.
+inet-henge.js renders your network diagram as SVG within ```<div id="diagram"></div>```. In the example above the diagram also displays metadata labelled ```'interface'``` which defined in JSON data.
 
 ![Shownet2016 example](example/images/shownet.png)
 
 ### Node Group
 
-Nodes can be grouped when a regular expression for node name is specified to determine which node belongs to which group.
+Nodes get rendered in groups when you specify which node belongs to which group by regular expression.
 
 When the first three characters describe POP name, you can group nodes by doing this:
 
@@ -84,30 +114,29 @@ Minimal json looks like:
 }
 ```
 
-You can specify icon for each node:
+You can specify node icon by URL:
 
 ```json
-{
   "nodes": [
-    { "name": "dceast-ne40e", "icon": "./images/router.png" },
+    { "name": "dceast-ne40e", "icon": "./images/router.png" }
+  ]
 ```
 
-Or metadata to display on network diagrams.
+Metadata to display on network diagrams:
 
 ```json
-    { "name": "dceast-fx1-1", "meta": { "loopback": "10.0.0.1" } },
-    ...
-  ],
   "links": [
-    { "source": "noc-asr9904", "target": "noc-ax8616r",
-      "meta": { "interface": { "source": "0-0-0-2", "target": "1-1" } }
+    {
+      "source": "noc-asr9904", "target": "noc-ax8616r",
+      "meta": {
+        "interface": { "source": "0-0-0-2", "target": "1-1" }
+      }
+    }
+  ]
 ```
 
-metadata for links should be described in the format:
+:point_up: This will render metadata on the both ends of links.
 
-```json
-"name": { "source": "data for source", "target": "data for target" }
-```
 
 ## Contributing
 
