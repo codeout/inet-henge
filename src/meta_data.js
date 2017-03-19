@@ -5,6 +5,10 @@ class MetaData {
   }
 
   get(keys) {
+    return this.slice(keys).filter((k, i) => typeof k.value === 'string');
+  }
+
+  slice(keys) {
     if (!this.data)
       return [];
 
