@@ -85,7 +85,10 @@ var Diagram = function () {
       this.display_load_message();
 
       d3.json(this.url, function (error, data) {
-        if (error) console.error(error);
+        if (error) {
+          console.error(error);
+          _this2.show_message('Failed to load "' + _this2.url + '"');
+        }
 
         var nodes = data.nodes.map(function (n, i) {
           return new _node2.default(n, i, _this2.meta, _this2.color);
@@ -177,6 +180,11 @@ var Diagram = function () {
     key: 'hide_load_message',
     value: function hide_load_message() {
       if (this.indicator) this.indicator.remove();
+    }
+  }, {
+    key: 'show_message',
+    value: function show_message(message) {
+      if (this.indicator) this.indicator.text(message);
     }
   }]);
 

@@ -61,8 +61,10 @@ class Diagram {
     this.display_load_message();
 
     d3.json(this.url, (error, data) => {
-      if (error)
+      if (error) {
         console.error(error);
+        this.show_message(`Failed to load "${this.url}"`);
+      }
 
       const nodes = data.nodes.map((n, i) => new Node(n, i, this.meta, this.color));
       const links = data.links.map((l, i) => new Link(l, i, this.meta));
@@ -143,6 +145,11 @@ class Diagram {
   hide_load_message() {
     if (this.indicator)
       this.indicator.remove();
+  }
+
+  show_message(message) {
+    if (this.indicator)
+      this.indicator.text(message);
   }
 }
 
