@@ -24,6 +24,10 @@ class Diagram {
       return (cola) => cola.linkDistance(distance);
   }
 
+  link_width(func) {
+    this.get_link_width = func;
+  }
+
   init(...meta) {
     this.meta = meta;
     this.cola = this.init_cola();
@@ -68,7 +72,7 @@ class Diagram {
 
       try{
         const nodes = data.nodes.map((n, i) => new Node(n, i, this.meta, this.color));
-        const links = data.links.map((l, i) => new Link(l, i, this.meta));
+        const links = data.links.map((l, i) => new Link(l, i, this.meta, this.get_link_width));
         const groups = Group.divide(nodes, this.group_pattern, this.color);
 
         this.cola.nodes(nodes)

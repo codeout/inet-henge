@@ -2,13 +2,18 @@ import MetaData from './meta_data';
 import Node from './node';
 
 class Link {
-  constructor(data, id, meta_keys) {
+  constructor(data, id, meta_keys, link_width) {
     this.id = id;
     this.source = Node.id_by_name(data.source);
     this.target = Node.id_by_name(data.target);
     this.meta = new MetaData(data.meta).get(meta_keys);
     this.source_meta = new MetaData(data.meta, 'source').get(meta_keys);
     this.target_meta = new MetaData(data.meta, 'target').get(meta_keys);
+
+    if (typeof link_width === 'function')
+      this.width = link_width(data.meta) || 1;
+    else
+      this.width = link_width || 1;
 
     this.label_x_offset = 20;
     this.label_y_offset = 1.5; // em
@@ -84,7 +89,8 @@ class Link {
       .attr('x1', (d) => d.source.x)
       .attr('y1', (d) => d.source.y)
       .attr('x2', (d) => d.target.x)
-      .attr('y2', (d) => d.target.y);
+      .attr('y2', (d) => d.target.y)
+      .attr('stroke-width', (d) => d.width);
   }
 
   static render_paths(svg, links) {

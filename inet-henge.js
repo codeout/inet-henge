@@ -46,6 +46,11 @@ var Diagram = function () {
       };
     }
   }, {
+    key: 'link_width',
+    value: function link_width(func) {
+      this.get_link_width = func;
+    }
+  }, {
     key: 'init',
     value: function init() {
       for (var _len = arguments.length, meta = Array(_len), _key = 0; _key < _len; _key++) {
@@ -95,7 +100,7 @@ var Diagram = function () {
             return new _node2.default(n, i, _this2.meta, _this2.color);
           });
           var links = data.links.map(function (l, i) {
-            return new _link2.default(l, i, _this2.meta);
+            return new _link2.default(l, i, _this2.meta, _this2.get_link_width);
           });
           var groups = _group2.default.divide(nodes, _this2.group_pattern, _this2.color);
 
@@ -320,7 +325,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Link = function () {
-  function Link(data, id, meta_keys) {
+  function Link(data, id, meta_keys, link_width) {
     _classCallCheck(this, Link);
 
     this.id = id;
@@ -329,6 +334,8 @@ var Link = function () {
     this.meta = new _meta_data2.default(data.meta).get(meta_keys);
     this.source_meta = new _meta_data2.default(data.meta, 'source').get(meta_keys);
     this.target_meta = new _meta_data2.default(data.meta, 'target').get(meta_keys);
+
+    if (typeof link_width === 'function') this.width = link_width(data.meta) || 1;else this.width = link_width || 1;
 
     this.label_x_offset = 20;
     this.label_y_offset = 1.5; // em
@@ -413,6 +420,8 @@ var Link = function () {
         return d.target.x;
       }).attr('y2', function (d) {
         return d.target.y;
+      }).attr('stroke-width', function (d) {
+        return d.width;
       });
     }
   }, {
