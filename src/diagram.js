@@ -18,7 +18,7 @@ class Diagram {
   }
 
   link_distance(distance) {
-    if (typeof distance == 'function')
+    if (typeof distance === 'function')
       return distance;
     else
       return (cola) => cola.linkDistance(distance);

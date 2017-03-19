@@ -4,7 +4,7 @@ class Node {
   constructor(data, id, meta_keys, color) {
     this.id = id;
     this.name = data.name;
-    this.group = typeof data.group == 'string' ? [data.group] : (data.group || []);
+    this.group = typeof data.group === 'string' ? [data.group] : (data.group || []);
     this.icon = data.icon;
     this.meta = new MetaData(data.meta).get(meta_keys);
     this.color = color;
@@ -45,7 +45,7 @@ class Node {
   }
 
   static id_by_name(name) {
-    if (Node.all[name] == undefined)
+    if (Node.all[name] === undefined)
       throw `Unknown node "${name}"`;
     return Node.all[name];
   }
