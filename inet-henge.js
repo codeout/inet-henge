@@ -41,7 +41,7 @@ var Diagram = function () {
   _createClass(Diagram, [{
     key: 'link_distance',
     value: function link_distance(distance) {
-      if (typeof distance == 'function') return distance;else return function (cola) {
+      if (typeof distance === 'function') return distance;else return function (cola) {
         return cola.linkDistance(distance);
       };
     }
@@ -313,14 +313,20 @@ var Link = function () {
     this.id = id;
     this.source = _node2.default.id_by_name(data.source);
     this.target = _node2.default.id_by_name(data.target);
-    this.source_meta = new _meta_data2.default(data.meta, 'source').slice(meta_keys);
-    this.target_meta = new _meta_data2.default(data.meta, 'target').slice(meta_keys);
+    this.meta = new _meta_data2.default(data.meta).get(meta_keys);
+    this.source_meta = new _meta_data2.default(data.meta, 'source').get(meta_keys);
+    this.target_meta = new _meta_data2.default(data.meta, 'target').get(meta_keys);
 
     this.label_x_offset = 20;
-    this.label_y_offset = '1.1em';
+    this.label_y_offset = 1.1; // em
   }
 
   _createClass(Link, [{
+    key: 'is_named_path',
+    value: function is_named_path() {
+      return this.meta.length > 0;
+    }
+  }, {
     key: 'is_reverse_path',
     value: function is_reverse_path() {
       return this.target_meta.length > 0;
@@ -341,7 +347,12 @@ var Link = function () {
   }, {
     key: 'tspan_x_offset',
     value: function tspan_x_offset() {
-      if (this.is_reverse_path()) return -this.label_x_offset;else return this.label_x_offset;
+      if (this.is_named_path()) return 0;else if (this.is_reverse_path()) return -this.label_x_offset;else return this.label_x_offset;
+    }
+  }, {
+    key: 'tspan_y_offset',
+    value: function tspan_y_offset() {
+      if (this.is_named_path()) return -this.label_y_offset + 0.7 + 'em';else return this.label_y_offset + 'em';
     }
   }, {
     key: 'rotate',
@@ -351,20 +362,32 @@ var Link = function () {
   }, {
     key: 'split',
     value: function split() {
-      if (this.source_meta && this.target_meta) {
-        var source = Object.assign(Object.create(this), this);
-        var target = Object.assign(Object.create(this), this);
-        source.target_meta = [];
-        target.source_meta = [];
-        return [source, target];
-      }
+      var _this = this;
 
-      return [this];
+      if (!this.meta && !this.source_meta && !this.target_meta) return [this];
+
+      var meta = [];
+      ['meta', 'source_meta', 'target_meta'].forEach(function (key, i, keys) {
+        if (_this[key]) {
+          (function () {
+            var duped = Object.assign(Object.create(_this), _this);
+
+            keys.filter(function (k) {
+              return k !== key;
+            }).forEach(function (k) {
+              return duped[k] = [];
+            });
+            meta.push(duped);
+          })();
+        }
+      });
+
+      return meta;
     }
   }, {
     key: 'has_meta',
     value: function has_meta() {
-      return this.source_meta.length > 0 || this.target_meta.length > 0;
+      return this.meta.length > 0 || this.source_meta.length > 0 || this.target_meta.length > 0;
     }
   }], [{
     key: 'render_links',
@@ -387,9 +410,11 @@ var Link = function () {
       });
       var paths = Link.create_paths(svg, labelled_links);
 
-      var split_labelled_links = Array.prototype.concat.apply([], labelled_links.map(function (l) {
+      var split_labelled_links = labelled_links.map(function (l) {
         return l.split();
-      })).filter(function (l) {
+      }).reduce(function (x, y) {
+        return x.concat(y);
+      }).filter(function (l) {
         return l.has_meta();
       });
       var labels = this.create_labels(svg, split_labelled_links);
@@ -415,8 +440,11 @@ var Link = function () {
       });
 
       text_path.each(function (d) {
+        Link.append_tspans(this, d.meta);
         Link.append_tspans(this, d.source_meta);
         Link.append_tspans(this, d.target_meta);
+
+        if (d.is_named_path()) Link.center(this);
 
         if (d.is_reverse_path()) Link.the_other_end(this);
       });
@@ -429,13 +457,18 @@ var Link = function () {
       d3.select(container).attr('class', 'reverse').attr('text-anchor', 'end').attr('startOffset', '100%');
     }
   }, {
+    key: 'center',
+    value: function center(container) {
+      d3.select(container).attr('class', 'center').attr('text-anchor', 'middle').attr('startOffset', '50%');
+    }
+  }, {
     key: 'append_tspans',
     value: function append_tspans(container, meta) {
       meta.forEach(function (m, i) {
         d3.select(container).append('tspan').attr('x', function (d) {
           return d.tspan_x_offset();
         }).attr('dy', function (d) {
-          return d.label_y_offset;
+          return d.tspan_y_offset();
         }).attr('class', m.class).text(m.value);
       });
     }
@@ -475,7 +508,7 @@ var Link = function () {
 module.exports = Link;
 
 },{"./meta_data":4,"./node":5}],4:[function(require,module,exports){
-"use strict";
+'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -490,14 +523,21 @@ var MetaData = function () {
   }
 
   _createClass(MetaData, [{
-    key: "slice",
+    key: 'get',
+    value: function get(keys) {
+      return this.slice(keys).filter(function (k, i) {
+        return typeof k.value === 'string';
+      });
+    }
+  }, {
+    key: 'slice',
     value: function slice(keys) {
       if (!this.data) return [];
 
       if (this.extra_key) return this.slice_with_extra_key(keys);else return this.slice_without_extra_key(keys);
     }
   }, {
-    key: "slice_with_extra_key",
+    key: 'slice_with_extra_key',
     value: function slice_with_extra_key(keys) {
       var _this = this;
 
@@ -510,7 +550,7 @@ var MetaData = function () {
       return data;
     }
   }, {
-    key: "slice_without_extra_key",
+    key: 'slice_without_extra_key',
     value: function slice_without_extra_key(keys) {
       var _this2 = this;
 
@@ -548,9 +588,9 @@ var Node = function () {
 
     this.id = id;
     this.name = data.name;
-    this.group = typeof data.group == 'string' ? [data.group] : data.group || [];
+    this.group = typeof data.group === 'string' ? [data.group] : data.group || [];
     this.icon = data.icon;
-    this.meta = new _meta_data2.default(data.meta).slice(meta_keys);
+    this.meta = new _meta_data2.default(data.meta).get(meta_keys);
     this.color = color;
 
     this.width = 60;
@@ -597,7 +637,7 @@ var Node = function () {
   }], [{
     key: 'id_by_name',
     value: function id_by_name(name) {
-      if (Node.all[name] == undefined) throw 'Unknown node "' + name + '"';
+      if (Node.all[name] === undefined) throw 'Unknown node "' + name + '"';
       return Node.all[name];
     }
   }, {

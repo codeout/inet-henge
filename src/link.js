@@ -6,11 +6,16 @@ class Link {
     this.id = id;
     this.source = Node.id_by_name(data.source);
     this.target = Node.id_by_name(data.target);
+    this.meta = new MetaData(data.meta).get(meta_keys);
     this.source_meta = new MetaData(data.meta, 'source').get(meta_keys);
     this.target_meta = new MetaData(data.meta, 'target').get(meta_keys);
 
     this.label_x_offset = 20;
-    this.label_y_offset = '1.1em';
+    this.label_y_offset = 1.1; // em
+  }
+
+  is_named_path() {
+    return this.meta.length > 0;
   }
 
   is_reverse_path() {
@@ -27,10 +32,19 @@ class Link {
 
   // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
   tspan_x_offset() {
-    if (this.is_reverse_path())
+    if (this.is_named_path())
+      return 0;
+    else if (this.is_reverse_path())
       return -this.label_x_offset;
     else
       return this.label_x_offset;
+  }
+
+  tspan_y_offset() {
+    if (this.is_named_path())
+      return `${-this.label_y_offset + 0.7}em`;
+    else
+      return `${this.label_y_offset}em`;
   }
 
   rotate(bbox) {
@@ -41,19 +55,24 @@ class Link {
   }
 
   split() {
-    if (this.source_meta && this.target_meta) {
-      const source = Object.assign(Object.create(this), this);
-      const target = Object.assign(Object.create(this), this);
-      source.target_meta = [];
-      target.source_meta = [];
-      return [source, target];
-    }
+    if (!this.meta && !this.source_meta && !this.target_meta)
+      return [this];
 
-    return [this];
+    const meta = [];
+    ['meta', 'source_meta', 'target_meta'].forEach((key, i, keys) => {
+      if (this[key]) {
+        const duped = Object.assign(Object.create(this), this);
+
+        keys.filter((k) => k !== key).forEach((k) => duped[k] = []);
+        meta.push(duped);
+      }
+    });
+
+    return meta;
   }
 
   has_meta() {
-    return this.source_meta.length > 0 || this.target_meta.length > 0;
+    return this.meta.length > 0 || this.source_meta.length > 0 || this.target_meta.length > 0;
   }
 
   static render_links(svg, links) {
@@ -100,8 +119,12 @@ class Link {
           .attr('xlink:href', (d) => `#${d.path_id()}`);
 
     text_path.each(function(d) {
+      Link.append_tspans(this, d.meta);
       Link.append_tspans(this, d.source_meta);
       Link.append_tspans(this, d.target_meta);
+
+      if (d.is_named_path())
+        Link.center(this);
 
       if (d.is_reverse_path())
         Link.the_other_end(this);
@@ -117,11 +140,18 @@ class Link {
       .attr('startOffset', '100%');
   }
 
+  static center(container) {
+    d3.select(container)
+      .attr('class', 'center')
+      .attr('text-anchor', 'middle')
+      .attr('startOffset', '50%');
+  }
+
   static append_tspans(container, meta) {
     meta.forEach((m, i) => {
       d3.select(container).append('tspan')
         .attr('x', (d) => d.tspan_x_offset())
-        .attr('dy', (d) => d.label_y_offset)
+        .attr('dy', (d) => d.tspan_y_offset())
         .attr('class', m.class)
         .text(m.value);
     });
