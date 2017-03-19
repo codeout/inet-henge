@@ -5,33 +5,14 @@
     <link href="style.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
     <script src="../vendor/cola.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
     <script src="../inet-henge.js"></script>
   </head>
 
   <body>
-    <form>
-      <label>
-        <input id="loopback" type="checkbox" checked>
-        loopback
-      </label>
-    </form>
     <div id="diagram"></div>
   </body>
 
   <script>
-   $(function() {
-     $('#loopback').on('change', function(e, data) {
-       diagram.destroy();
-       diagram = new Diagram('#diagram', 'index.json')
-
-       if($('#loopback:checked').length>0)
-         diagram.init('loopback', 'interface');
-       else
-         diagram.init('interface');
-     });
-   })
-
    var diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/});
    diagram.init('loopback', 'interface');
   </script>
