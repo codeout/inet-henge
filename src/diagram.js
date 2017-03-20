@@ -70,9 +70,10 @@ class Diagram {
         this.show_message(`Failed to load "${this.url}"`);
       }
 
-      try{
-        const nodes = data.nodes.map((n, i) => new Node(n, i, this.meta, this.color));
-        const links = data.links.map((l, i) => new Link(l, i, this.meta, this.get_link_width));
+      try {
+        const nodes = data.nodes ? data.nodes.map((n, i) => new Node(n, i, this.meta, this.color)) : [];
+        const links = data.links ? data.links.map((l, i) => new Link(l, i, this.meta, this.get_link_width))
+              : [];
         const groups = Group.divide(nodes, this.group_pattern, this.color);
 
         this.cola.nodes(nodes)
@@ -102,7 +103,7 @@ class Diagram {
 
         path.attr('d', (d) => d.d());  // make sure path calculation is done
         this.freeze(node);
-      }catch(e){
+      } catch (e) {
         this.show_message(e);
         throw e;
       }

@@ -96,12 +96,12 @@ var Diagram = function () {
         }
 
         try {
-          var nodes = data.nodes.map(function (n, i) {
+          var nodes = data.nodes ? data.nodes.map(function (n, i) {
             return new _node2.default(n, i, _this2.meta, _this2.color);
-          });
-          var links = data.links.map(function (l, i) {
+          }) : [];
+          var links = data.links ? data.links.map(function (l, i) {
             return new _link2.default(l, i, _this2.meta, _this2.get_link_width);
-          });
+          }) : [];
           var groups = _group2.default.divide(nodes, _this2.group_pattern, _this2.color);
 
           _this2.cola.nodes(nodes).links(links).groups(groups);
@@ -436,7 +436,7 @@ var Link = function () {
         return l.split();
       }).reduce(function (x, y) {
         return x.concat(y);
-      }).filter(function (l) {
+      }, []).filter(function (l) {
         return l.has_meta();
       });
       var labels = this.create_labels(svg, split_labelled_links);
