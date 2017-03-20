@@ -41,6 +41,7 @@ Then host the ```/example``` directory in your favorite web server, or CSP agnos
 
 [Shownet 2016 Network](https://inet-henge.herokuapp.com/)
 
+
 ## Usage
 
 In example [here](example/shownet.html), load related assets at first:
@@ -87,6 +88,7 @@ inet-henge.js renders your network diagram as SVG within ```<div id="diagram"></
 
 ![Shownet2016 example](example/images/shownet.png)
 
+
 ### Node Group
 
 Nodes get rendered in groups when you specify which node belongs to which group by regular expression.
@@ -96,6 +98,7 @@ When the first three characters describe POP name, you can group nodes by doing 
 ``` javascript
 var diagram = new Diagram('#diagram', 'data.json', {pop: /^.{3}/})
 ```
+
 
 ### JSON Data
 
@@ -136,6 +139,76 @@ Metadata to display on network diagrams:
 ```
 
 :point_up: This will render metadata on the both ends of links.
+
+
+### Labels
+
+When ```init()``` API is called with arguments, inet-henge finds corresponding metadata and show them as labels.
+
+To place a loopback address on nodes:
+
+```js
+new Diagram('#diagram', 'index.json').init('loopback');
+```
+
+```json
+{
+  "nodes": [
+    { "name": "Node 1", "meta": { "loopback": "10.0.0.1" } }
+  ]
+}
+```
+
+To place link and interface names:
+
+```js
+new Diagram('#diagram', 'index.json').init('bandwidth', 'intf-name');
+```
+
+```json
+  "links": [
+    {
+      "source": "Node 1", "target": "Node 2",
+      "meta": {
+        "bandwidth": "10G",
+        "intf-name": { "source": "interface A", "target": "interface B" }
+      }
+    }
+  ]
+```
+
+
+### Link Width
+
+You can use ```link_width()``` API to customize link widths. The argument should be a function which calculates metadata and returns value for ```stroke-width``` of SVG.
+
+```js
+var diagram = new Diagram('#diagram', 'index.json');
+diagram.link_width(function (link) {
+  if (!link)
+    return 1;  // px
+  else if (link.bandwidth === '100G')
+    return 10; // px
+  else if (link.bandwidth === '10G')
+    return 3;  // px
+});
+diagram.init('bandwidth');
+```
+
+```json
+  "links": [
+    { "source": "Node 1", "target": "Node 2", "meta": { "bandwidth": "1G" }},
+    { "source": "Node 1", "target": "Node 3", "meta": { "bandwidth": "10G" }},
+    { "source": "Node 2", "target": "Node 3", "meta": { "bandwidth": "100G" }}
+  ]
+```
+
+NOTE: :warning: Make sure no stylesheet overrides customized link widths. :warning:
+
+
+### Style
+
+inet-henge generates SVG image, so you can customize the style by using CSS.
 
 
 ## Contributing
