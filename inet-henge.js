@@ -17,6 +17,8 @@ var _node = require('./node');
 
 var _node2 = _interopRequireDefault(_node);
 
+require('./hack_cola');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -203,7 +205,7 @@ var Diagram = function () {
 
 module.exports = window.Diagram = Diagram;
 
-},{"./group":2,"./link":3,"./node":5}],2:[function(require,module,exports){
+},{"./group":2,"./hack_cola":3,"./link":4,"./node":6}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -308,6 +310,70 @@ var Group = function () {
 module.exports = Group;
 
 },{}],3:[function(require,module,exports){
+'use strict';
+
+// ported from WebCola/cola.js
+
+function unionCount(a, b) {
+    var u = {};
+    for (var i in a) {
+        u[i] = {};
+    }for (var i in b) {
+        u[i] = {};
+    }return Object.keys(u).length;
+}
+function intersectionCount(a, b) {
+    var n = 0;
+    for (var i in a) {
+        if (typeof b[i] !== 'undefined') ++n;
+    }return n;
+}
+function getNeighbours(links, la) {
+    var neighbours = {};
+    var addNeighbours = function addNeighbours(u, v) {
+        if (typeof neighbours[u] === 'undefined') neighbours[u] = {};
+        neighbours[u][v] = {};
+    };
+    links.forEach(function (e) {
+        var u = la.getSourceIndex(e),
+            v = la.getTargetIndex(e);
+        addNeighbours(u, v);
+        addNeighbours(v, u);
+    });
+    return neighbours;
+}
+function computeLinkLengths(links, w, f, la) {
+    var neighbours = getNeighbours(links, la);
+    links.forEach(function (l) {
+        var a = neighbours[la.getSourceIndex(l)];
+        var b = neighbours[la.getTargetIndex(l)];
+        la.setLength(l, 1 + w * f(a, b));
+    });
+}
+function jaccardLinkLengths(links, la, w) {
+    if (w === void 0) {
+        w = 1;
+    }
+    computeLinkLengths(links, w, function (a, b) {
+        return Math.min(Object.keys(a).length, Object.keys(b).length) < 1.1 ? 0 : 1 - intersectionCount(a, b) / unionCount(a, b);
+    }, la);
+}
+
+cola.Layout.prototype.jaccardLinkLengths = function (idealLength, w) {
+    var _this = this;
+    if (w === void 0) {
+        w = 1;
+    }
+    this.linkDistance(function (l) {
+        return idealLength * l.length;
+    });
+    this._linkLengthCalculator = function () {
+        return jaccardLinkLengths(_this._links, _this.linkAccessor, w);
+    };
+    return this;
+};
+
+},{}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -529,7 +595,7 @@ var Link = function () {
 
 module.exports = Link;
 
-},{"./meta_data":4,"./node":5}],4:[function(require,module,exports){
+},{"./meta_data":5,"./node":6}],5:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -591,7 +657,7 @@ var MetaData = function () {
 
 module.exports = MetaData;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -742,4 +808,4 @@ var Node = function () {
 
 module.exports = Node;
 
-},{"./meta_data":4}]},{},[1,2,3,4,5]);
+},{"./meta_data":5}]},{},[1,2,3,4,5,6]);

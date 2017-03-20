@@ -1,6 +1,7 @@
 import Group from './group';
 import Link from './link';
 import Node from './node';
+import './hack_cola';
 
 class Diagram {
   constructor(container, url, options) {
