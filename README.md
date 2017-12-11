@@ -34,7 +34,25 @@ JSON example:
 git clone https://github.com/codeout/inet-henge.git
 ```
 
-Then host the ```/example``` directory in your favorite web server, or CSP agnostic browser, like Safari, can render it locally in your computer.
+Then host the root directory in your favorite web server.
+
+```
+ruby -run -e httpd . -p 8000
+```
+
+Now you can see ```http://localhost:8000/example```.
+
+
+```
+python -m SimpleHTTPServer  # python2
+python -m http.server       # python3
+
+or
+
+php -S 127.0.0.1:8000
+```
+
+are also available to start web server.
 
 
 ## Demo
