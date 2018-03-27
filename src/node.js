@@ -78,7 +78,7 @@ class Node {
       .text((d) => d.name)
       .attr('x', (d) => d.x_for_text());
 
-    text.each(function(d) {
+    text.each((d) => {
       Node.append_tspans(text, d.meta);
     });
   }
