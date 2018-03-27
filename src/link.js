@@ -1,5 +1,6 @@
 import MetaData from './meta_data';
 import Node from './node';
+import {classify} from './util';
 
 class Link {
   constructor(data, id, meta_keys, link_width) {
@@ -85,7 +86,7 @@ class Link {
       .data(links)
       .enter()
       .append('line')
-      .attr('class', 'link')
+      .attr('class', (d) => `link ${classify(d.source.name)} ${classify(d.target.name)} ${classify(d.source.name)}-${classify(d.target.name)}`)
       .attr('x1', (d) => d.source.x)
       .attr('y1', (d) => d.source.y)
       .attr('x2', (d) => d.target.x)

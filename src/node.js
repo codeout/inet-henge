@@ -1,4 +1,5 @@
 import MetaData from './meta_data';
+import {classify} from './util';
 
 class Node {
   constructor(data, id, meta_keys, color) {
@@ -94,7 +95,7 @@ class Node {
   }
 
   static append_image(container) {
-    d3.select(container).attr('class', 'node image')
+    d3.select(container).attr('class', (d) => `node image ${classify(d.name)}`)
       .append('image')
       .attr('xlink:href', (d) => d.icon)
       .attr('width', (d) => d.node_width())
@@ -102,7 +103,7 @@ class Node {
   }
 
   static append_rect(container) {
-    d3.select(container).attr('class', 'node rect')
+    d3.select(container).attr('class', (d) => `node rect ${classify(d.name)}`)
       .append('rect')
       .attr('width', (d) => d.node_width())
       .attr('height', (d) => d.node_height())

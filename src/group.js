@@ -1,3 +1,5 @@
+import {classify} from './util';
+
 class Group {
   constructor(name, color) {
     this.name = name;
@@ -50,7 +52,7 @@ class Group {
           .data(groups)
           .enter()
           .append('g')
-          .attr('class', 'group')
+          .attr('class', (d) => `group ${classify(d.name)}`)
           .attr('transform', (d) => d.transform());
 
     group.append('rect')

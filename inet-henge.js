@@ -20796,6 +20796,8 @@ module.exports = window.Diagram = Diagram;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _util = require('./util');
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Group = function () {
@@ -20858,7 +20860,9 @@ var Group = function () {
   }, {
     key: 'render',
     value: function render(svg, groups) {
-      var group = svg.selectAll('.group').data(groups).enter().append('g').attr('class', 'group').attr('transform', function (d) {
+      var group = svg.selectAll('.group').data(groups).enter().append('g').attr('class', function (d) {
+        return 'group ' + (0, _util.classify)(d.name);
+      }).attr('transform', function (d) {
         return d.transform();
       });
 
@@ -20909,7 +20913,7 @@ var Group = function () {
 
 module.exports = Group;
 
-},{}],135:[function(require,module,exports){
+},{"./util":140}],135:[function(require,module,exports){
 'use strict';
 
 // ported from WebCola/cola.js
@@ -20985,6 +20989,8 @@ var _meta_data2 = _interopRequireDefault(_meta_data);
 var _node = require('./node');
 
 var _node2 = _interopRequireDefault(_node);
+
+var _util = require('./util');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21078,7 +21084,9 @@ var Link = function () {
   }], [{
     key: 'render_links',
     value: function render_links(svg, links) {
-      return svg.selectAll('.link').data(links).enter().append('line').attr('class', 'link').attr('x1', function (d) {
+      return svg.selectAll('.link').data(links).enter().append('line').attr('class', function (d) {
+        return 'link ' + (0, _util.classify)(d.source.name) + ' ' + (0, _util.classify)(d.target.name) + ' ' + (0, _util.classify)(d.source.name) + '-' + (0, _util.classify)(d.target.name);
+      }).attr('x1', function (d) {
         return d.source.x;
       }).attr('y1', function (d) {
         return d.source.y;
@@ -21208,7 +21216,7 @@ var Link = function () {
 
 module.exports = Link;
 
-},{"./meta_data":137,"./node":138}],137:[function(require,module,exports){
+},{"./meta_data":137,"./node":138,"./util":140}],137:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21278,6 +21286,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _meta_data = require('./meta_data');
 
 var _meta_data2 = _interopRequireDefault(_meta_data);
+
+var _util = require('./util');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21388,7 +21398,9 @@ var Node = function () {
   }, {
     key: 'append_image',
     value: function append_image(container) {
-      d3.select(container).attr('class', 'node image').append('image').attr('xlink:href', function (d) {
+      d3.select(container).attr('class', function (d) {
+        return 'node image ' + (0, _util.classify)(d.name);
+      }).append('image').attr('xlink:href', function (d) {
         return d.icon;
       }).attr('width', function (d) {
         return d.node_width();
@@ -21399,7 +21411,9 @@ var Node = function () {
   }, {
     key: 'append_rect',
     value: function append_rect(container) {
-      d3.select(container).attr('class', 'node rect').append('rect').attr('width', function (d) {
+      d3.select(container).attr('class', function (d) {
+        return 'node rect ' + (0, _util.classify)(d.name);
+      }).append('rect').attr('width', function (d) {
         return d.node_width();
       }).attr('height', function (d) {
         return d.node_height();
@@ -21430,7 +21444,7 @@ var Node = function () {
 
 module.exports = Node;
 
-},{"./meta_data":137}],139:[function(require,module,exports){
+},{"./meta_data":137,"./util":140}],139:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21546,4 +21560,16 @@ var PositionCache = function () {
 
 module.exports = PositionCache;
 
-},{"crypto":53}]},{},[133]);
+},{"crypto":53}],140:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+function classify(string) {
+  return string.replace(' ', '-').toLowerCase();
+}
+
+exports.classify = classify;
+
+},{}]},{},[133]);
