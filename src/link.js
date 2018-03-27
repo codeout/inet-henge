@@ -185,6 +185,13 @@ class Link {
     d3.selectAll('.path-label')
       .style('visibility', visibility);
   }
+
+  static set_position(link, position) {
+    link.attr('x1', (d, i) => position[i].x1)
+      .attr('y1', (d, i) => position[i].y1)
+      .attr('x2', (d, i) => position[i].x2)
+      .attr('y2', (d, i) => position[i].y2);
+  }
 }
 
 module.exports = Link;

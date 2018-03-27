@@ -114,6 +114,14 @@ class Node {
   static tick(container) {
     container.attr('transform', (d) => d.transform());
   }
+
+  static set_position(node, position) {
+    node.attr('transform', (d, i) => {
+      d.x = position[i].x;
+      d.y = position[i].y;
+      d.transform();
+    });
+  }
 }
 
 module.exports = Node;

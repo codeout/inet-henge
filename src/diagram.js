@@ -1,6 +1,7 @@
 import Group from './group';
 import Link from './link';
 import Node from './node';
+import PositionCache from './position_cache';
 import './hack_cola';
 
 class Diagram {
@@ -94,7 +95,17 @@ class Diagram {
 
         // without path calculation
         this.configure_tick(group, node, link);
-        this.ticks_forward();
+
+        const position = PositionCache.load();
+        if (position.match(data)) {
+          Group.set_position(group, position.group);
+          Node.set_position(node, position.node);
+          Link.set_position(link, position.link);
+        } else {
+          this.ticks_forward();
+          this.save_position(group, node, link, data);
+        }
+
         this.hide_load_message();
 
         // render path
@@ -161,6 +172,11 @@ class Diagram {
   show_message(message) {
     if (this.indicator)
       this.indicator.text(message);
+  }
+
+  save_position(group, node, link, data) {
+    const cache = new PositionCache(group, node, link, data);
+    cache.save();
   }
 }
 

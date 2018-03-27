@@ -72,6 +72,17 @@ class Group {
       .attr('width', (d) => d.group_width())
       .attr('height', (d) => d.group_height());
   }
+
+  static set_position(group, position) {
+    group.attr('transform', (d, i) => {
+      d.bounds.x = position[i].x;
+      d.bounds.y = position[i].y;
+      d.transform();
+    });
+    group.selectAll('rect')
+      .attr('width', (d, i) => position[i].width)
+      .attr('height', (d, i) => position[i].height);
+  }
 }
 
 module.exports = Group;
