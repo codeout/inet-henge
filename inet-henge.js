@@ -21465,7 +21465,15 @@ var PositionCache = function () {
   }, {
     key: 'sha1',
     value: function sha1(data) {
-      data = data || this.data;
+      data = Object.assign({}, data || this.data);
+      data.nodes && data.nodes.forEach(function (i) {
+        delete i.icon;
+        delete i.meta;
+      });
+      data.links && data.links.forEach(function (i) {
+        delete i.meta;
+      });
+
       var sha1 = crypto.createHash('sha1');
       sha1.update(JSON.stringify(data));
       return sha1.digest('hex');
@@ -21538,4 +21546,4 @@ var PositionCache = function () {
 
 module.exports = PositionCache;
 
-},{"crypto":53}]},{},[133,134,135,136,137,138]);
+},{"crypto":53}]},{},[133]);

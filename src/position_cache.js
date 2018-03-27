@@ -21,7 +21,15 @@ class PositionCache {
   }
 
   sha1(data) {
-    data = data || this.data;
+    data = Object.assign({}, data || this.data);
+    data.nodes && data.nodes.forEach((i) => {
+      delete i.icon;
+      delete i.meta;
+    });
+    data.links && data.links.forEach((i) => {
+      delete i.meta;
+    });
+
     const sha1 = crypto.createHash('sha1');
     sha1.update(JSON.stringify(data));
     return sha1.digest('hex');
