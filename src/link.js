@@ -120,7 +120,7 @@ class Link {
           .data(links)
           .enter()
           .append('text')
-          .attr('class', 'path-label')
+          .attr('class', (d) => `path-label ${classify(d.source.name)} ${classify(d.target.name)} ${classify(d.source.name)}-${classify(d.target.name)}`)
           .attr('pointer-events', 'none');
     const text_path = text.append('textPath')
           .attr('xlink:href', (d) => `#${d.path_id()}`);

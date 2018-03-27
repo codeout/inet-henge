@@ -21130,7 +21130,9 @@ var Link = function () {
   }, {
     key: 'create_labels',
     value: function create_labels(svg, links) {
-      var text = svg.selectAll('.path-label').data(links).enter().append('text').attr('class', 'path-label').attr('pointer-events', 'none');
+      var text = svg.selectAll('.path-label').data(links).enter().append('text').attr('class', function (d) {
+        return 'path-label ' + (0, _util.classify)(d.source.name) + ' ' + (0, _util.classify)(d.target.name) + ' ' + (0, _util.classify)(d.source.name) + '-' + (0, _util.classify)(d.target.name);
+      }).attr('pointer-events', 'none');
       var text_path = text.append('textPath').attr('xlink:href', function (d) {
         return '#' + d.path_id();
       });
