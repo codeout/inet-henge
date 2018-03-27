@@ -20606,7 +20606,8 @@ var Diagram = function () {
 
     this.set_distance = this.link_distance(options.distance || 150);
     this.color = d3.scale.category20();
-    this.max_ticks = 1000;
+    this.max_ticks = options.ticks || 1000;
+    this.position_cache = 'positionCache' in options ? options.positionCache : true;
   }
 
   _createClass(Diagram, [{
@@ -20695,7 +20696,7 @@ var Diagram = function () {
           _this2.configure_tick(group, node, link);
 
           var position = _position_cache2.default.load();
-          if (position.match(data)) {
+          if (_this2.position_cache && position.match(data)) {
             _group2.default.set_position(group, position.group);
             _node2.default.set_position(node, position.node);
             _link2.default.set_position(link, position.link);

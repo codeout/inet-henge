@@ -16,7 +16,8 @@ class Diagram {
 
     this.set_distance = this.link_distance(options.distance || 150);
     this.color = d3.scale.category20();
-    this.max_ticks = 1000;
+    this.max_ticks = options.ticks || 1000;
+    this.position_cache = 'positionCache' in options ? options.positionCache : true;
   }
 
   link_distance(distance) {
@@ -97,7 +98,7 @@ class Diagram {
         this.configure_tick(group, node, link);
 
         const position = PositionCache.load();
-        if (position.match(data)) {
+        if (this.position_cache && position.match(data)) {
           Group.set_position(group, position.group);
           Node.set_position(node, position.node);
           Link.set_position(link, position.link);
