@@ -11,7 +11,7 @@ All you have to do are:
 
 1. Define nodes identified by name
 2. Define links by specifying both end nodes
-3. Show in browser. That's it.
+3. Show in a browser. That's it.
 
 JSON example:
 
@@ -52,7 +52,7 @@ or
 php -S 127.0.0.1:8000
 ```
 
-are also available to start web server.
+are also available to start a web server.
 
 
 ## Demo
@@ -157,7 +157,7 @@ Metadata to display on network diagrams:
   ]
 ```
 
-:point_up: This will render metadata on the both ends of links.
+:point_up: This will render metadata on both ends of links.
 
 
 ### Labels
@@ -224,10 +224,26 @@ diagram.init('bandwidth');
 
 NOTE: :warning: Make sure no stylesheet overrides customized link widths. :warning:
 
+### Ticks
+
+You can specify the number of steps (called as ticks) to calculate with [d3-force](https://github.com/d3/d3-force/blob/master/README.md) layout. Bigger ticks typically converge on a better layout, but it will take much longer until settlement. The default value is 1000.
+
+``` javascript
+var diagram = new Diagram('#diagram', 'data.json', {ticks: 3000});
+```
+
+### Position Cache
+
+inet-henge caches a calculated position of nodes, groups, and links for the next rendering. If you load the same JSON data, the cache will be used as a position hint. You can disable this behavior with `positionCache` option.
+
+``` javascript
+var diagram = new Diagram('#diagram', 'data.json', {positionCache: false});
+```
+
 
 ### Style
 
-inet-henge generates SVG image, so you can customize the style by using CSS.
+inet-henge generates an SVG image, so you can customize the style by using CSS.
 
 
 ## Contributing
@@ -240,4 +256,4 @@ Or send a pull request to fix.
 
 ## Copyright and License
 
-Copyright (c) 2017 Shintaro Kojima. Code released under the [MIT license](LICENSE).
+Copyright (c) 2018 Shintaro Kojima. Code released under the [MIT license](LICENSE).
