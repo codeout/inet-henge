@@ -13,8 +13,8 @@ class PositionCache {
     const cache = {
       sha1: this.sha1(),
       group: this.group_position(),
-      node:  this.node_position(),
-      link:  this.link_position()
+      node: this.node_position(),
+      link: this.link_position()
     };
 
     localStorage.setItem('position_cache', JSON.stringify(cache));

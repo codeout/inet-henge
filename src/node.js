@@ -1,5 +1,5 @@
 import MetaData from './meta_data';
-import {classify} from './util';
+import { classify } from './util';
 
 class Node {
   constructor(data, id, meta_keys, color) {
@@ -53,10 +53,10 @@ class Node {
 
   static render(svg, nodes) {
     const container = svg.selectAll('.node')
-          .data(nodes)
-          .enter()
-          .append('g')
-          .attr('transform', (d) => d.transform());
+      .data(nodes)
+      .enter()
+      .append('g')
+      .attr('transform', (d) => d.transform());
 
     container.each(function(d) {
       if (d.icon)
@@ -72,9 +72,9 @@ class Node {
 
   static append_text(container) {
     const text = d3.select(container).append('text')
-          .attr('text-anchor', 'middle')
-          .attr('x', (d) => d.x_for_text())
-          .attr('y', (d) => d.y_for_text());
+      .attr('text-anchor', 'middle')
+      .attr('x', (d) => d.x_for_text())
+      .attr('y', (d) => d.y_for_text());
     text.append('tspan')
       .text((d) => d.name)
       .attr('x', (d) => d.x_for_text());

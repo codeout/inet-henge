@@ -1,4 +1,4 @@
-import {classify} from './util';
+import { classify } from './util';
 
 class Group {
   constructor(name, color) {
@@ -49,11 +49,11 @@ class Group {
 
   static render(svg, groups) {
     const group = svg.selectAll('.group')
-          .data(groups)
-          .enter()
-          .append('g')
-          .attr('class', (d) => `group ${classify(d.name)}`)
-          .attr('transform', (d) => d.transform());
+      .data(groups)
+      .enter()
+      .append('g')
+      .attr('class', (d) => `group ${classify(d.name)}`)
+      .attr('transform', (d) => d.transform());
 
     group.append('rect')
       .attr('rx', 8)

@@ -1,6 +1,6 @@
 import MetaData from './meta_data';
 import Node from './node';
-import {classify} from './util';
+import { classify } from './util';
 
 class Link {
   constructor(data, id, meta_keys, link_width) {
@@ -86,7 +86,7 @@ class Link {
       .data(links)
       .enter()
       .append('g')
-      .attr('class', 'path-group')
+      .attr('class', 'path-group');
 
     const link = group.append('line')
       .attr('class', (d) => `link ${classify(d.source.name)} ${classify(d.target.name)} ${classify(d.source.name)}-${classify(d.target.name)}`)
@@ -102,14 +102,14 @@ class Link {
       .attr('id', (d) => d.path_id());
 
     const text = group.selectAll('.path-label')
-      .data((d)=> d.split().filter((l) => l.has_meta()))
+      .data((d) => d.split().filter((l) => l.has_meta()))
       .enter()
       .append('text')
       .attr('class', 'path-label')
       .attr('pointer-events', 'none');
 
     const text_path = text.append('textPath')
-          .attr('xlink:href', (d) => `#${d.path_id()}`);
+      .attr('xlink:href', (d) => `#${d.path_id()}`);
 
     text_path.each(function(d) {
       Link.append_tspans(this, d.meta);

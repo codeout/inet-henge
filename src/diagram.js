@@ -76,7 +76,7 @@ class Diagram {
       try {
         const nodes = data.nodes ? data.nodes.map((n, i) => new Node(n, i, this.meta, this.color)) : [];
         const links = data.links ? data.links.map((l, i) => new Link(l, i, this.meta, this.get_link_width))
-              : [];
+          : [];
         const groups = Group.divide(nodes, this.group_pattern, this.color);
 
         this.cola.nodes(nodes)

@@ -23,7 +23,7 @@ class MetaData {
 
     keys.forEach((k) => {
       if (this.data[k] && this.data[k][this.extra_key])
-        data.push({class: k, value: this.data[k][this.extra_key]});
+        data.push({ class: k, value: this.data[k][this.extra_key] });
     });
 
     return data;
@@ -34,7 +34,7 @@ class MetaData {
 
     keys.forEach((k) => {
       if (this.data[k])
-        data.push({class: k, value: this.data[k]});
+        data.push({ class: k, value: this.data[k] });
     });
 
     return data;
