@@ -20681,18 +20681,18 @@ var Diagram = function () {
           _this2.cola.start();
 
           var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback));
-          var link = _link2.default.render_links(_this2.svg, links);
+
+          var _Link$render_links = _link2.default.render_links(_this2.svg, links);
+
+          var _Link$render_links2 = _slicedToArray(_Link$render_links, 3);
+
+          var link = _Link$render_links2[0];
+          var path = _Link$render_links2[1];
+          var label = _Link$render_links2[2];
+
           var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback));
 
-          var _Link$render_paths = _link2.default.render_paths(_this2.svg, links);
-
-          var _Link$render_paths2 = _slicedToArray(_Link$render_paths, 2);
-
-          var path = _Link$render_paths2[0];
-          var label = _Link$render_paths2[1];
-
           // without path calculation
-
           _this2.configure_tick(group, node, link);
 
           var position = _position_cache2.default.load();
@@ -21084,7 +21084,9 @@ var Link = function () {
   }], [{
     key: 'render_links',
     value: function render_links(svg, links) {
-      return svg.selectAll('.link').data(links).enter().append('line').attr('class', function (d) {
+      var group = svg.selectAll('.path-group').data(links).enter().append('g').attr('class', 'path-group');
+
+      var link = group.append('line').attr('class', function (d) {
         return 'link ' + (0, _util.classify)(d.source.name) + ' ' + (0, _util.classify)(d.target.name) + ' ' + (0, _util.classify)(d.source.name) + '-' + (0, _util.classify)(d.target.name);
       }).attr('x1', function (d) {
         return d.source.x;
@@ -21097,42 +21099,19 @@ var Link = function () {
       }).attr('stroke-width', function (d) {
         return d.width;
       });
-    }
-  }, {
-    key: 'render_paths',
-    value: function render_paths(svg, links) {
-      var labelled_links = links.filter(function (l) {
-        return l.has_meta();
-      });
-      var paths = Link.create_paths(svg, labelled_links);
 
-      var split_labelled_links = labelled_links.map(function (l) {
-        return l.split();
-      }).reduce(function (x, y) {
-        return x.concat(y);
-      }, []).filter(function (l) {
-        return l.has_meta();
-      });
-      var labels = this.create_labels(svg, split_labelled_links);
-
-      Link.zoom(); // Initialize
-      return [paths, labels];
-    }
-  }, {
-    key: 'create_paths',
-    value: function create_paths(svg, links) {
-      return svg.selectAll('.path').data(links).enter().append('path').attr('d', function (d) {
+      var path = group.append('path').attr('class', 'path').attr('d', function (d) {
         return d.d();
       }).attr('id', function (d) {
         return d.path_id();
       });
-    }
-  }, {
-    key: 'create_labels',
-    value: function create_labels(svg, links) {
-      var text = svg.selectAll('.path-label').data(links).enter().append('text').attr('class', function (d) {
-        return 'path-label ' + (0, _util.classify)(d.source.name) + ' ' + (0, _util.classify)(d.target.name) + ' ' + (0, _util.classify)(d.source.name) + '-' + (0, _util.classify)(d.target.name);
-      }).attr('pointer-events', 'none');
+
+      var text = group.selectAll('.path-label').data(function (d) {
+        return d.split().filter(function (l) {
+          return l.has_meta();
+        });
+      }).enter().append('text').attr('class', 'path-label').attr('pointer-events', 'none');
+
       var text_path = text.append('textPath').attr('xlink:href', function (d) {
         return '#' + d.path_id();
       });
@@ -21147,7 +21126,8 @@ var Link = function () {
         if (d.is_reverse_path()) Link.the_other_end(this);
       });
 
-      return text;
+      Link.zoom(); // Initialize
+      return [link, path, text];
     }
   }, {
     key: 'the_other_end',

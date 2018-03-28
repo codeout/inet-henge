@@ -88,11 +88,10 @@ class Diagram {
         const group = Group.render(this.svg, groups).call(
           this.cola.drag().on('dragstart', this.dragstart_callback)
         );
-        const link = Link.render_links(this.svg, links);
+        const [link, path, label] = Link.render_links(this.svg, links);
         const node = Node.render(this.svg, nodes).call(
           this.cola.drag().on('dragstart', this.dragstart_callback)
         );
-        const [path, label] = Link.render_paths(this.svg, links);
 
         // without path calculation
         this.configure_tick(group, node, link);

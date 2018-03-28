@@ -82,46 +82,32 @@ class Link {
   }
 
   static render_links(svg, links) {
-    return svg.selectAll('.link')
+    const group = svg.selectAll('.path-group')
       .data(links)
       .enter()
-      .append('line')
+      .append('g')
+      .attr('class', 'path-group')
+
+    const link = group.append('line')
       .attr('class', (d) => `link ${classify(d.source.name)} ${classify(d.target.name)} ${classify(d.source.name)}-${classify(d.target.name)}`)
       .attr('x1', (d) => d.source.x)
       .attr('y1', (d) => d.source.y)
       .attr('x2', (d) => d.target.x)
       .attr('y2', (d) => d.target.y)
       .attr('stroke-width', (d) => d.width);
-  }
 
-  static render_paths(svg, links) {
-    const labelled_links = links.filter((l) => l.has_meta());
-    const paths = Link.create_paths(svg, labelled_links);
-
-    const split_labelled_links = labelled_links.map((l) => l.split()).reduce((x, y) => x.concat(y), [])
-          .filter((l) => l.has_meta());
-    const labels = this.create_labels(svg, split_labelled_links);
-
-    Link.zoom();  // Initialize
-    return [paths, labels];
-  }
-
-  static create_paths(svg, links) {
-    return svg.selectAll('.path')
-      .data(links)
-      .enter()
-      .append('path')
+    const path = group.append('path')
+      .attr('class', 'path')
       .attr('d', (d) => d.d())
       .attr('id', (d) => d.path_id());
-  }
 
-  static create_labels(svg, links) {
-    const text = svg.selectAll('.path-label')
-          .data(links)
-          .enter()
-          .append('text')
-          .attr('class', (d) => `path-label ${classify(d.source.name)} ${classify(d.target.name)} ${classify(d.source.name)}-${classify(d.target.name)}`)
-          .attr('pointer-events', 'none');
+    const text = group.selectAll('.path-label')
+      .data((d)=> d.split().filter((l) => l.has_meta()))
+      .enter()
+      .append('text')
+      .attr('class', 'path-label')
+      .attr('pointer-events', 'none');
+
     const text_path = text.append('textPath')
           .attr('xlink:href', (d) => `#${d.path_id()}`);
 
@@ -137,7 +123,8 @@ class Link {
         Link.the_other_end(this);
     });
 
-    return text;
+    Link.zoom();  // Initialize
+    return [link, path, text];
   }
 
   static the_other_end(container) {
