@@ -10,6 +10,7 @@ class Link {
     this.meta = new MetaData(data.meta).get(meta_keys);
     this.source_meta = new MetaData(data.meta, 'source').get(meta_keys);
     this.target_meta = new MetaData(data.meta, 'target').get(meta_keys);
+    this.extra_class = data.class || '';
 
     if (typeof link_width === 'function')
       this.width = link_width(data.meta) || 1;
@@ -89,7 +90,7 @@ class Link {
       .attr('class', 'path-group');
 
     const link = group.append('line')
-      .attr('class', (d) => `link ${classify(d.source.name)} ${classify(d.target.name)} ${classify(d.source.name)}-${classify(d.target.name)}`)
+      .attr('class', (d) => `link ${classify(d.source.name)} ${classify(d.target.name)} ${classify(d.source.name)}-${classify(d.target.name)} ${d.extra_class}`)
       .attr('x1', (d) => d.source.x)
       .attr('y1', (d) => d.source.y)
       .attr('x2', (d) => d.target.x)

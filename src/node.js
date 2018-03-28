@@ -8,6 +8,7 @@ class Node {
     this.group = typeof data.group === 'string' ? [data.group] : (data.group || []);
     this.icon = data.icon;
     this.meta = new MetaData(data.meta).get(meta_keys);
+    this.extra_class = data.class || '';
     this.color = color;
 
     this.width = 60;
@@ -95,7 +96,7 @@ class Node {
   }
 
   static append_image(container) {
-    d3.select(container).attr('class', (d) => `node image ${classify(d.name)}`)
+    d3.select(container).attr('class', (d) => `node image ${classify(d.name)} ${d.extra_class}`)
       .append('image')
       .attr('xlink:href', (d) => d.icon)
       .attr('width', (d) => d.node_width())
@@ -103,7 +104,7 @@ class Node {
   }
 
   static append_rect(container) {
-    d3.select(container).attr('class', (d) => `node rect ${classify(d.name)}`)
+    d3.select(container).attr('class', (d) => `node rect ${classify(d.name)} ${d.extra_class}`)
       .append('rect')
       .attr('width', (d) => d.node_width())
       .attr('height', (d) => d.node_height())

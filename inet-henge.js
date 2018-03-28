@@ -21006,6 +21006,7 @@ var Link = function () {
     this.meta = new _meta_data2.default(data.meta).get(meta_keys);
     this.source_meta = new _meta_data2.default(data.meta, 'source').get(meta_keys);
     this.target_meta = new _meta_data2.default(data.meta, 'target').get(meta_keys);
+    this.extra_class = data.class || '';
 
     if (typeof link_width === 'function') this.width = link_width(data.meta) || 1;else this.width = link_width || 1;
 
@@ -21087,7 +21088,7 @@ var Link = function () {
       var group = svg.selectAll('.path-group').data(links).enter().append('g').attr('class', 'path-group');
 
       var link = group.append('line').attr('class', function (d) {
-        return 'link ' + (0, _util.classify)(d.source.name) + ' ' + (0, _util.classify)(d.target.name) + ' ' + (0, _util.classify)(d.source.name) + '-' + (0, _util.classify)(d.target.name);
+        return 'link ' + (0, _util.classify)(d.source.name) + ' ' + (0, _util.classify)(d.target.name) + ' ' + (0, _util.classify)(d.source.name) + '-' + (0, _util.classify)(d.target.name) + ' ' + d.extra_class;
       }).attr('x1', function (d) {
         return d.source.x;
       }).attr('y1', function (d) {
@@ -21284,6 +21285,7 @@ var Node = function () {
     this.group = typeof data.group === 'string' ? [data.group] : data.group || [];
     this.icon = data.icon;
     this.meta = new _meta_data2.default(data.meta).get(meta_keys);
+    this.extra_class = data.class || '';
     this.color = color;
 
     this.width = 60;
@@ -21381,7 +21383,7 @@ var Node = function () {
     key: 'append_image',
     value: function append_image(container) {
       d3.select(container).attr('class', function (d) {
-        return 'node image ' + (0, _util.classify)(d.name);
+        return 'node image ' + (0, _util.classify)(d.name) + ' ' + d.extra_class;
       }).append('image').attr('xlink:href', function (d) {
         return d.icon;
       }).attr('width', function (d) {
@@ -21394,7 +21396,7 @@ var Node = function () {
     key: 'append_rect',
     value: function append_rect(container) {
       d3.select(container).attr('class', function (d) {
-        return 'node rect ' + (0, _util.classify)(d.name);
+        return 'node rect ' + (0, _util.classify)(d.name) + ' ' + d.extra_class;
       }).append('rect').attr('width', function (d) {
         return d.node_width();
       }).attr('height', function (d) {
