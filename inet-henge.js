@@ -20696,13 +20696,13 @@ var Diagram = function () {
           _this2.configure_tick(group, node, link);
 
           var position = _position_cache2.default.load();
-          if (_this2.position_cache && position.match(data)) {
+          if (_this2.position_cache && position.match(data, _this2.pop)) {
             _group2.default.set_position(group, position.group);
             _node2.default.set_position(node, position.node);
             _link2.default.set_position(link, position.link);
           } else {
             _this2.ticks_forward();
-            _this2.save_position(group, node, link, data);
+            _this2.save_position(group, node, link, data, _this2.pop);
           }
 
           _this2.hide_load_message();
@@ -20780,8 +20780,8 @@ var Diagram = function () {
     }
   }, {
     key: 'save_position',
-    value: function save_position(group, node, link, data) {
-      var cache = new _position_cache2.default(group, node, link, data);
+    value: function save_position(group, node, link, data, pop) {
+      var cache = new _position_cache2.default(group, node, link, data, pop);
       cache.save();
     }
   }]);
@@ -21438,13 +21438,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var crypto = require('crypto');
 
 var PositionCache = function () {
-  function PositionCache(group, node, link, data, sha1) {
+  function PositionCache(group, node, link, data, pop, sha1) {
     _classCallCheck(this, PositionCache);
 
     this.group = group;
     this.node = node;
     this.link = link;
     this.data = data;
+    this.pop = pop;
     this.cached_sha1 = sha1;
   }
 
@@ -21462,8 +21463,9 @@ var PositionCache = function () {
     }
   }, {
     key: 'sha1',
-    value: function sha1(data) {
+    value: function sha1(data, pop) {
       data = Object.assign({}, data || this.data);
+      data.pop = pop || this.pop;
       data.nodes && data.nodes.forEach(function (i) {
         delete i.icon;
         delete i.meta;
@@ -21524,15 +21526,15 @@ var PositionCache = function () {
     }
   }, {
     key: 'match',
-    value: function match(data) {
-      return this.cached_sha1 === this.sha1(data);
+    value: function match(data, pop) {
+      return this.cached_sha1 === this.sha1(data, pop);
     }
   }], [{
     key: 'load',
     value: function load() {
       var cache = JSON.parse(localStorage.getItem('position_cache'));
       if (cache) {
-        return new PositionCache(cache.group, cache.node, cache.link, null, cache.sha1);
+        return new PositionCache(cache.group, cache.node, cache.link, null, null, cache.sha1);
       } else {
         return new PositionCache();
       }

@@ -97,13 +97,13 @@ class Diagram {
         this.configure_tick(group, node, link);
 
         const position = PositionCache.load();
-        if (this.position_cache && position.match(data)) {
+        if (this.position_cache && position.match(data, this.pop)) {
           Group.set_position(group, position.group);
           Node.set_position(node, position.node);
           Link.set_position(link, position.link);
         } else {
           this.ticks_forward();
-          this.save_position(group, node, link, data);
+          this.save_position(group, node, link, data, this.pop);
         }
 
         this.hide_load_message();
@@ -174,8 +174,8 @@ class Diagram {
       this.indicator.text(message);
   }
 
-  save_position(group, node, link, data) {
-    const cache = new PositionCache(group, node, link, data);
+  save_position(group, node, link, data, pop) {
+    const cache = new PositionCache(group, node, link, data, pop);
     cache.save();
   }
 }

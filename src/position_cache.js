@@ -1,11 +1,12 @@
 const crypto = require('crypto');
 
 class PositionCache {
-  constructor(group, node, link, data, sha1) {
+  constructor(group, node, link, data, pop, sha1) {
     this.group = group;
     this.node = node;
     this.link = link;
     this.data = data;
+    this.pop = pop;
     this.cached_sha1 = sha1;
   }
 
@@ -20,8 +21,9 @@ class PositionCache {
     localStorage.setItem('position_cache', JSON.stringify(cache));
   }
 
-  sha1(data) {
+  sha1(data, pop) {
     data = Object.assign({}, data || this.data);
+    data.pop = pop || this.pop;
     data.nodes && data.nodes.forEach((i) => {
       delete i.icon;
       delete i.meta;
@@ -78,14 +80,14 @@ class PositionCache {
     return position;
   }
 
-  match(data) {
-    return this.cached_sha1 === this.sha1(data);
+  match(data, pop) {
+    return this.cached_sha1 === this.sha1(data, pop);
   }
 
   static load() {
     const cache = JSON.parse(localStorage.getItem('position_cache'));
     if (cache) {
-      return new PositionCache(cache.group, cache.node, cache.link, null, cache.sha1);
+      return new PositionCache(cache.group, cache.node, cache.link, null, null, cache.sha1);
     } else {
       return new PositionCache();
     }
