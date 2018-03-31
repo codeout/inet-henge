@@ -121,7 +121,7 @@ class Node {
     node.attr('transform', (d, i) => {
       d.x = position[i].x;
       d.y = position[i].y;
-      d.transform();
+      return d.transform();
     });
   }
 }

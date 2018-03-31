@@ -79,7 +79,7 @@ class Group {
     group.attr('transform', (d, i) => {
       d.bounds.x = position[i].x;
       d.bounds.y = position[i].y;
-      d.transform();
+      return d.transform();
     });
     group.selectAll('rect')
       .attr('width', (d, i) => position[i].width)

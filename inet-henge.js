@@ -20898,7 +20898,7 @@ var Group = function () {
       group.attr('transform', function (d, i) {
         d.bounds.x = position[i].x;
         d.bounds.y = position[i].y;
-        d.transform();
+        return d.transform();
       });
       group.selectAll('rect').attr('width', function (d, i) {
         return position[i].width;
@@ -21418,7 +21418,7 @@ var Node = function () {
       node.attr('transform', function (d, i) {
         d.x = position[i].x;
         d.y = position[i].y;
-        d.transform();
+        return d.transform();
       });
     }
   }]);
