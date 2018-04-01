@@ -21008,10 +21008,11 @@ var Link = function () {
     this.target_meta = new _meta_data2.default(data.meta, 'target').get(meta_keys);
     this.extra_class = data.class || '';
 
-    if (typeof link_width === 'function') this.width = link_width(data.meta) || 1;else this.width = link_width || 1;
+    if (typeof link_width === 'function') this.width = link_width(data.meta) || 3;else this.width = link_width || 3;
 
     this.label_x_offset = 20;
     this.label_y_offset = 1.5; // em
+    this.color = '#7a4e4e';
   }
 
   _createClass(Link, [{
@@ -21097,6 +21098,8 @@ var Link = function () {
         return d.target.x;
       }).attr('y2', function (d) {
         return d.target.y;
+      }).attr('stroke', function (d) {
+        return d.color;
       }).attr('stroke-width', function (d) {
         return d.width;
       });

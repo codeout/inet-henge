@@ -13,12 +13,13 @@ class Link {
     this.extra_class = data.class || '';
 
     if (typeof link_width === 'function')
-      this.width = link_width(data.meta) || 1;
+      this.width = link_width(data.meta) || 3;
     else
-      this.width = link_width || 1;
+      this.width = link_width || 3;
 
     this.label_x_offset = 20;
     this.label_y_offset = 1.5; // em
+    this.color = '#7a4e4e';
   }
 
   is_named_path() {
@@ -95,6 +96,7 @@ class Link {
       .attr('y1', (d) => d.source.y)
       .attr('x2', (d) => d.target.x)
       .attr('y2', (d) => d.target.y)
+      .attr('stroke', (d) => d.color)
       .attr('stroke-width', (d) => d.width);
 
     const path = group.append('path')
