@@ -9,7 +9,7 @@ class Diagram {
     options = options || {};
 
     this.selector = container;
-    this.url = url;
+    this.original_url = url;
     this.group_pattern = options.pop;
     this.width = options.width || 960;
     this.height = options.height || 600;
@@ -64,13 +64,22 @@ class Diagram {
     return container;
   }
 
+  url() {
+    if (this.unique_url) {
+      return this.unique_url;
+    }
+
+    this.unique_url = `${this.original_url}?${new Date().getTime()}`;
+    return this.unique_url;
+  }
+
   render() {
     this.display_load_message();
 
-    d3.json(this.url, (error, data) => {
+    d3.json(this.url(), (error, data) => {
       if (error) {
         console.error(error);
-        this.show_message(`Failed to load "${this.url}"`);
+        this.show_message(`Failed to load "${this.url()}"`);
       }
 
       try {

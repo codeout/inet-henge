@@ -20599,7 +20599,7 @@ var Diagram = function () {
     options = options || {};
 
     this.selector = container;
-    this.url = url;
+    this.original_url = url;
     this.group_pattern = options.pop;
     this.width = options.width || 960;
     this.height = options.height || 600;
@@ -20655,16 +20655,26 @@ var Diagram = function () {
       return container;
     }
   }, {
+    key: 'url',
+    value: function url() {
+      if (this.unique_url) {
+        return this.unique_url;
+      }
+
+      this.unique_url = this.original_url + '?' + new Date().getTime();
+      return this.unique_url;
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
 
       this.display_load_message();
 
-      d3.json(this.url, function (error, data) {
+      d3.json(this.url(), function (error, data) {
         if (error) {
           console.error(error);
-          _this2.show_message('Failed to load "' + _this2.url + '"');
+          _this2.show_message('Failed to load "' + _this2.url() + '"');
         }
 
         try {
