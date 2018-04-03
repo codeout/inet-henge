@@ -23,7 +23,7 @@ class PositionCache {
 
   sha1(data, pop) {
     data = Object.assign({}, data || this.data);
-    data.pop = pop || this.pop;
+    data.pop = pop || this.pop || null;  // NOTE: unify undefined with null
     data.nodes && data.nodes.forEach((i) => {
       delete i.icon;
       delete i.meta;
