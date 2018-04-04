@@ -21465,7 +21465,8 @@ var PositionCache = function () {
   _createClass(PositionCache, [{
     key: 'save',
     value: function save() {
-      var cache = {
+      var cache = PositionCache.get_all();
+      cache[location.pathname] = {
         sha1: this.sha1(),
         group: this.group_position(),
         node: this.node_position(),
@@ -21543,9 +21544,19 @@ var PositionCache = function () {
       return this.cached_sha1 === this.sha1(data, pop);
     }
   }], [{
+    key: 'get_all',
+    value: function get_all() {
+      return JSON.parse(localStorage.getItem('position_cache')) || {};
+    }
+  }, {
+    key: 'get',
+    value: function get() {
+      return this.get_all()[location.pathname] || {};
+    }
+  }, {
     key: 'load',
     value: function load() {
-      var cache = JSON.parse(localStorage.getItem('position_cache'));
+      var cache = this.get();
       if (cache) {
         return new PositionCache(cache.group, cache.node, cache.link, null, null, cache.sha1);
       } else {

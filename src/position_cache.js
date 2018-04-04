@@ -10,8 +10,17 @@ class PositionCache {
     this.cached_sha1 = sha1;
   }
 
+  static get_all() {
+    return JSON.parse(localStorage.getItem('position_cache')) || {};
+  }
+
+  static get() {
+    return this.get_all()[location.pathname] || {};
+  }  
+
   save() {
-    const cache = {
+    const cache = PositionCache.get_all();
+    cache[location.pathname] = {
       sha1: this.sha1(),
       group: this.group_position(),
       node: this.node_position(),
@@ -85,7 +94,7 @@ class PositionCache {
   }
 
   static load() {
-    const cache = JSON.parse(localStorage.getItem('position_cache'));
+    const cache = this.get();
     if (cache) {
       return new PositionCache(cache.group, cache.node, cache.link, null, null, cache.sha1);
     } else {
