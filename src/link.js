@@ -114,7 +114,7 @@ class Link {
     const text_path = text.append('textPath')
       .attr('xlink:href', (d) => `#${d.path_id()}`);
 
-    text_path.each(function(d) {
+    text_path.each(function (d) {
       Link.append_tspans(this, d.meta);
       Link.append_tspans(this, d.source_meta);
       Link.append_tspans(this, d.target_meta);
@@ -163,7 +163,7 @@ class Link {
     if (path)
       path.attr('d', (d) => d.d());
     if (label)
-      label.attr('transform', function(d) {
+      label.attr('transform', function (d) {
         return d.rotate(this.getBBox());
       });
   }
