@@ -43,7 +43,7 @@ rules:
   # Variables
   # http://eslint.org/docs/rules/#variables
   no-delete-var: 2
-  no-undef: 2
+  no-undef: 0
   no-unused-vars: [2, {"args": "none"}]
 
   # Node.js and CommonJS
