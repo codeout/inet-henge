@@ -20608,6 +20608,7 @@ var Diagram = function () {
     this.color = d3.scale.category20();
     this.max_ticks = options.ticks || 1000;
     this.position_cache = 'positionCache' in options ? options.positionCache : true;
+    this.bundle = 'bundle' in options ? options.bundle : false;
   }
 
   _createClass(Diagram, [{
@@ -20700,10 +20701,14 @@ var Diagram = function () {
             var label = _Link$render_links2[2];
 
             var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
-              _link2.default.shift_bundle(link, path, label);
+              if (_this2.bundle) {
+                _link2.default.shift_bundle(link, path, label);
+              }
             }));
             var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
-              _link2.default.shift_bundle(link, path, label);
+              if (_this2.bundle) {
+                _link2.default.shift_bundle(link, path, label);
+              }
             }));
 
             // without path calculation
@@ -20725,7 +20730,9 @@ var Diagram = function () {
             _this2.configure_tick(group, node, link, path, label);
 
             _this2.cola.start();
-            _link2.default.shift_bundle(link, path, label);
+            if (_this2.bundle) {
+              _link2.default.shift_bundle(link, path, label);
+            }
             _this2.ticks_forward(1);
 
             path.attr('d', function (d) {
@@ -21627,4 +21634,4 @@ function classify(string) {
 
 exports.classify = classify;
 
-},{}]},{},[133,134,135,136,137,138,139,140]);
+},{}]},{},[133]);
