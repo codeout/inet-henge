@@ -94,12 +94,16 @@ class Diagram {
         this.set_distance(this.cola);
         this.cola.start();
 
-        const group = Group.render(this.svg, groups).call(
-          this.cola.drag().on('dragstart', this.dragstart_callback)
-        );
         const [link, path, label] = Link.render_links(this.svg, links);
+        const group = Group.render(this.svg, groups).call(
+          this.cola.drag()
+            .on('dragstart', this.dragstart_callback)
+            .on('drag', (d) => { Link.shift_bundle(link, path, label); })
+        );
         const node = Node.render(this.svg, nodes).call(
-          this.cola.drag().on('dragstart', this.dragstart_callback)
+          this.cola.drag()
+            .on('dragstart', this.dragstart_callback)
+            .on('drag', (d) => { Link.shift_bundle(link, path, label); })
         );
 
         // without path calculation
@@ -119,7 +123,9 @@ class Diagram {
 
         // render path
         this.configure_tick(group, node, link, path, label);
+
         this.cola.start();
+        Link.shift_bundle(link, path, label);
         this.ticks_forward(1);
 
         path.attr('d', (d) => d.d());  // make sure path calculation is done

@@ -20678,54 +20678,61 @@ var Diagram = function () {
         }
 
         try {
-          var nodes = data.nodes ? data.nodes.map(function (n, i) {
-            return new _node2.default(n, i, _this2.meta, _this2.color);
-          }) : [];
-          var links = data.links ? data.links.map(function (l, i) {
-            return new _link2.default(l, i, _this2.meta, _this2.get_link_width);
-          }) : [];
-          var groups = _group2.default.divide(nodes, _this2.group_pattern, _this2.color);
+          (function () {
+            var nodes = data.nodes ? data.nodes.map(function (n, i) {
+              return new _node2.default(n, i, _this2.meta, _this2.color);
+            }) : [];
+            var links = data.links ? data.links.map(function (l, i) {
+              return new _link2.default(l, i, _this2.meta, _this2.get_link_width);
+            }) : [];
+            var groups = _group2.default.divide(nodes, _this2.group_pattern, _this2.color);
 
-          _this2.cola.nodes(nodes).links(links).groups(groups);
-          _this2.set_distance(_this2.cola);
-          _this2.cola.start();
+            _this2.cola.nodes(nodes).links(links).groups(groups);
+            _this2.set_distance(_this2.cola);
+            _this2.cola.start();
 
-          var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback));
+            var _Link$render_links = _link2.default.render_links(_this2.svg, links);
 
-          var _Link$render_links = _link2.default.render_links(_this2.svg, links);
+            var _Link$render_links2 = _slicedToArray(_Link$render_links, 3);
 
-          var _Link$render_links2 = _slicedToArray(_Link$render_links, 3);
+            var link = _Link$render_links2[0];
+            var path = _Link$render_links2[1];
+            var label = _Link$render_links2[2];
 
-          var link = _Link$render_links2[0];
-          var path = _Link$render_links2[1];
-          var label = _Link$render_links2[2];
+            var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
+              _link2.default.shift_bundle(link, path, label);
+            }));
+            var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
+              _link2.default.shift_bundle(link, path, label);
+            }));
 
-          var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback));
+            // without path calculation
+            _this2.configure_tick(group, node, link);
 
-          // without path calculation
-          _this2.configure_tick(group, node, link);
+            var position = _position_cache2.default.load();
+            if (_this2.position_cache && position.match(data, _this2.pop)) {
+              _group2.default.set_position(group, position.group);
+              _node2.default.set_position(node, position.node);
+              _link2.default.set_position(link, position.link);
+            } else {
+              _this2.ticks_forward();
+              _this2.save_position(group, node, link, data, _this2.pop);
+            }
 
-          var position = _position_cache2.default.load();
-          if (_this2.position_cache && position.match(data, _this2.pop)) {
-            _group2.default.set_position(group, position.group);
-            _node2.default.set_position(node, position.node);
-            _link2.default.set_position(link, position.link);
-          } else {
-            _this2.ticks_forward();
-            _this2.save_position(group, node, link, data, _this2.pop);
-          }
+            _this2.hide_load_message();
 
-          _this2.hide_load_message();
+            // render path
+            _this2.configure_tick(group, node, link, path, label);
 
-          // render path
-          _this2.configure_tick(group, node, link, path, label);
-          _this2.cola.start();
-          _this2.ticks_forward(1);
+            _this2.cola.start();
+            _link2.default.shift_bundle(link, path, label);
+            _this2.ticks_forward(1);
 
-          path.attr('d', function (d) {
-            return d.d();
-          }); // make sure path calculation is done
-          _this2.freeze(node);
+            path.attr('d', function (d) {
+              return d.d();
+            }); // make sure path calculation is done
+            _this2.freeze(node);
+          })();
         } catch (e) {
           _this2.show_message(e);
           throw e;
@@ -21020,9 +21027,12 @@ var Link = function () {
 
     if (typeof link_width === 'function') this.width = link_width(data.meta) || 3;else this.width = link_width || 3;
 
+    this.bundle_gap = 15;
     this.label_x_offset = 20;
     this.label_y_offset = 1.5; // em
     this.color = '#7a4e4e';
+
+    this.register(id, this.source, this.target);
   }
 
   _createClass(Link, [{
@@ -21092,6 +21102,24 @@ var Link = function () {
     key: 'has_meta',
     value: function has_meta() {
       return this.meta.length > 0 || this.source_meta.length > 0 || this.target_meta.length > 0;
+    }
+  }, {
+    key: 'register',
+    value: function register(id, source, target) {
+      Link.groups = Link.groups || {};
+      var key = [source, target].sort();
+      Link.groups[key] = Link.groups[key] || [];
+      Link.groups[key].push(id);
+    }
+  }, {
+    key: 'shift_bundle',
+    value: function shift_bundle(multiplier) {
+      var gap = this.bundle_gap * multiplier;
+      var width = this.target.x - this.source.x;
+      var height = this.source.y - this.target.y;
+      var length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
+
+      return 'translate(' + gap * height / length + ', ' + gap * width / length + ')';
     }
   }], [{
     key: 'render_links',
@@ -21204,6 +21232,23 @@ var Link = function () {
       }).attr('y2', function (d, i) {
         return position[i].y2;
       });
+    }
+  }, {
+    key: 'shift_multiplier',
+    value: function shift_multiplier(link) {
+      var members = Link.groups[[link.source.id, link.target.id].sort()] || [];
+      return members.indexOf(link.id) - (members.length - 1) / 2;
+    }
+  }, {
+    key: 'shift_bundle',
+    value: function shift_bundle(link, path, label) {
+      var transform = function transform(d) {
+        return d.shift_bundle(Link.shift_multiplier(d));
+      };
+
+      link.attr('transform', transform);
+      path.attr('transform', transform);
+      label.attr('transform', transform);
     }
   }]);
 
@@ -21582,4 +21627,4 @@ function classify(string) {
 
 exports.classify = classify;
 
-},{}]},{},[133]);
+},{}]},{},[133,134,135,136,137,138,139,140]);

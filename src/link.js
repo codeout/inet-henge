@@ -17,9 +17,12 @@ class Link {
     else
       this.width = link_width || 3;
 
+    this.bundle_gap = 15;
     this.label_x_offset = 20;
     this.label_y_offset = 1.5; // em
     this.color = '#7a4e4e';
+
+    this.register(id, this.source, this.target);
   }
 
   is_named_path() {
@@ -182,6 +185,35 @@ class Link {
       .attr('y1', (d, i) => position[i].y1)
       .attr('x2', (d, i) => position[i].x2)
       .attr('y2', (d, i) => position[i].y2);
+  }
+
+  register(id, source, target) {
+    Link.groups = Link.groups || {};
+    const key = [source, target].sort();
+    Link.groups[key] = Link.groups[key] || [];
+    Link.groups[key].push(id);
+  }
+
+  static shift_multiplier(link) {
+    const members = Link.groups[[link.source.id, link.target.id].sort()] || [];
+    return members.indexOf(link.id) - (members.length - 1) / 2;
+  }
+
+  static shift_bundle(link, path, label) {
+    const transform = (d) => d.shift_bundle(Link.shift_multiplier(d));
+
+    link.attr('transform', transform);
+    path.attr('transform', transform);
+    label.attr('transform', transform);
+  }
+
+  shift_bundle(multiplier) {
+    const gap = this.bundle_gap * multiplier;
+    const width = this.target.x - this.source.x;
+    const height = this.source.y - this.target.y;
+    const length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
+
+    return `translate(${gap * height / length}, ${gap * width / length})`;
   }
 }
 
