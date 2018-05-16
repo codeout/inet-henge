@@ -13,7 +13,7 @@
   </body>
 
   <script>
-   var diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/});
+   var diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, bundle: true});
    diagram.init('loopback', 'interface');
   </script>
 </html>
