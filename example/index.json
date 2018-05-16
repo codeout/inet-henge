@@ -24,6 +24,8 @@
     { "source": "POP01-bb02", "target": "POP02-bb02" },
     { "source": "POP01-bb02", "target": "POP03-bb02",
       "meta": { "interface": { "source": "ge-0/0/0", "target": "Te0/0/0/0" } } },
+    { "source": "POP01-bb02", "target": "POP03-bb02",
+      "meta": { "interface": { "source": "ge-0/0/1", "target": "Te0/0/0/1" } } },
     { "source": "POP02-bb01", "target": "POP03-bb02" },
     { "source": "POP02-bb02", "target": "POP03-bb01" },
     { "source": "POP01-ag01", "target": "POP01-ag02" },

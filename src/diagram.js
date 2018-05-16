@@ -18,6 +18,7 @@ class Diagram {
     this.color = d3.scale.category20();
     this.max_ticks = options.ticks || 1000;
     this.position_cache = 'positionCache' in options ? options.positionCache : true;
+    this.bundle = 'bundle' in options ? options.bundle : false;
   }
 
   link_distance(distance) {
@@ -94,12 +95,25 @@ class Diagram {
         this.set_distance(this.cola);
         this.cola.start();
 
+        var link, path, label;
         const group = Group.render(this.svg, groups).call(
-          this.cola.drag().on('dragstart', this.dragstart_callback)
+          this.cola.drag()
+            .on('dragstart', this.dragstart_callback)
+            .on('drag', (d) => {
+              if (this.bundle) {
+                Link.shift_bundle(link, path, label);
+              }
+            })
         );
-        const [link, path, label] = Link.render_links(this.svg, links);
+        [link, path, label] = Link.render_links(this.svg, links);
         const node = Node.render(this.svg, nodes).call(
-          this.cola.drag().on('dragstart', this.dragstart_callback)
+          this.cola.drag()
+            .on('dragstart', this.dragstart_callback)
+            .on('drag', (d) => {
+              if (this.bundle) {
+                Link.shift_bundle(link, path, label);
+              }
+            })
         );
 
         // without path calculation
@@ -119,7 +133,11 @@ class Diagram {
 
         // render path
         this.configure_tick(group, node, link, path, label);
+
         this.cola.start();
+        if (this.bundle) {
+          Link.shift_bundle(link, path, label);
+        }
         this.ticks_forward(1);
 
         path.attr('d', (d) => d.d());  // make sure path calculation is done

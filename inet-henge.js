@@ -20608,6 +20608,7 @@ var Diagram = function () {
     this.color = d3.scale.category20();
     this.max_ticks = options.ticks || 1000;
     this.position_cache = 'positionCache' in options ? options.positionCache : true;
+    this.bundle = 'bundle' in options ? options.bundle : false;
   }
 
   _createClass(Diagram, [{
@@ -20690,17 +20691,26 @@ var Diagram = function () {
           _this2.set_distance(_this2.cola);
           _this2.cola.start();
 
-          var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback));
+          var link, path, label;
+          var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
+            if (_this2.bundle) {
+              _link2.default.shift_bundle(link, path, label);
+            }
+          }));
 
           var _Link$render_links = _link2.default.render_links(_this2.svg, links);
 
           var _Link$render_links2 = _slicedToArray(_Link$render_links, 3);
 
-          var link = _Link$render_links2[0];
-          var path = _Link$render_links2[1];
-          var label = _Link$render_links2[2];
+          link = _Link$render_links2[0];
+          path = _Link$render_links2[1];
+          label = _Link$render_links2[2];
 
-          var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback));
+          var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
+            if (_this2.bundle) {
+              _link2.default.shift_bundle(link, path, label);
+            }
+          }));
 
           // without path calculation
           _this2.configure_tick(group, node, link);
@@ -20719,7 +20729,11 @@ var Diagram = function () {
 
           // render path
           _this2.configure_tick(group, node, link, path, label);
+
           _this2.cola.start();
+          if (_this2.bundle) {
+            _link2.default.shift_bundle(link, path, label);
+          }
           _this2.ticks_forward(1);
 
           path.attr('d', function (d) {
@@ -21020,9 +21034,12 @@ var Link = function () {
 
     if (typeof link_width === 'function') this.width = link_width(data.meta) || 3;else this.width = link_width || 3;
 
+    this.bundle_gap = 15;
     this.label_x_offset = 20;
     this.label_y_offset = 1.5; // em
     this.color = '#7a4e4e';
+
+    this.register(id, this.source, this.target);
   }
 
   _createClass(Link, [{
@@ -21092,6 +21109,24 @@ var Link = function () {
     key: 'has_meta',
     value: function has_meta() {
       return this.meta.length > 0 || this.source_meta.length > 0 || this.target_meta.length > 0;
+    }
+  }, {
+    key: 'register',
+    value: function register(id, source, target) {
+      Link.groups = Link.groups || {};
+      var key = [source, target].sort();
+      Link.groups[key] = Link.groups[key] || [];
+      Link.groups[key].push(id);
+    }
+  }, {
+    key: 'shift_bundle',
+    value: function shift_bundle(multiplier) {
+      var gap = this.bundle_gap * multiplier;
+      var width = this.target.x - this.source.x;
+      var height = this.source.y - this.target.y;
+      var length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
+
+      return 'translate(' + gap * height / length + ', ' + gap * width / length + ')';
     }
   }], [{
     key: 'render_links',
@@ -21204,6 +21239,23 @@ var Link = function () {
       }).attr('y2', function (d, i) {
         return position[i].y2;
       });
+    }
+  }, {
+    key: 'shift_multiplier',
+    value: function shift_multiplier(link) {
+      var members = Link.groups[[link.source.id, link.target.id].sort()] || [];
+      return members.indexOf(link.id) - (members.length - 1) / 2;
+    }
+  }, {
+    key: 'shift_bundle',
+    value: function shift_bundle(link, path, label) {
+      var transform = function transform(d) {
+        return d.shift_bundle(Link.shift_multiplier(d));
+      };
+
+      link.attr('transform', transform);
+      path.attr('transform', transform);
+      label.attr('transform', transform);
     }
   }]);
 
