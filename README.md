@@ -263,7 +263,7 @@ You can display multiple links between nodes by setting `bundle: true` in constr
 
 ![Bundle example](example/images/bundle.png)
 
-Node are connected to each other with a single link by default.
+Nodes are connected to each other with a single link by default.
 
 
 ## Contributing
