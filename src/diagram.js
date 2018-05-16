@@ -95,7 +95,7 @@ class Diagram {
         this.set_distance(this.cola);
         this.cola.start();
 
-        const [link, path, label] = Link.render_links(this.svg, links);
+        var link, path, label;
         const group = Group.render(this.svg, groups).call(
           this.cola.drag()
             .on('dragstart', this.dragstart_callback)
@@ -105,6 +105,7 @@ class Diagram {
               }
             })
         );
+        [link, path, label] = Link.render_links(this.svg, links);
         const node = Node.render(this.svg, nodes).call(
           this.cola.drag()
             .on('dragstart', this.dragstart_callback)

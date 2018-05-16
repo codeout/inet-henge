@@ -20679,67 +20679,67 @@ var Diagram = function () {
         }
 
         try {
-          (function () {
-            var nodes = data.nodes ? data.nodes.map(function (n, i) {
-              return new _node2.default(n, i, _this2.meta, _this2.color);
-            }) : [];
-            var links = data.links ? data.links.map(function (l, i) {
-              return new _link2.default(l, i, _this2.meta, _this2.get_link_width);
-            }) : [];
-            var groups = _group2.default.divide(nodes, _this2.group_pattern, _this2.color);
+          var nodes = data.nodes ? data.nodes.map(function (n, i) {
+            return new _node2.default(n, i, _this2.meta, _this2.color);
+          }) : [];
+          var links = data.links ? data.links.map(function (l, i) {
+            return new _link2.default(l, i, _this2.meta, _this2.get_link_width);
+          }) : [];
+          var groups = _group2.default.divide(nodes, _this2.group_pattern, _this2.color);
 
-            _this2.cola.nodes(nodes).links(links).groups(groups);
-            _this2.set_distance(_this2.cola);
-            _this2.cola.start();
+          _this2.cola.nodes(nodes).links(links).groups(groups);
+          _this2.set_distance(_this2.cola);
+          _this2.cola.start();
 
-            var _Link$render_links = _link2.default.render_links(_this2.svg, links);
-
-            var _Link$render_links2 = _slicedToArray(_Link$render_links, 3);
-
-            var link = _Link$render_links2[0];
-            var path = _Link$render_links2[1];
-            var label = _Link$render_links2[2];
-
-            var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
-              if (_this2.bundle) {
-                _link2.default.shift_bundle(link, path, label);
-              }
-            }));
-            var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
-              if (_this2.bundle) {
-                _link2.default.shift_bundle(link, path, label);
-              }
-            }));
-
-            // without path calculation
-            _this2.configure_tick(group, node, link);
-
-            var position = _position_cache2.default.load();
-            if (_this2.position_cache && position.match(data, _this2.pop)) {
-              _group2.default.set_position(group, position.group);
-              _node2.default.set_position(node, position.node);
-              _link2.default.set_position(link, position.link);
-            } else {
-              _this2.ticks_forward();
-              _this2.save_position(group, node, link, data, _this2.pop);
-            }
-
-            _this2.hide_load_message();
-
-            // render path
-            _this2.configure_tick(group, node, link, path, label);
-
-            _this2.cola.start();
+          var link, path, label;
+          var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
             if (_this2.bundle) {
               _link2.default.shift_bundle(link, path, label);
             }
-            _this2.ticks_forward(1);
+          }));
 
-            path.attr('d', function (d) {
-              return d.d();
-            }); // make sure path calculation is done
-            _this2.freeze(node);
-          })();
+          var _Link$render_links = _link2.default.render_links(_this2.svg, links);
+
+          var _Link$render_links2 = _slicedToArray(_Link$render_links, 3);
+
+          link = _Link$render_links2[0];
+          path = _Link$render_links2[1];
+          label = _Link$render_links2[2];
+
+          var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
+            if (_this2.bundle) {
+              _link2.default.shift_bundle(link, path, label);
+            }
+          }));
+
+          // without path calculation
+          _this2.configure_tick(group, node, link);
+
+          var position = _position_cache2.default.load();
+          if (_this2.position_cache && position.match(data, _this2.pop)) {
+            _group2.default.set_position(group, position.group);
+            _node2.default.set_position(node, position.node);
+            _link2.default.set_position(link, position.link);
+          } else {
+            _this2.ticks_forward();
+            _this2.save_position(group, node, link, data, _this2.pop);
+          }
+
+          _this2.hide_load_message();
+
+          // render path
+          _this2.configure_tick(group, node, link, path, label);
+
+          _this2.cola.start();
+          if (_this2.bundle) {
+            _link2.default.shift_bundle(link, path, label);
+          }
+          _this2.ticks_forward(1);
+
+          path.attr('d', function (d) {
+            return d.d();
+          }); // make sure path calculation is done
+          _this2.freeze(node);
         } catch (e) {
           _this2.show_message(e);
           throw e;
