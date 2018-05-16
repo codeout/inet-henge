@@ -222,7 +222,7 @@ diagram.init('bandwidth');
   ]
 ```
 
-NOTE: :warning: Make sure no stylesheet overrides customized link widths. :warning:
+:warning: Make sure no stylesheet overrides customized link widths. :warning:
 
 ### Ticks
 
@@ -244,6 +244,26 @@ var diagram = new Diagram('#diagram', 'data.json', {positionCache: false});
 ### Style
 
 inet-henge generates an SVG image, so you can customize the style by using CSS.
+
+
+## Experimental Features
+
+:warning: Those features may work, but still under development. The behavior might be changed :warning:
+
+### Display bundles
+
+You can display multiple links between nodes by setting `bundle: true` in constructor like:
+
+```html
+<script>
+ var diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, bundle: true});
+ diagram.init('loopback', 'interface');
+</script>
+```
+
+![Bundle example](example/images/bundle.png)
+
+Node are connected to each other with a single link by default.
 
 
 ## Contributing
