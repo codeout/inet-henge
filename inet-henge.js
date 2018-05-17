@@ -20779,6 +20779,16 @@ var Diagram = function () {
   }, {
     key: 'zoom_callback',
     value: function zoom_callback(container) {
+      if (!this.initial_translate) {
+        var transform = d3.transform(this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
+        this.initial_scale = transform.scale[0]; // NOTE: Assuming ky = kx
+        this.initial_translate = transform.translate;
+      }
+
+      d3.event.scale *= this.initial_scale;
+      d3.event.translate[0] += this.initial_translate[0];
+      d3.event.translate[1] += this.initial_translate[1];
+
       _link2.default.zoom(d3.event.scale);
       container.attr('transform', 'translate(' + d3.event.translate + ') scale(' + d3.event.scale + ')');
     }
