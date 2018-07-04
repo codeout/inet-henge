@@ -18,6 +18,7 @@ class Diagram {
     this.options.color = d3.scale.category20();
     this.options.max_ticks = options.ticks || 1000;
     this.options.position_cache = 'positionCache' in options ? options.positionCache : true;
+    // NOTE: This is an experimental option
     this.options.bundle = 'bundle' in options ? options.bundle : false;
 
     this.set_distance = this.link_distance(options.distance || 150);
