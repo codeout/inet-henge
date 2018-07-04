@@ -22543,13 +22543,13 @@ var Diagram = function () {
           _this2.configure_tick(group, node, link);
 
           var position = _position_cache2.default.load();
-          if (_this2.options.position_cache && position.match(data, _this2.pop)) {
+          if (_this2.options.position_cache && position.match(data, _this2.options.group_pattern)) {
             _group2.default.set_position(group, position.group);
             _node2.default.set_position(node, position.node);
             _link2.default.set_position(link, position.link);
           } else {
             _this2.ticks_forward();
-            _this2.save_position(group, node, link, data, _this2.pop);
+            _this2.save_position(group, node, link, data, _this2.options.group_pattern);
           }
 
           _this2.hide_load_message();
