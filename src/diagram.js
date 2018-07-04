@@ -17,6 +17,7 @@ class Diagram {
 
     this.options.color = d3.scale.category20();
     this.options.max_ticks = options.ticks || 1000;
+    // NOTE: true or 'fixed' (experimental) affects behavior
     this.options.position_cache = 'positionCache' in options ? options.positionCache : true;
     // NOTE: This is an experimental option
     this.options.bundle = 'bundle' in options ? options.bundle : false;
@@ -125,6 +126,8 @@ class Diagram {
 
         this.position_cache = PositionCache.load(data, this.options.group_pattern);
         if (this.options.position_cache && this.position_cache) {
+          // NOTE: Evaluate only when positionCache: true or 'fixed', and
+          //       when the stored position cache matches pair of given data and pop
           Group.set_position(group, this.position_cache.group);
           Node.set_position(node, this.position_cache.node);
           Link.set_position(link, this.position_cache.link);
@@ -146,6 +149,13 @@ class Diagram {
 
         path.attr('d', (d) => d.d());  // make sure path calculation is done
         this.freeze(node);
+
+        // NOTE: This is an experimental option
+        if (this.options.position_cache === 'fixed') {
+          this.cola.on('end', () => {
+            this.save_position(group, node, link);
+          });
+        }
       } catch (e) {
         this.show_message(e);
         throw e;
