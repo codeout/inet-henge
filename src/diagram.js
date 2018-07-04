@@ -8,17 +8,19 @@ class Diagram {
   constructor(container, url, options) {
     options = options || {};
 
-    this.selector = container;
-    this.original_url = url;
-    this.group_pattern = options.pop;
-    this.width = options.width || 960;
-    this.height = options.height || 600;
+    this.options = {};
+    this.options.selector = container;
+    this.options.url = url;
+    this.options.group_pattern = options.pop;
+    this.options.width = options.width || 960;
+    this.options.height = options.height || 600;
+
+    this.options.color = d3.scale.category20();
+    this.options.max_ticks = options.ticks || 1000;
+    this.options.position_cache = 'positionCache' in options ? options.positionCache : true;
+    this.options.bundle = 'bundle' in options ? options.bundle : false;
 
     this.set_distance = this.link_distance(options.distance || 150);
-    this.color = d3.scale.category20();
-    this.max_ticks = options.ticks || 1000;
-    this.position_cache = 'positionCache' in options ? options.positionCache : true;
-    this.bundle = 'bundle' in options ? options.bundle : false;
   }
 
   link_distance(distance) {
@@ -33,7 +35,7 @@ class Diagram {
   }
 
   init(...meta) {
-    this.meta = meta;
+    this.options.meta = meta;
     this.cola = this.init_cola();
     this.svg = this.init_svg();
 
@@ -44,22 +46,22 @@ class Diagram {
     return cola.d3adaptor()
       .avoidOverlaps(true)
       .handleDisconnected(false)
-      .size([this.width, this.height]);
+      .size([this.options.width, this.options.height]);
   }
 
   init_svg() {
-    const container = d3.select(this.selector).append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height)
+    const container = d3.select(this.options.selector).append('svg')
+      .attr('width', this.options.width)
+      .attr('height', this.options.height)
       .append('g')
       .call(
         d3.behavior.zoom().on('zoom', () => this.zoom_callback(container))
       ).append('g');
 
     container.append('rect')
-      .attr('width', this.width * 10)   // 10 is huge enough
-      .attr('height', this.height * 10)
-      .attr('transform', `translate(-${this.width * 5}, -${this.height * 5})`)
+      .attr('width', this.options.width * 10)   // 10 is huge enough
+      .attr('height', this.options.height * 10)
+      .attr('transform', `translate(-${this.options.width * 5}, -${this.options.height * 5})`)
       .style('opacity', 0);
 
     return container;
@@ -70,7 +72,7 @@ class Diagram {
       return this.unique_url;
     }
 
-    this.unique_url = `${this.original_url}?${new Date().getTime()}`;
+    this.unique_url = `${this.options.url}?${new Date().getTime()}`;
     return this.unique_url;
   }
 
@@ -84,10 +86,10 @@ class Diagram {
       }
 
       try {
-        const nodes = data.nodes ? data.nodes.map((n, i) => new Node(n, i, this.meta, this.color)) : [];
-        const links = data.links ? data.links.map((l, i) => new Link(l, i, this.meta, this.get_link_width))
+        const nodes = data.nodes ? data.nodes.map((n, i) => new Node(n, i, this.options.meta, this.options.color)) : [];
+        const links = data.links ? data.links.map((l, i) => new Link(l, i, this.options.meta, this.get_link_width))
           : [];
-        const groups = Group.divide(nodes, this.group_pattern, this.color);
+        const groups = Group.divide(nodes, this.options.group_pattern, this.options.color);
 
         this.cola.nodes(nodes)
           .links(links)
@@ -100,7 +102,7 @@ class Diagram {
           this.cola.drag()
             .on('dragstart', this.dragstart_callback)
             .on('drag', (d) => {
-              if (this.bundle) {
+              if (this.options.bundle) {
                 Link.shift_bundle(link, path, label);
               }
             })
@@ -110,7 +112,7 @@ class Diagram {
           this.cola.drag()
             .on('dragstart', this.dragstart_callback)
             .on('drag', (d) => {
-              if (this.bundle) {
+              if (this.options.bundle) {
                 Link.shift_bundle(link, path, label);
               }
             })
@@ -120,7 +122,7 @@ class Diagram {
         this.configure_tick(group, node, link);
 
         const position = PositionCache.load();
-        if (this.position_cache && position.match(data, this.pop)) {
+        if (this.options.position_cache && position.match(data, this.pop)) {
           Group.set_position(group, position.group);
           Node.set_position(node, position.node);
           Link.set_position(link, position.link);
@@ -135,7 +137,7 @@ class Diagram {
         this.configure_tick(group, node, link, path, label);
 
         this.cola.start();
-        if (this.bundle) {
+        if (this.options.bundle) {
           Link.shift_bundle(link, path, label);
         }
         this.ticks_forward(1);
@@ -158,7 +160,7 @@ class Diagram {
   }
 
   ticks_forward(count) {
-    count = count || this.max_ticks;
+    count = count || this.options.max_ticks;
 
     for (let i = 0; i < count; i++)
       this.cola.tick();
@@ -194,8 +196,8 @@ class Diagram {
 
   display_load_message() {
     this.indicator = this.svg.append('text')
-      .attr('x', this.width / 2)
-      .attr('y', this.height / 2)
+      .attr('x', this.options.width / 2)
+      .attr('y', this.options.height / 2)
       .attr('dy', '.35em')
       .style('text-anchor', 'middle')
       .text('Simulating. Just a moment ...');
