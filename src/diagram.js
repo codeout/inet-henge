@@ -122,14 +122,15 @@ class Diagram {
         // without path calculation
         this.configure_tick(group, node, link);
 
-        const position = PositionCache.load();
-        if (this.options.position_cache && position.match(data, this.options.group_pattern)) {
-          Group.set_position(group, position.group);
-          Node.set_position(node, position.node);
-          Link.set_position(link, position.link);
+        this.position_cache = PositionCache.load(data, this.options.group_pattern);
+        if (this.options.position_cache && this.position_cache) {
+          Group.set_position(group, this.position_cache.group);
+          Node.set_position(node, this.position_cache.node);
+          Link.set_position(link, this.position_cache.link);
         } else {
           this.ticks_forward();
-          this.save_position(group, node, link, data, this.options.group_pattern);
+          this.position_cache = new PositionCache(data, this.options.group_pattern);
+          this.save_position(group, node, link);
         }
 
         this.hide_load_message();
@@ -213,9 +214,8 @@ class Diagram {
       this.indicator.text(message);
   }
 
-  save_position(group, node, link, data, pop) {
-    const cache = new PositionCache(group, node, link, data, pop);
-    cache.save();
+  save_position(group, node, link) {
+    this.position_cache.save(group, node, link);
   }
 }
 
