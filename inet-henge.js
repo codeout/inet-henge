@@ -14521,7 +14521,7 @@ module.exports={
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.0.tgz",
   "_shasum": "cac9af8762c85836187003c8dfe193e5e2eae5df",
   "_spec": "elliptic@^6.0.0",
-  "_where": "/Users/koji/darwin/wip/js/inet-henge/node_modules/browserify-sign",
+  "_where": "/Users/koji/darwin/wip/js/inet-henge/inet-henge/node_modules/browserify-sign",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -22432,7 +22432,9 @@ var Diagram = function () {
 
     this.options.color = d3.scale.category20();
     this.options.max_ticks = options.ticks || 1000;
+    // NOTE: true or 'fixed' (experimental) affects behavior
     this.options.position_cache = 'positionCache' in options ? options.positionCache : true;
+    // NOTE: This is an experimental option
     this.options.bundle = 'bundle' in options ? options.bundle : false;
 
     this.set_distance = this.link_distance(options.distance || 150);
@@ -22542,14 +22544,17 @@ var Diagram = function () {
           // without path calculation
           _this2.configure_tick(group, node, link);
 
-          var position = _position_cache2.default.load();
-          if (_this2.options.position_cache && position.match(data, _this2.options.group_pattern)) {
-            _group2.default.set_position(group, position.group);
-            _node2.default.set_position(node, position.node);
-            _link2.default.set_position(link, position.link);
+          _this2.position_cache = _position_cache2.default.load(data, _this2.options.group_pattern);
+          if (_this2.options.position_cache && _this2.position_cache) {
+            // NOTE: Evaluate only when positionCache: true or 'fixed', and
+            //       when the stored position cache matches pair of given data and pop
+            _group2.default.set_position(group, _this2.position_cache.group);
+            _node2.default.set_position(node, _this2.position_cache.node);
+            _link2.default.set_position(link, _this2.position_cache.link);
           } else {
             _this2.ticks_forward();
-            _this2.save_position(group, node, link, data, _this2.options.group_pattern);
+            _this2.position_cache = new _position_cache2.default(data, _this2.options.group_pattern);
+            _this2.save_position(group, node, link);
           }
 
           _this2.hide_load_message();
@@ -22561,12 +22566,18 @@ var Diagram = function () {
           if (_this2.options.bundle) {
             _link2.default.shift_bundle(link, path, label);
           }
-          _this2.ticks_forward(1);
 
           path.attr('d', function (d) {
             return d.d();
           }); // make sure path calculation is done
           _this2.freeze(node);
+
+          // NOTE: This is an experimental option
+          if (_this2.options.position_cache === 'fixed') {
+            _this2.cola.on('end', function () {
+              _this2.save_position(group, node, link);
+            });
+          }
         } catch (e) {
           _this2.show_message(e);
           throw e;
@@ -22641,9 +22652,8 @@ var Diagram = function () {
     }
   }, {
     key: 'save_position',
-    value: function save_position(group, node, link, data, pop) {
-      var cache = new _position_cache2.default(group, node, link, data, pop);
-      cache.save();
+    value: function save_position(group, node, link) {
+      this.position_cache.save(group, node, link);
     }
   }]);
 
@@ -23338,26 +23348,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var crypto = require('crypto');
 
 var PositionCache = function () {
-  function PositionCache(group, node, link, data, pop, sha1) {
+  function PositionCache(data, pop, sha1, group, node, link) {
     _classCallCheck(this, PositionCache);
 
-    this.group = group;
-    this.node = node;
-    this.link = link;
     this.data = data;
     this.pop = pop;
+
+    // NOTE: properties below can be undefined
     this.cached_sha1 = sha1;
   }
 
   _createClass(PositionCache, [{
     key: 'save',
-    value: function save() {
+    value: function save(group, node, link) {
       var cache = PositionCache.get_all();
       cache[location.pathname] = {
         sha1: this.sha1(),
-        group: this.group_position(),
-        node: this.node_position(),
-        link: this.link_position()
+        group: this.group_position(group),
+        node: this.node_position(node),
+        link: this.link_position(link)
       };
 
       localStorage.setItem('position_cache', JSON.stringify(cache));
@@ -23366,7 +23375,13 @@ var PositionCache = function () {
     key: 'sha1',
     value: function sha1(data, pop) {
       data = Object.assign({}, data || this.data);
-      data.pop = pop || this.pop || null; // NOTE: unify undefined with null
+      data.pop = pop || this.pop;
+      if (data.pop) {
+        data.pop = data.pop.toString();
+      } else {
+        data.pop = null; // NOTE: unify undefined with null
+      }
+
       data.nodes && data.nodes.forEach(function (i) {
         delete i.icon;
         delete i.meta;
@@ -23381,10 +23396,10 @@ var PositionCache = function () {
     }
   }, {
     key: 'group_position',
-    value: function group_position() {
+    value: function group_position(group) {
       var position = [];
 
-      this.group.each(function (d) {
+      group.each(function (d) {
         position.push({
           x: d.bounds.x,
           y: d.bounds.y,
@@ -23397,10 +23412,10 @@ var PositionCache = function () {
     }
   }, {
     key: 'node_position',
-    value: function node_position() {
+    value: function node_position(node) {
       var position = [];
 
-      this.node.each(function (d) {
+      node.each(function (d) {
         position.push({
           x: d.x,
           y: d.y
@@ -23411,10 +23426,10 @@ var PositionCache = function () {
     }
   }, {
     key: 'link_position',
-    value: function link_position() {
+    value: function link_position(link) {
       var position = [];
 
-      this.link.each(function (d) {
+      link.each(function (d) {
         position.push({
           x1: d.source.x,
           y1: d.source.y,
@@ -23442,12 +23457,18 @@ var PositionCache = function () {
     }
   }, {
     key: 'load',
-    value: function load() {
+    value: function load(data, pop) {
       var cache = this.get();
       if (cache) {
-        return new PositionCache(cache.group, cache.node, cache.link, null, null, cache.sha1);
-      } else {
-        return new PositionCache();
+        var position = new PositionCache(data, pop, cache.sha1);
+        if (position.match(data, pop)) {
+          // if data and pop match saved sha1
+          position.group = cache.group;
+          position.node = cache.node;
+          position.link = cache.link;
+
+          return position;
+        }
       }
     }
   }]);
