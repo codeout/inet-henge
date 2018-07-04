@@ -86,9 +86,10 @@ class Diagram {
       }
 
       try {
-        const nodes = data.nodes ? data.nodes.map((n, i) => new Node(n, i, this.options.meta, this.options.color)) : [];
-        const links = data.links ? data.links.map((l, i) => new Link(l, i, this.options.meta, this.get_link_width))
-          : [];
+        const nodes = data.nodes ?
+          data.nodes.map((n, i) => new Node(n, i, this.options.meta, this.options.color)) : [];
+        const links = data.links ?
+          data.links.map((l, i) => new Link(l, i, this.options.meta, this.get_link_width)) : [];
         const groups = Group.divide(nodes, this.options.group_pattern, this.options.color);
 
         this.cola.nodes(nodes)
