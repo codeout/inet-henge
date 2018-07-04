@@ -16,7 +16,7 @@ class PositionCache {
 
   static get() {
     return this.get_all()[location.pathname] || {};
-  }  
+  }
 
   save() {
     const cache = PositionCache.get_all();
