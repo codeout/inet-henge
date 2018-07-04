@@ -1,4 +1,4 @@
-import { classify } from './util';
+import {classify} from './util';
 
 class Group {
   constructor(name, color) {

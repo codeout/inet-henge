@@ -1,5 +1,5 @@
 import MetaData from './meta_data';
-import { classify } from './util';
+import {classify} from './util';
 
 class Node {
   constructor(data, id, meta_keys, color) {
@@ -59,7 +59,7 @@ class Node {
       .append('g')
       .attr('transform', (d) => d.transform());
 
-    container.each(function(d) {
+    container.each(function (d) {
       if (d.icon)
         Node.append_image(this);
       else
