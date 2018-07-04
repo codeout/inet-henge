@@ -22423,17 +22423,19 @@ var Diagram = function () {
 
     options = options || {};
 
-    this.selector = container;
-    this.original_url = url;
-    this.group_pattern = options.pop;
-    this.width = options.width || 960;
-    this.height = options.height || 600;
+    this.options = {};
+    this.options.selector = container;
+    this.options.url = url;
+    this.options.group_pattern = options.pop;
+    this.options.width = options.width || 960;
+    this.options.height = options.height || 600;
+
+    this.options.color = d3.scale.category20();
+    this.options.max_ticks = options.ticks || 1000;
+    this.options.position_cache = 'positionCache' in options ? options.positionCache : true;
+    this.options.bundle = 'bundle' in options ? options.bundle : false;
 
     this.set_distance = this.link_distance(options.distance || 150);
-    this.color = d3.scale.category20();
-    this.max_ticks = options.ticks || 1000;
-    this.position_cache = 'positionCache' in options ? options.positionCache : true;
-    this.bundle = 'bundle' in options ? options.bundle : false;
   }
 
   _createClass(Diagram, [{
@@ -22455,7 +22457,7 @@ var Diagram = function () {
         meta[_key] = arguments[_key];
       }
 
-      this.meta = meta;
+      this.options.meta = meta;
       this.cola = this.init_cola();
       this.svg = this.init_svg();
 
@@ -22464,19 +22466,19 @@ var Diagram = function () {
   }, {
     key: 'init_cola',
     value: function init_cola() {
-      return cola.d3adaptor().avoidOverlaps(true).handleDisconnected(false).size([this.width, this.height]);
+      return cola.d3adaptor().avoidOverlaps(true).handleDisconnected(false).size([this.options.width, this.options.height]);
     }
   }, {
     key: 'init_svg',
     value: function init_svg() {
       var _this = this;
 
-      var container = d3.select(this.selector).append('svg').attr('width', this.width).attr('height', this.height).append('g').call(d3.behavior.zoom().on('zoom', function () {
+      var container = d3.select(this.options.selector).append('svg').attr('width', this.options.width).attr('height', this.options.height).append('g').call(d3.behavior.zoom().on('zoom', function () {
         return _this.zoom_callback(container);
       })).append('g');
 
-      container.append('rect').attr('width', this.width * 10) // 10 is huge enough
-      .attr('height', this.height * 10).attr('transform', 'translate(-' + this.width * 5 + ', -' + this.height * 5 + ')').style('opacity', 0);
+      container.append('rect').attr('width', this.options.width * 10) // 10 is huge enough
+      .attr('height', this.options.height * 10).attr('transform', 'translate(-' + this.options.width * 5 + ', -' + this.options.height * 5 + ')').style('opacity', 0);
 
       return container;
     }
@@ -22487,7 +22489,7 @@ var Diagram = function () {
         return this.unique_url;
       }
 
-      this.unique_url = this.original_url + '?' + new Date().getTime();
+      this.unique_url = this.options.url + '?' + new Date().getTime();
       return this.unique_url;
     }
   }, {
@@ -22505,12 +22507,12 @@ var Diagram = function () {
 
         try {
           var nodes = data.nodes ? data.nodes.map(function (n, i) {
-            return new _node2.default(n, i, _this2.meta, _this2.color);
+            return new _node2.default(n, i, _this2.options.meta, _this2.options.color);
           }) : [];
           var links = data.links ? data.links.map(function (l, i) {
-            return new _link2.default(l, i, _this2.meta, _this2.get_link_width);
+            return new _link2.default(l, i, _this2.options.meta, _this2.get_link_width);
           }) : [];
-          var groups = _group2.default.divide(nodes, _this2.group_pattern, _this2.color);
+          var groups = _group2.default.divide(nodes, _this2.options.group_pattern, _this2.options.color);
 
           _this2.cola.nodes(nodes).links(links).groups(groups);
           _this2.set_distance(_this2.cola);
@@ -22518,7 +22520,7 @@ var Diagram = function () {
 
           var link, path, label;
           var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
-            if (_this2.bundle) {
+            if (_this2.options.bundle) {
               _link2.default.shift_bundle(link, path, label);
             }
           }));
@@ -22532,7 +22534,7 @@ var Diagram = function () {
           label = _Link$render_links2[2];
 
           var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
-            if (_this2.bundle) {
+            if (_this2.options.bundle) {
               _link2.default.shift_bundle(link, path, label);
             }
           }));
@@ -22541,7 +22543,7 @@ var Diagram = function () {
           _this2.configure_tick(group, node, link);
 
           var position = _position_cache2.default.load();
-          if (_this2.position_cache && position.match(data, _this2.pop)) {
+          if (_this2.options.position_cache && position.match(data, _this2.pop)) {
             _group2.default.set_position(group, position.group);
             _node2.default.set_position(node, position.node);
             _link2.default.set_position(link, position.link);
@@ -22556,7 +22558,7 @@ var Diagram = function () {
           _this2.configure_tick(group, node, link, path, label);
 
           _this2.cola.start();
-          if (_this2.bundle) {
+          if (_this2.options.bundle) {
             _link2.default.shift_bundle(link, path, label);
           }
           _this2.ticks_forward(1);
@@ -22583,7 +22585,7 @@ var Diagram = function () {
   }, {
     key: 'ticks_forward',
     value: function ticks_forward(count) {
-      count = count || this.max_ticks;
+      count = count || this.options.max_ticks;
 
       for (var i = 0; i < count; i++) {
         this.cola.tick();
@@ -22625,7 +22627,7 @@ var Diagram = function () {
   }, {
     key: 'display_load_message',
     value: function display_load_message() {
-      this.indicator = this.svg.append('text').attr('x', this.width / 2).attr('y', this.height / 2).attr('dy', '.35em').style('text-anchor', 'middle').text('Simulating. Just a moment ...');
+      this.indicator = this.svg.append('text').attr('x', this.options.width / 2).attr('y', this.options.height / 2).attr('dy', '.35em').style('text-anchor', 'middle').text('Simulating. Just a moment ...');
     }
   }, {
     key: 'hide_load_message',

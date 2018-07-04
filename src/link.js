@@ -1,6 +1,6 @@
 import MetaData from './meta_data';
 import Node from './node';
-import { classify } from './util';
+import {classify} from './util';
 
 class Link {
   constructor(data, id, meta_keys, link_width) {
