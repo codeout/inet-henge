@@ -123,13 +123,13 @@ class Diagram {
         this.configure_tick(group, node, link);
 
         const position = PositionCache.load();
-        if (this.options.position_cache && position.match(data, this.pop)) {
+        if (this.options.position_cache && position.match(data, this.options.group_pattern)) {
           Group.set_position(group, position.group);
           Node.set_position(node, position.node);
           Link.set_position(link, position.link);
         } else {
           this.ticks_forward();
-          this.save_position(group, node, link, data, this.pop);
+          this.save_position(group, node, link, data, this.options.group_pattern);
         }
 
         this.hide_load_message();
