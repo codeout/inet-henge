@@ -141,7 +141,6 @@ class Diagram {
         if (this.options.bundle) {
           Link.shift_bundle(link, path, label);
         }
-        this.ticks_forward(1);
 
         path.attr('d', (d) => d.d());  // make sure path calculation is done
         this.freeze(node);
