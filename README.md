@@ -173,10 +173,14 @@ new Diagram('#diagram', 'index.json').init('loopback');
 ```json
 {
   "nodes": [
-    { "name": "Node 1", "meta": { "loopback": "10.0.0.1" } }
-  ]
+    { "name": "Node 1", "meta": { "loopback": "10.0.0.1" } },
+    ...
+  ],
+  ...
 }
 ```
+
+![Label on node](example/images/node_label.png)
 
 To place link and interface names:
 
@@ -184,7 +188,9 @@ To place link and interface names:
 new Diagram('#diagram', 'index.json').init('bandwidth', 'intf-name');
 ```
 
-```json
+```js
+{
+  ...
   "links": [
     {
       "source": "Node 1", "target": "Node 2",
@@ -192,9 +198,12 @@ new Diagram('#diagram', 'index.json').init('bandwidth', 'intf-name');
         "bandwidth": "10G",
         "intf-name": { "source": "interface A", "target": "interface B" }
       }
-    }
+    },
+    ...
   ]
 ```
+
+![Label on link](example/images/link_label.png)
 
 
 ### Link Width
@@ -210,6 +219,8 @@ diagram.link_width(function (link) {
     return 10; // px
   else if (link.bandwidth === '10G')
     return 3;  // px
+  else if (link.bandwidth === '1G')
+    return 1;  // px
 });
 diagram.init('bandwidth');
 ```
@@ -221,6 +232,8 @@ diagram.init('bandwidth');
     { "source": "Node 2", "target": "Node 3", "meta": { "bandwidth": "100G" }}
   ]
 ```
+
+![Link width](example/images/link_width.png)
 
 :warning: Make sure no stylesheet overrides customized link widths. :warning:
 
@@ -264,6 +277,17 @@ You can display multiple links between nodes by setting `bundle: true` in constr
 ![Bundle example](example/images/bundle.png)
 
 Nodes are connected to each other with a single link by default.
+
+### Save positions after dragging nodes
+
+You can save positions of all nodes in browser even after dragging them by setting `positionCache: 'fixed'` in constructor like:
+
+```html
+<script>
+ var diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, positionCache: 'fixed'});
+ diagram.init('loopback', 'interface');
+</script>
+```
 
 
 ## Contributing
