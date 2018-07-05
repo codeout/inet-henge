@@ -17,7 +17,7 @@ class Link {
     else
       this.width = link_width || 3;
 
-    this.bundle_gap = 15;
+    this.default_margin = 15;
     this.label_x_offset = 20;
     this.label_y_offset = 1.5; // em
     this.color = '#7a4e4e';
@@ -39,6 +39,26 @@ class Link {
 
   path_id() {
     return `path${this.id}`;
+  }
+
+  link_id() {
+    return `link${this.id}`;
+  }
+
+  margin() {
+    if (!this._margin) {
+      const margin = window.getComputedStyle(document.getElementById(this.link_id())).margin;
+
+      // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
+      // or "0px" even when not defined in .css
+      if (!margin || margin === '0px') {
+        this._margin = this.default_margin;
+      } else {
+        this._margin = parseInt(margin);
+      }
+    }
+
+    return this._margin;
   }
 
   // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
@@ -100,7 +120,8 @@ class Link {
       .attr('x2', (d) => d.target.x)
       .attr('y2', (d) => d.target.y)
       .attr('stroke', (d) => d.color)
-      .attr('stroke-width', (d) => d.width);
+      .attr('stroke-width', (d) => d.width)
+      .attr('id', (d) => d.link_id());
 
     const path = group.append('path')
       .attr('class', 'path')
@@ -208,7 +229,7 @@ class Link {
   }
 
   shift_bundle(multiplier) {
-    const gap = this.bundle_gap * multiplier;
+    const gap = this.margin() * multiplier;
     const width = this.target.x - this.source.x;
     const height = this.source.y - this.target.y;
     const length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
