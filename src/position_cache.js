@@ -1,12 +1,11 @@
 const crypto = require('crypto');
 
 class PositionCache {
-  constructor(group, node, link, data, pop, sha1) {
-    this.group = group;
-    this.node = node;
-    this.link = link;
+  constructor(data, pop, sha1, group, node, link) {
     this.data = data;
     this.pop = pop;
+
+    // NOTE: properties below can be undefined
     this.cached_sha1 = sha1;
   }
 
@@ -18,13 +17,13 @@ class PositionCache {
     return this.get_all()[location.pathname] || {};
   }
 
-  save() {
+  save(group, node, link) {
     const cache = PositionCache.get_all();
     cache[location.pathname] = {
       sha1: this.sha1(),
-      group: this.group_position(),
-      node: this.node_position(),
-      link: this.link_position()
+      group: this.group_position(group),
+      node: this.node_position(node),
+      link: this.link_position(link)
     };
 
     localStorage.setItem('position_cache', JSON.stringify(cache));
@@ -32,7 +31,13 @@ class PositionCache {
 
   sha1(data, pop) {
     data = Object.assign({}, data || this.data);
-    data.pop = pop || this.pop || null;  // NOTE: unify undefined with null
+    data.pop = pop || this.pop;
+    if (data.pop) {
+      data.pop = data.pop.toString();
+    } else {
+      data.pop = null;  // NOTE: unify undefined with null
+    }
+
     data.nodes && data.nodes.forEach((i) => {
       delete i.icon;
       delete i.meta;
@@ -46,10 +51,10 @@ class PositionCache {
     return sha1.digest('hex');
   }
 
-  group_position() {
+  group_position(group) {
     const position = [];
 
-    this.group.each((d) => {
+    group.each((d) => {
       position.push({
         x: d.bounds.x,
         y: d.bounds.y,
@@ -61,10 +66,10 @@ class PositionCache {
     return position;
   }
 
-  node_position() {
+  node_position(node) {
     const position = [];
 
-    this.node.each((d) => {
+    node.each((d) => {
       position.push({
         x: d.x,
         y: d.y
@@ -74,10 +79,10 @@ class PositionCache {
     return position;
   }
 
-  link_position() {
+  link_position(link) {
     const position = [];
 
-    this.link.each((d) => {
+    link.each((d) => {
       position.push({
         x1: d.source.x,
         y1: d.source.y,
@@ -93,12 +98,17 @@ class PositionCache {
     return this.cached_sha1 === this.sha1(data, pop);
   }
 
-  static load() {
+  static load(data, pop) {
     const cache = this.get();
     if (cache) {
-      return new PositionCache(cache.group, cache.node, cache.link, null, null, cache.sha1);
-    } else {
-      return new PositionCache();
+      const position = new PositionCache(data, pop, cache.sha1);
+      if (position.match(data, pop)) {  // if data and pop match saved sha1
+        position.group = cache.group;
+        position.node = cache.node;
+        position.link = cache.link;
+
+        return position;
+      }
     }
   }
 }
