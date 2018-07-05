@@ -14521,7 +14521,7 @@ module.exports={
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.0.tgz",
   "_shasum": "cac9af8762c85836187003c8dfe193e5e2eae5df",
   "_spec": "elliptic@^6.0.0",
-  "_where": "/Users/koji/darwin/wip/js/inet-henge/inet-henge/node_modules/browserify-sign",
+  "_where": "/Users/koji/darwin/wip/js/inet-henge/node_modules/browserify-sign",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -22881,7 +22881,7 @@ var Link = function () {
 
     if (typeof link_width === 'function') this.width = link_width(data.meta) || 3;else this.width = link_width || 3;
 
-    this.bundle_gap = 15;
+    this.default_margin = 15;
     this.label_x_offset = 20;
     this.label_y_offset = 1.5; // em
     this.color = '#7a4e4e';
@@ -22908,6 +22908,28 @@ var Link = function () {
     key: 'path_id',
     value: function path_id() {
       return 'path' + this.id;
+    }
+  }, {
+    key: 'link_id',
+    value: function link_id() {
+      return 'link' + this.id;
+    }
+  }, {
+    key: 'margin',
+    value: function margin() {
+      if (!this._margin) {
+        var margin = window.getComputedStyle(document.getElementById(this.link_id())).margin;
+
+        // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
+        // or "0px" even when not defined in .css
+        if (!margin || margin === '0px') {
+          this._margin = this.default_margin;
+        } else {
+          this._margin = parseInt(margin);
+        }
+      }
+
+      return this._margin;
     }
 
     // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
@@ -22966,7 +22988,7 @@ var Link = function () {
   }, {
     key: 'shift_bundle',
     value: function shift_bundle(multiplier) {
-      var gap = this.bundle_gap * multiplier;
+      var gap = this.margin() * multiplier;
       var width = this.target.x - this.source.x;
       var height = this.source.y - this.target.y;
       var length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
@@ -22992,6 +23014,8 @@ var Link = function () {
         return d.color;
       }).attr('stroke-width', function (d) {
         return d.width;
+      }).attr('id', function (d) {
+        return d.link_id();
       });
 
       var path = group.append('path').attr('class', 'path').attr('d', function (d) {
