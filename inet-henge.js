@@ -22475,7 +22475,8 @@ var Diagram = function () {
     value: function init_svg() {
       var _this = this;
 
-      var container = d3.select(this.options.selector).append('svg').attr('width', this.options.width).attr('height', this.options.height).append('g').call(d3.behavior.zoom().on('zoom', function () {
+      this.zoom = d3.behavior.zoom();
+      var container = d3.select(this.options.selector).append('svg').attr('width', this.options.width).attr('height', this.options.height).append('g').call(this.zoom.on('zoom', function () {
         return _this.zoom_callback(container);
       })).append('g');
 
@@ -22654,6 +22655,15 @@ var Diagram = function () {
     key: 'save_position',
     value: function save_position(group, node, link) {
       this.position_cache.save(group, node, link);
+    }
+  }, {
+    key: 'attr',
+    value: function attr(name, value) {
+      this.svg.attr(name, value);
+
+      var transform = d3.transform(this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
+      this.zoom.scale(transform.scale[0]); // NOTE: Assuming ky = kx
+      this.zoom.translate(transform.translate);
     }
   }]);
 
