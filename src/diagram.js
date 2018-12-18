@@ -23,6 +23,9 @@ class Diagram {
     this.options.bundle = 'bundle' in options ? options.bundle : false;
 
     this.set_distance = this.link_distance(options.distance || 150);
+
+    // Create events
+    this.dispatch = d3.dispatch('rendered');
   }
 
   link_distance(distance) {
@@ -150,6 +153,7 @@ class Diagram {
 
         path.attr('d', (d) => d.d()); // make sure path calculation is done
         this.freeze(node);
+        this.dispatch.rendered();
 
         // NOTE: This is an experimental option
         if (this.options.position_cache === 'fixed') {
@@ -236,6 +240,10 @@ class Diagram {
     const transform = d3.transform(this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
     this.zoom.scale(transform.scale[0]); // NOTE: Assuming ky = kx
     this.zoom.translate(transform.translate);
+  }
+
+  on(name, callback) {
+    this.dispatch.on(name, callback);
   }
 }
 
