@@ -236,7 +236,6 @@ class Diagram {
     const transform = d3.transform(this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
     this.zoom.scale(transform.scale[0]); // NOTE: Assuming ky = kx
     this.zoom.translate(transform.translate);
-
   }
 }
 
