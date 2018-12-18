@@ -22428,6 +22428,9 @@ var Diagram = function () {
     this.options.bundle = 'bundle' in options ? options.bundle : false;
 
     this.set_distance = this.link_distance(options.distance || 150);
+
+    // Create events
+    this.dispatch = d3.dispatch('rendered');
   }
 
   _createClass(Diagram, [{
@@ -22562,6 +22565,7 @@ var Diagram = function () {
             return d.d();
           }); // make sure path calculation is done
           _this2.freeze(node);
+          _this2.dispatch.rendered();
 
           // NOTE: This is an experimental option
           if (_this2.options.position_cache === 'fixed') {
@@ -22654,6 +22658,11 @@ var Diagram = function () {
       var transform = d3.transform(this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
       this.zoom.scale(transform.scale[0]); // NOTE: Assuming ky = kx
       this.zoom.translate(transform.translate);
+    }
+  }, {
+    key: 'on',
+    value: function on(name, callback) {
+      this.dispatch.on(name, callback);
     }
   }]);
 
