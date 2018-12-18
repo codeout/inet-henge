@@ -35,7 +35,7 @@ class PositionCache {
     if (data.pop) {
       data.pop = data.pop.toString();
     } else {
-      data.pop = null;  // NOTE: unify undefined with null
+      data.pop = null; // NOTE: unify undefined with null
     }
 
     data.nodes && data.nodes.forEach((i) => {
@@ -102,7 +102,7 @@ class PositionCache {
     const cache = this.get();
     if (cache) {
       const position = new PositionCache(data, pop, cache.sha1);
-      if (position.match(data, pop)) {  // if data and pop match saved sha1
+      if (position.match(data, pop)) { // if data and pop match saved sha1
         position.group = cache.group;
         position.node = cache.node;
         position.link = cache.link;

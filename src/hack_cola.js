@@ -1,3 +1,4 @@
+/* eslint-disable */
 // ported from WebCola/cola.js
 
 function unionCount(a, b) {
