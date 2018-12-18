@@ -114,6 +114,7 @@ class Link {
       .attr('class', 'path-group');
 
     const link = group.append('line')
+      // eslint-disable-next-line max-len
       .attr('class', (d) => `link ${classify(d.source.name)} ${classify(d.target.name)} ${classify(d.source.name)}-${classify(d.target.name)} ${d.extra_class}`)
       .attr('x1', (d) => d.source.x)
       .attr('y1', (d) => d.source.y)
@@ -150,7 +151,7 @@ class Link {
         Link.the_other_end(this);
     });
 
-    Link.zoom();  // Initialize
+    Link.zoom(); // Initialize
     return [link, path, text];
   }
 

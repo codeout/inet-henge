@@ -62,7 +62,7 @@ class Diagram {
       ).append('g');
 
     container.append('rect')
-      .attr('width', this.options.width * 10)   // 10 is huge enough
+      .attr('width', this.options.width * 10) // 10 is huge enough
       .attr('height', this.options.height * 10)
       .attr('transform', `translate(-${this.options.width * 5}, -${this.options.height * 5})`)
       .style('opacity', 0);
@@ -148,7 +148,7 @@ class Diagram {
           Link.shift_bundle(link, path, label);
         }
 
-        path.attr('d', (d) => d.d());  // make sure path calculation is done
+        path.attr('d', (d) => d.d()); // make sure path calculation is done
         this.freeze(node);
 
         // NOTE: This is an experimental option
@@ -190,8 +190,8 @@ class Diagram {
 
   zoom_callback(container) {
     if (!this.initial_translate) {
-      const transform = d3.transform(this.svg.attr('transform'));  // FIXME: This is valid only for d3.js v3
-      this.initial_scale = transform.scale[0];  // NOTE: Assuming ky = kx
+      const transform = d3.transform(this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
+      this.initial_scale = transform.scale[0]; // NOTE: Assuming ky = kx
       this.initial_translate = transform.translate;
     }
 
@@ -233,8 +233,8 @@ class Diagram {
   attr(name, value) {
     this.svg.attr(name, value);
 
-    const transform = d3.transform(this.svg.attr('transform'));  // FIXME: This is valid only for d3.js v3
-    this.zoom.scale(transform.scale[0]);  // NOTE: Assuming ky = kx
+    const transform = d3.transform(this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
+    this.zoom.scale(transform.scale[0]); // NOTE: Assuming ky = kx
     this.zoom.translate(transform.translate);
 
   }
