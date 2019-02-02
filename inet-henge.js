@@ -22383,6 +22383,8 @@ exports.createContext = Script.createContext = function (context) {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _group = require('./group');
@@ -22408,14 +22410,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Diagram = function () {
-  function Diagram(container, url, options) {
+  function Diagram(container, urlOrData, options) {
     _classCallCheck(this, Diagram);
 
     options = options || {};
 
     this.options = {};
     this.options.selector = container;
-    this.options.url = url;
+    this.options.urlOrData = urlOrData;
     this.options.group_pattern = options.pop;
     this.options.width = options.width || 960;
     this.options.height = options.height || 600;
@@ -22455,6 +22457,8 @@ var Diagram = function () {
   }, {
     key: 'init',
     value: function init() {
+      var _this = this;
+
       for (var _len = arguments.length, meta = Array(_len), _key = 0; _key < _len; _key++) {
         meta[_key] = arguments[_key];
       }
@@ -22463,7 +22467,20 @@ var Diagram = function () {
       this.cola = this.init_cola();
       this.svg = this.init_svg();
 
-      this.render();
+      this.display_load_message();
+
+      if (_typeof(this.options.urlOrData) === 'object') {
+        this.render(this.options.urlOrData);
+      } else {
+        d3.json(this.url(), function (error, data) {
+          if (error) {
+            console.error(error);
+            _this.show_message('Failed to load "' + _this.url() + '"');
+          }
+
+          _this.render(data);
+        });
+      }
     }
   }, {
     key: 'init_cola',
@@ -22473,11 +22490,11 @@ var Diagram = function () {
   }, {
     key: 'init_svg',
     value: function init_svg() {
-      var _this = this;
+      var _this2 = this;
 
       this.zoom = d3.behavior.zoom();
       var container = d3.select(this.options.selector).append('svg').attr('width', this.options.width).attr('height', this.options.height).append('g').call(this.zoom.on('zoom', function () {
-        return _this.zoom_callback(container);
+        return _this2.zoom_callback(container);
       })).append('g');
 
       container.append('rect').attr('width', this.options.width * 10) // 10 is huge enough
@@ -22492,99 +22509,90 @@ var Diagram = function () {
         return this.unique_url;
       }
 
-      this.unique_url = this.options.url + '?' + new Date().getTime();
+      this.unique_url = this.options.urlOrData + '?' + new Date().getTime();
       return this.unique_url;
     }
   }, {
     key: 'render',
-    value: function render() {
-      var _this2 = this;
+    value: function render(data) {
+      var _this3 = this;
 
-      this.display_load_message();
+      try {
+        var nodes = data.nodes ? data.nodes.map(function (n, i) {
+          return new _node2.default(n, i, _this3.options.meta, _this3.options.color);
+        }) : [];
+        var links = data.links ? data.links.map(function (l, i) {
+          return new _link2.default(l, i, _this3.options.meta, _this3.get_link_width);
+        }) : [];
+        var groups = _group2.default.divide(nodes, this.options.group_pattern, this.options.color);
 
-      d3.json(this.url(), function (error, data) {
-        if (error) {
-          console.error(error);
-          _this2.show_message('Failed to load "' + _this2.url() + '"');
-        }
+        this.cola.nodes(nodes).links(links).groups(groups);
+        this.set_distance(this.cola);
+        this.cola.start();
 
-        try {
-          var nodes = data.nodes ? data.nodes.map(function (n, i) {
-            return new _node2.default(n, i, _this2.options.meta, _this2.options.color);
-          }) : [];
-          var links = data.links ? data.links.map(function (l, i) {
-            return new _link2.default(l, i, _this2.options.meta, _this2.get_link_width);
-          }) : [];
-          var groups = _group2.default.divide(nodes, _this2.options.group_pattern, _this2.options.color);
-
-          _this2.cola.nodes(nodes).links(links).groups(groups);
-          _this2.set_distance(_this2.cola);
-          _this2.cola.start();
-
-          var link, path, label;
-          var group = _group2.default.render(_this2.svg, groups).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
-            if (_this2.options.bundle) {
-              _link2.default.shift_bundle(link, path, label);
-            }
-          }));
-
-          var _Link$render_links = _link2.default.render_links(_this2.svg, links);
-
-          var _Link$render_links2 = _slicedToArray(_Link$render_links, 3);
-
-          link = _Link$render_links2[0];
-          path = _Link$render_links2[1];
-          label = _Link$render_links2[2];
-
-          var node = _node2.default.render(_this2.svg, nodes).call(_this2.cola.drag().on('dragstart', _this2.dragstart_callback).on('drag', function (d) {
-            if (_this2.options.bundle) {
-              _link2.default.shift_bundle(link, path, label);
-            }
-          }));
-
-          // without path calculation
-          _this2.configure_tick(group, node, link);
-
-          _this2.position_cache = _position_cache2.default.load(data, _this2.options.group_pattern);
-          if (_this2.options.position_cache && _this2.position_cache) {
-            // NOTE: Evaluate only when positionCache: true or 'fixed', and
-            //       when the stored position cache matches pair of given data and pop
-            _group2.default.set_position(group, _this2.position_cache.group);
-            _node2.default.set_position(node, _this2.position_cache.node);
-            _link2.default.set_position(link, _this2.position_cache.link);
-          } else {
-            _this2.ticks_forward();
-            _this2.position_cache = new _position_cache2.default(data, _this2.options.group_pattern);
-            _this2.save_position(group, node, link);
-          }
-
-          _this2.hide_load_message();
-
-          // render path
-          _this2.configure_tick(group, node, link, path, label);
-
-          _this2.cola.start();
-          if (_this2.options.bundle) {
+        var link, path, label;
+        var group = _group2.default.render(this.svg, groups).call(this.cola.drag().on('dragstart', this.dragstart_callback).on('drag', function (d) {
+          if (_this3.options.bundle) {
             _link2.default.shift_bundle(link, path, label);
           }
+        }));
 
-          path.attr('d', function (d) {
-            return d.d();
-          }); // make sure path calculation is done
-          _this2.freeze(node);
-          _this2.dispatch.rendered();
+        var _Link$render_links = _link2.default.render_links(this.svg, links);
 
-          // NOTE: This is an experimental option
-          if (_this2.options.position_cache === 'fixed') {
-            _this2.cola.on('end', function () {
-              _this2.save_position(group, node, link);
-            });
+        var _Link$render_links2 = _slicedToArray(_Link$render_links, 3);
+
+        link = _Link$render_links2[0];
+        path = _Link$render_links2[1];
+        label = _Link$render_links2[2];
+
+        var node = _node2.default.render(this.svg, nodes).call(this.cola.drag().on('dragstart', this.dragstart_callback).on('drag', function (d) {
+          if (_this3.options.bundle) {
+            _link2.default.shift_bundle(link, path, label);
           }
-        } catch (e) {
-          _this2.show_message(e);
-          throw e;
+        }));
+
+        // without path calculation
+        this.configure_tick(group, node, link);
+
+        this.position_cache = _position_cache2.default.load(data, this.options.group_pattern);
+        if (this.options.position_cache && this.position_cache) {
+          // NOTE: Evaluate only when positionCache: true or 'fixed', and
+          //       when the stored position cache matches pair of given data and pop
+          _group2.default.set_position(group, this.position_cache.group);
+          _node2.default.set_position(node, this.position_cache.node);
+          _link2.default.set_position(link, this.position_cache.link);
+        } else {
+          this.ticks_forward();
+          this.position_cache = new _position_cache2.default(data, this.options.group_pattern);
+          this.save_position(group, node, link);
         }
-      });
+
+        this.hide_load_message();
+
+        // render path
+        this.configure_tick(group, node, link, path, label);
+
+        this.cola.start();
+        if (this.options.bundle) {
+          _link2.default.shift_bundle(link, path, label);
+        }
+
+        path.attr('d', function (d) {
+          return d.d();
+        }); // make sure path calculation is done
+        this.freeze(node);
+        this.dispatch.rendered();
+
+        // NOTE: This is an experimental option
+        if (this.options.position_cache === 'fixed') {
+          this.cola.on('end', function () {
+            _this3.save_position(group, node, link);
+          });
+        }
+      } catch (e) {
+        this.show_message(e);
+        throw e;
+      }
     }
   }, {
     key: 'configure_tick',

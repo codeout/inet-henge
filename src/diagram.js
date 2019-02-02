@@ -5,12 +5,12 @@ import PositionCache from './position_cache';
 import './hack_cola';
 
 class Diagram {
-  constructor(container, url, options) {
+  constructor(container, urlOrData, options) {
     options = options || {};
 
     this.options = {};
     this.options.selector = container;
-    this.options.url = url;
+    this.options.urlOrData = urlOrData;
     this.options.group_pattern = options.pop;
     this.options.width = options.width || 960;
     this.options.height = options.height || 600;
@@ -48,7 +48,20 @@ class Diagram {
     this.cola = this.init_cola();
     this.svg = this.init_svg();
 
-    this.render();
+    this.display_load_message();
+
+    if (typeof this.options.urlOrData === 'object') {
+      this.render(this.options.urlOrData);
+    } else {
+      d3.json(this.url(), (error, data) => {
+        if (error) {
+          console.error(error);
+          this.show_message(`Failed to load "${this.url()}"`);
+        }
+
+        this.render(data);
+      });
+    }
   }
 
   init_cola() {
@@ -82,94 +95,85 @@ class Diagram {
       return this.unique_url;
     }
 
-    this.unique_url = `${this.options.url}?${new Date().getTime()}`;
+    this.unique_url = `${this.options.urlOrData}?${new Date().getTime()}`;
     return this.unique_url;
   }
 
-  render() {
-    this.display_load_message();
+  render(data) {
+    try {
+      const nodes = data.nodes ?
+        data.nodes.map((n, i) => new Node(n, i, this.options.meta, this.options.color)) : [];
+      const links = data.links ?
+        data.links.map((l, i) => new Link(l, i, this.options.meta, this.get_link_width)) : [];
+      const groups = Group.divide(nodes, this.options.group_pattern, this.options.color);
 
-    d3.json(this.url(), (error, data) => {
-      if (error) {
-        console.error(error);
-        this.show_message(`Failed to load "${this.url()}"`);
+      this.cola.nodes(nodes)
+        .links(links)
+        .groups(groups);
+      this.set_distance(this.cola);
+      this.cola.start();
+
+      var link, path, label;
+      const group = Group.render(this.svg, groups).call(
+        this.cola.drag()
+          .on('dragstart', this.dragstart_callback)
+          .on('drag', (d) => {
+            if (this.options.bundle) {
+              Link.shift_bundle(link, path, label);
+            }
+          })
+      );
+      [link, path, label] = Link.render_links(this.svg, links);
+      const node = Node.render(this.svg, nodes).call(
+        this.cola.drag()
+          .on('dragstart', this.dragstart_callback)
+          .on('drag', (d) => {
+            if (this.options.bundle) {
+              Link.shift_bundle(link, path, label);
+            }
+          })
+      );
+
+      // without path calculation
+      this.configure_tick(group, node, link);
+
+      this.position_cache = PositionCache.load(data, this.options.group_pattern);
+      if (this.options.position_cache && this.position_cache) {
+        // NOTE: Evaluate only when positionCache: true or 'fixed', and
+        //       when the stored position cache matches pair of given data and pop
+        Group.set_position(group, this.position_cache.group);
+        Node.set_position(node, this.position_cache.node);
+        Link.set_position(link, this.position_cache.link);
+      } else {
+        this.ticks_forward();
+        this.position_cache = new PositionCache(data, this.options.group_pattern);
+        this.save_position(group, node, link);
       }
 
-      try {
-        const nodes = data.nodes ?
-          data.nodes.map((n, i) => new Node(n, i, this.options.meta, this.options.color)) : [];
-        const links = data.links ?
-          data.links.map((l, i) => new Link(l, i, this.options.meta, this.get_link_width)) : [];
-        const groups = Group.divide(nodes, this.options.group_pattern, this.options.color);
+      this.hide_load_message();
 
-        this.cola.nodes(nodes)
-          .links(links)
-          .groups(groups);
-        this.set_distance(this.cola);
-        this.cola.start();
+      // render path
+      this.configure_tick(group, node, link, path, label);
 
-        var link, path, label;
-        const group = Group.render(this.svg, groups).call(
-          this.cola.drag()
-            .on('dragstart', this.dragstart_callback)
-            .on('drag', (d) => {
-              if (this.options.bundle) {
-                Link.shift_bundle(link, path, label);
-              }
-            })
-        );
-        [link, path, label] = Link.render_links(this.svg, links);
-        const node = Node.render(this.svg, nodes).call(
-          this.cola.drag()
-            .on('dragstart', this.dragstart_callback)
-            .on('drag', (d) => {
-              if (this.options.bundle) {
-                Link.shift_bundle(link, path, label);
-              }
-            })
-        );
+      this.cola.start();
+      if (this.options.bundle) {
+        Link.shift_bundle(link, path, label);
+      }
 
-        // without path calculation
-        this.configure_tick(group, node, link);
+      path.attr('d', (d) => d.d()); // make sure path calculation is done
+      this.freeze(node);
+      this.dispatch.rendered();
 
-        this.position_cache = PositionCache.load(data, this.options.group_pattern);
-        if (this.options.position_cache && this.position_cache) {
-          // NOTE: Evaluate only when positionCache: true or 'fixed', and
-          //       when the stored position cache matches pair of given data and pop
-          Group.set_position(group, this.position_cache.group);
-          Node.set_position(node, this.position_cache.node);
-          Link.set_position(link, this.position_cache.link);
-        } else {
-          this.ticks_forward();
-          this.position_cache = new PositionCache(data, this.options.group_pattern);
+      // NOTE: This is an experimental option
+      if (this.options.position_cache === 'fixed') {
+        this.cola.on('end', () => {
           this.save_position(group, node, link);
-        }
-
-        this.hide_load_message();
-
-        // render path
-        this.configure_tick(group, node, link, path, label);
-
-        this.cola.start();
-        if (this.options.bundle) {
-          Link.shift_bundle(link, path, label);
-        }
-
-        path.attr('d', (d) => d.d()); // make sure path calculation is done
-        this.freeze(node);
-        this.dispatch.rendered();
-
-        // NOTE: This is an experimental option
-        if (this.options.position_cache === 'fixed') {
-          this.cola.on('end', () => {
-            this.save_position(group, node, link);
-          });
-        }
-      } catch (e) {
-        this.show_message(e);
-        throw e;
+        });
       }
-    });
+    } catch (e) {
+      this.show_message(e);
+      throw e;
+    }
   }
 
   configure_tick(group, node, link, path, label) {
