@@ -5,12 +5,12 @@ import PositionCache from './position_cache';
 import './hack_cola';
 
 class Diagram {
-  constructor(container, url, options) {
+  constructor(container, urlOrData, options) {
     options = options || {};
 
     this.options = {};
     this.options.selector = container;
-    this.options.url = url;
+    this.options.urlOrData = urlOrData;
     this.options.group_pattern = options.pop;
     this.options.width = options.width || 960;
     this.options.height = options.height || 600;
@@ -50,14 +50,18 @@ class Diagram {
 
     this.display_load_message();
 
-    d3.json(this.url(), (error, data) => {
-      if (error) {
-        console.error(error);
-        this.show_message(`Failed to load "${this.url()}"`);
-      }
+    if (typeof this.options.urlOrData === 'object') {
+      this.render(this.options.urlOrData);
+    } else {
+      d3.json(this.url(), (error, data) => {
+        if (error) {
+          console.error(error);
+          this.show_message(`Failed to load "${this.url()}"`);
+        }
 
-      this.render(data);
-    });
+        this.render(data);
+      });
+    }
   }
 
   init_cola() {
@@ -91,7 +95,7 @@ class Diagram {
       return this.unique_url;
     }
 
-    this.unique_url = `${this.options.url}?${new Date().getTime()}`;
+    this.unique_url = `${this.options.urlOrData}?${new Date().getTime()}`;
     return this.unique_url;
   }
 

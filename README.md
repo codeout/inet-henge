@@ -103,6 +103,19 @@ and render your network diagram:
 </html>
 ```
 
+Object is also acceptable:
+
+```html
+  <script>
+    var data = {
+      "nodes": [{ "name": "A" }, { "name": "B" }],
+      "links": [{ "source": "A", "target": "B" }]
+    };
+   new Diagram('#diagram', data).init('interface');
+  </script>
+</html>
+```
+
 inet-henge.js renders your network diagram as SVG within ```<div id="diagram"></div>```. In the example above the diagram also displays metadata labelled ```'interface'``` which defined in JSON data.
 
 ![Shownet2016 example](example/images/shownet.png)
