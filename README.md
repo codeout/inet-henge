@@ -208,11 +208,13 @@ new Diagram('#diagram', 'index.json').init('bandwidth', 'intf-name');
 
 ### Link Width
 
-You can use ```link_width()``` API to customize link widths. The argument should be a function which calculates metadata and returns value for ```stroke-width``` of SVG.
+You can use ```linkWidth()``` API to customize link widths. The argument should be a function which calculates metadata and returns value for ```stroke-width``` of SVG.
+
+:warning: Deprecation Warning: Use ```linkWidth()``` instead of ```link_width()``` :warning:
 
 ```js
 var diagram = new Diagram('#diagram', 'index.json');
-diagram.link_width(function (link) {
+diagram.linkWidth(function (link) {
   if (!link)
     return 1;  // px
   else if (link.bandwidth === '100G')
@@ -300,4 +302,4 @@ Or send a pull request to fix.
 
 ## Copyright and License
 
-Copyright (c) 2018 Shintaro Kojima. Code released under the [MIT license](LICENSE).
+Copyright (c) 2019 Shintaro Kojima. Code released under the [MIT license](LICENSE).

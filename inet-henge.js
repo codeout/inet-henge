@@ -22441,9 +22441,16 @@ var Diagram = function () {
       };
     }
   }, {
+    key: 'linkWidth',
+    value: function linkWidth(func) {
+      this.get_link_width = func;
+    }
+  }, {
     key: 'link_width',
     value: function link_width(func) {
-      this.get_link_width = func;
+      // Deprecated
+      console.warn('link_width() is deprecated. Use linkWidth()');
+      this.linkWidth(func);
     }
   }, {
     key: 'init',

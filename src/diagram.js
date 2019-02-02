@@ -35,8 +35,12 @@ class Diagram {
       return (cola) => cola.linkDistance(distance);
   }
 
-  link_width(func) {
+  linkWidth(func) {
     this.get_link_width = func;
+  }
+  link_width(func) { // Deprecated
+    console.warn('link_width() is deprecated. Use linkWidth()');
+    this.linkWidth(func);
   }
 
   init(...meta) {
