@@ -304,6 +304,19 @@ You can save positions of all nodes in browser even after dragging them by setti
 </script>
 ```
 
+### Internal groups
+
+You can display node type based groups in POP-based [Node group](#Node-Group) by `group` definition in each node.
+
+```json
+  "nodes": [
+    { "name": "POP01-bb01", "group": "core", "icon": "./images/router.png" },
+    { "name": "POP01-bb02", "group": "core", "icon": "./images/router.png" },
+    ...
+```
+
+![Internal group](example/images/internal_group.png)
+
 
 ## Contributing
 
