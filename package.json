@@ -30,7 +30,7 @@
     "babelify": "^8.0.0",
     "browserify": "^16.2.3",
     "eslint": "^5.10.0",
-    "watchify": "^3.7.0"
+    "watchify": "^3.11.1"
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint src",
