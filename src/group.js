@@ -31,14 +31,18 @@ class Group {
       groups[key].push(node);
     };
 
-    if (pattern)
-      nodes.forEach((node) => {
-        const result = node.name.match(pattern);
+    nodes.forEach((node) => {
+      let result = null;
+
+      if (pattern) {
+        result = node.name.match(pattern);
         if (result)
           register(result[1] || result[0], node);
+      }
 
-        node.group.forEach((name) => register(name, node, result));
-      });
+      // Node type based group
+      node.group.forEach((name) => register(name, node, result));
+    });
 
     return this.array(groups);
   }
