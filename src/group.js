@@ -37,6 +37,7 @@ class Group {
         if (result)
           register(result[1] || result[0], node);
 
+        // Node type based group
         node.group.forEach((name) => register(name, node, result));
       });
 
