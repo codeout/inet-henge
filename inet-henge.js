@@ -22734,9 +22734,13 @@ var Group = function () {
         groups[key].push(node);
       };
 
-      if (pattern) nodes.forEach(function (node) {
-        var result = node.name.match(pattern);
-        if (result) register(result[1] || result[0], node);
+      nodes.forEach(function (node) {
+        var result = null;
+
+        if (pattern) {
+          result = node.name.match(pattern);
+          if (result) register(result[1] || result[0], node);
+        }
 
         // Node type based group
         node.group.forEach(function (name) {
