@@ -272,6 +272,20 @@ inet-henge caches a calculated position of nodes, groups, and links for the next
 var diagram = new Diagram('#diagram', 'data.json', {positionCache: false});
 ```
 
+### SVG viewport size
+
+You can change svg's viewport size:
+
+```js
+var diagram = new Diagram('#diagram', 'data.json', {width: 1200, height: 600});
+```
+
+This will generate:
+
+```html
+<svg width="1200" height="600">
+```
+
 
 ### Style
 
