@@ -159,6 +159,10 @@ You can specify node icon by URL:
 
 Metadata to display on network diagrams:
 
+```js
+new Diagram('#diagram', 'index.json').init('interface');
+```
+
 ```json
   "links": [
     {
