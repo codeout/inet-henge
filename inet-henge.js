@@ -23304,7 +23304,11 @@ var Node = function () {
   }, {
     key: 'render',
     value: function render(svg, nodes) {
-      var container = svg.selectAll('.node').data(nodes).enter().append('g').attr('transform', function (d) {
+      var container = svg.selectAll('.node').data(nodes).enter().append('g').attr('id', function (d) {
+        return (0, _util.classify)(d.name);
+      }).attr('name', function (d) {
+        return d.name;
+      }).attr('transform', function (d) {
         return d.transform();
       });
 
