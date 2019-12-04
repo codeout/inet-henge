@@ -23020,13 +23020,8 @@ var Link = function () {
     value: function shift_bundle(multiplier) {
       var gap = this.margin() * multiplier;
 
-      // Use negative gap value when source and destination are flipped
-      if (this.source.id > this.target.id) {
-        gap = -1 * gap;
-      }
-
-      var width = this.target.x - this.source.x;
-      var height = this.source.y - this.target.y;
+      var width = Math.abs(this.target.x - this.source.x);
+      var height = Math.abs(this.source.y - this.target.y);
       var length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
 
       return 'translate(' + gap * height / length + ', ' + gap * width / length + ')';
