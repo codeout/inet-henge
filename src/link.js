@@ -230,7 +230,13 @@ class Link {
   }
 
   shift_bundle(multiplier) {
-    const gap = this.margin() * multiplier;
+    let gap = this.margin() * multiplier;
+
+    // Use negative gap value when source and destination are flipped
+    if (this.source.id > this.target.id) {
+      gap = -1 * gap;
+    }
+
     const width = this.target.x - this.source.x;
     const height = this.source.y - this.target.y;
     const length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
