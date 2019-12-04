@@ -57,6 +57,8 @@ class Node {
       .data(nodes)
       .enter()
       .append('g')
+      .attr('id', (d) => classify(d.name))
+      .attr('name', (d) => d.name)
       .attr('transform', (d) => d.transform());
 
     container.each(function (d) {
