@@ -22628,9 +22628,7 @@ var Diagram = function () {
     key: 'zoom_callback',
     value: function zoom_callback(container) {
       if (!this.initial_translate) {
-        var transform = d3.transform(this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
-        this.initial_scale = transform.scale[0]; // NOTE: Assuming ky = kx
-        this.initial_translate = transform.translate;
+        this.save_initial_translate();
       }
 
       d3.event.scale *= this.initial_scale;
@@ -22666,8 +22664,19 @@ var Diagram = function () {
       this.position_cache.save(group, node, link);
     }
   }, {
+    key: 'save_initial_translate',
+    value: function save_initial_translate() {
+      var transform = d3.transform(this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
+      this.initial_scale = transform.scale[0]; // NOTE: Assuming ky = kx
+      this.initial_translate = transform.translate;
+    }
+  }, {
     key: 'attr',
     value: function attr(name, value) {
+      if (!this.initial_translate) {
+        this.save_initial_translate();
+      }
+
       this.svg.attr(name, value);
 
       var transform = d3.transform(this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
