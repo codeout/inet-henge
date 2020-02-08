@@ -116,8 +116,9 @@ class Diagram {
       const groupLayer = this.svg.append('g').attr('id', 'groups');
       const linkLayer = this.svg.append('g').attr('id', 'links');
       const nodeLayer = this.svg.append('g').attr('id', 'nodes');
+      const linkLabelLayer = this.svg.append('g').attr('id', 'link-labels');
 
-      const [link, path, label] = Link.render(linkLayer, links);
+      const [link, path, label] = Link.render(linkLayer, linkLabelLayer, links);
 
       const group = Group.render(groupLayer, groups).call(
         this.cola.drag()

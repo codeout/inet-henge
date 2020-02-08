@@ -11,13 +11,13 @@
 
 .node text { font-size: 10px; }
 
-.link {
+.link line {
   stroke: #7a4e4e;
   stroke-width: 3px;
   stroke-opacity: 1;
 }
 
-.path-label { font-size: 7px; }
+.link text { font-size: 7px; }
 
 
 .loopback,
