@@ -123,7 +123,7 @@ class Diagram {
             }
           })
       );
-      [link, path, label] = Link.render_links(this.svg, links);
+      [link, path, label] = Link.render(this.svg, links);
       const node = Node.render(this.svg, nodes).call(
         this.cola.drag()
           .on('dragstart', this.dragstart_callback)

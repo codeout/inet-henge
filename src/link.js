@@ -106,7 +106,7 @@ class Link {
     return this.meta.length > 0 || this.source_meta.length > 0 || this.target_meta.length > 0;
   }
 
-  static render_links(svg, links) {
+  static render(svg, links) {
     const group = svg.selectAll('.path-group')
       .data(links)
       .enter()
