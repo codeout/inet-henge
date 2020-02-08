@@ -52,8 +52,8 @@ class Node {
     return Node.all[name];
   }
 
-  static render(svg, nodes) {
-    const container = svg.selectAll('.node')
+  static render(layer, nodes) {
+    const container = layer.selectAll('.node')
       .data(nodes)
       .enter()
       .append('g')

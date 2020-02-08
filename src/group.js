@@ -51,8 +51,8 @@ class Group {
     return Object.keys(groups).map((g) => groups[g]);
   }
 
-  static render(svg, groups) {
-    const group = svg.selectAll('.group')
+  static render(layer, groups) {
+    const group = layer.selectAll('.group')
       .data(groups)
       .enter()
       .append('g')
