@@ -122,7 +122,7 @@ class Diagram {
       const group = Group.render(groupLayer, groups).call(
         this.cola.drag()
           .on('dragstart', this.dragstart_callback)
-          .on('drag', (d) => {
+          .on('drag', () => {
             if (this.options.bundle) {
               Link.shift_bundle(link, path, label);
             }
@@ -132,7 +132,7 @@ class Diagram {
       const node = Node.render(nodeLayer, nodes).call(
         this.cola.drag()
           .on('dragstart', this.dragstart_callback)
-          .on('drag', (d) => {
+          .on('drag', () => {
             if (this.options.bundle) {
               Link.shift_bundle(link, path, label);
             }
