@@ -126,7 +126,9 @@ class Link {
       .attr('y2', (d) => d.target.y)
       .attr('stroke', (d) => d.color)
       .attr('stroke-width', (d) => d.width)
-      .attr('id', (d) => d.link_id());
+      .attr('id', (d) => d.link_id())
+      .on('mouseover', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', true))
+      .on('mouseout', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', false));
 
     const path = pathGroup.append('path')
       .attr('d', (d) => d.d())
@@ -143,6 +145,7 @@ class Link {
       .data((d) => d.split().filter((l) => l.has_meta()))
       .enter()
       .append('text')
+      .attr('class', (d) => d.path_id()) // Bind text with path_id as class
       .attr('pointer-events', 'none');
 
     const text_path = text.append('textPath')
