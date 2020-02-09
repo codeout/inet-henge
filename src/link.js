@@ -127,8 +127,8 @@ class Link {
       .attr('stroke', (d) => d.color)
       .attr('stroke-width', (d) => d.width)
       .attr('id', (d) => d.link_id())
-      .on('mouseover', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', true))
-      .on('mouseout', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', false));
+      .on('mouseover.line', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', true))
+      .on('mouseout.line', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', false));
 
     const path = pathGroup.append('path')
       .attr('d', (d) => d.d())
@@ -145,8 +145,7 @@ class Link {
       .data((d) => d.split().filter((l) => l.has_meta()))
       .enter()
       .append('text')
-      .attr('class', (d) => d.path_id()) // Bind text with path_id as class
-      .attr('pointer-events', 'none');
+      .attr('class', (d) => d.path_id()); // Bind text with path_id as class
 
     const text_path = text.append('textPath')
       .attr('xlink:href', (d) => `#${d.path_id()}`);
