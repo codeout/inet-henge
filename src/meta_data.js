@@ -5,7 +5,7 @@ class MetaData {
   }
 
   get(keys) {
-    return this.slice(keys).filter((k, i) => typeof k.value === 'string');
+    return this.slice(keys).filter((k) => typeof k.value === 'string');
   }
 
   slice(keys) {

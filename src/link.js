@@ -106,35 +106,46 @@ class Link {
     return this.meta.length > 0 || this.source_meta.length > 0 || this.target_meta.length > 0;
   }
 
-  static render_links(svg, links) {
-    const group = svg.selectAll('.path-group')
+  class() {
+    // eslint-disable-next-line max-len
+    return `link ${classify(this.source.name)} ${classify(this.target.name)} ${classify(this.source.name)}-${classify(this.target.name)} ${this.extra_class}`;
+  }
+
+  static render(linkLayer, labelLayer, links) {
+    // Render lines
+    const pathGroup = linkLayer.selectAll('.link')
       .data(links)
       .enter()
       .append('g')
-      .attr('class', 'path-group');
+      .attr('class', (d) => d.class());
 
-    const link = group.append('line')
-      // eslint-disable-next-line max-len
-      .attr('class', (d) => `link ${classify(d.source.name)} ${classify(d.target.name)} ${classify(d.source.name)}-${classify(d.target.name)} ${d.extra_class}`)
+    const link = pathGroup.append('line')
       .attr('x1', (d) => d.source.x)
       .attr('y1', (d) => d.source.y)
       .attr('x2', (d) => d.target.x)
       .attr('y2', (d) => d.target.y)
       .attr('stroke', (d) => d.color)
       .attr('stroke-width', (d) => d.width)
-      .attr('id', (d) => d.link_id());
+      .attr('id', (d) => d.link_id())
+      .on('mouseover.line', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', true))
+      .on('mouseout.line', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', false));
 
-    const path = group.append('path')
-      .attr('class', 'path')
+    const path = pathGroup.append('path')
       .attr('d', (d) => d.d())
       .attr('id', (d) => d.path_id());
 
-    const text = group.selectAll('.path-label')
+    // Render texts
+    const textGroup = labelLayer.selectAll('.link')
+      .data(links)
+      .enter()
+      .append('g')
+      .attr('class', (d) => d.class());
+
+    const text = textGroup.selectAll('text')
       .data((d) => d.split().filter((l) => l.has_meta()))
       .enter()
       .append('text')
-      .attr('class', 'path-label')
-      .attr('pointer-events', 'none');
+      .attr('class', (d) => d.path_id()); // Bind text with path_id as class
 
     const text_path = text.append('textPath')
       .attr('xlink:href', (d) => `#${d.path_id()}`);
@@ -198,7 +209,7 @@ class Link {
     if (scale && scale > 1.5)
       visibility = 'visible';
 
-    d3.selectAll('.path-label')
+    d3.selectAll('.link text')
       .style('visibility', visibility);
   }
 

@@ -2,6 +2,7 @@
 
 .node,
 .group rect { cursor: move; }
+.link text { cursor: default; }
 
 .node rect,
 .group rect {
@@ -11,14 +12,25 @@
 
 .node text { font-size: 10px; }
 
-.link {
+.link line {
   stroke: #7a4e4e;
   stroke-width: 3px;
   stroke-opacity: 1;
 }
 
-.path-label { font-size: 7px; }
-
+.link text { font-size: 7px; }
+.link text:hover tspan,
+.link text.hover tspan {
+  fill: #00B0E8;
+  font-weight: bold;
+  visibility: visible !important;
+}
+.link text.hover tspan {
+  font-size: 10px;
+}
+.link line:hover {
+  stroke: #00B0E8;
+}
 
 .loopback,
 .interface { fill: #333; }

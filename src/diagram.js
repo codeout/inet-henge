@@ -113,21 +113,27 @@ class Diagram {
       this.set_distance(this.cola);
       this.cola.start();
 
-      var link, path, label;
-      const group = Group.render(this.svg, groups).call(
+      const groupLayer = this.svg.append('g').attr('id', 'groups');
+      const linkLayer = this.svg.append('g').attr('id', 'links');
+      const nodeLayer = this.svg.append('g').attr('id', 'nodes');
+      const linkLabelLayer = this.svg.append('g').attr('id', 'link-labels');
+
+      const [link, path, label] = Link.render(linkLayer, linkLabelLayer, links);
+
+      const group = Group.render(groupLayer, groups).call(
         this.cola.drag()
           .on('dragstart', this.dragstart_callback)
-          .on('drag', (d) => {
+          .on('drag', () => {
             if (this.options.bundle) {
               Link.shift_bundle(link, path, label);
             }
           })
       );
-      [link, path, label] = Link.render_links(this.svg, links);
-      const node = Node.render(this.svg, nodes).call(
+
+      const node = Node.render(nodeLayer, nodes).call(
         this.cola.drag()
           .on('dragstart', this.dragstart_callback)
-          .on('drag', (d) => {
+          .on('drag', () => {
             if (this.options.bundle) {
               Link.shift_bundle(link, path, label);
             }
