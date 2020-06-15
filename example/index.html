@@ -11,7 +11,7 @@
   <body>
     <div id="diagram"></div>
     <script>
-     var diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, bundle: true});
+     const diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, bundle: true});
      diagram.init('loopback', 'interface');
     </script>
   </body>
