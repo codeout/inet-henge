@@ -25,21 +25,14 @@
   "main": "inet-henge.js",
   "dependencies": {},
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-preset-env": "^1.7.0",
-    "babelify": "^8.0.0",
-    "browserify": "^16.2.3",
-    "eslint": "^5.10.0",
-    "watchify": "^3.11.1"
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.5",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint src",
     "build": "./node_modules/.bin/browserify -t babelify src/diagram.js -o inet-henge.js",
     "watch": "./node_modules/.bin/watchify src/*.js -t babelify src/diagram.js -o inet-henge.js -v"
-  },
-  "babel": {
-    "presets": [
-      "env"
-    ]
   }
 }
