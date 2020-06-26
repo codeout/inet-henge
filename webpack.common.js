@@ -1,10 +1,7 @@
 module.exports = {
-  mode: 'development',
-  devtool: "source-map",
   entry: './src/diagram',
   output: {
     path: __dirname,
-    filename: 'inet-henge.js',
   },
   resolve: {
     extensions: ['.ts', '.js'],

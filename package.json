@@ -37,7 +37,8 @@
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint src",
-    "build": "./node_modules/.bin/webpack",
-    "watch": "./node_modules/.bin/webpack --watch"
+    "dev": "./node_modules/.bin/webpack --config webpack.dev.js",
+    "prod": "./node_modules/.bin/webpack --config webpack.prod.js",
+    "watch": "./node_modules/.bin/webpack --config webpack.dev.js --watch"
   }
 }
