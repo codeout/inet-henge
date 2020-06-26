@@ -1,40 +1,40 @@
 export class MetaData {
-  constructor(private data, private extra_key?) {
-  }
+    constructor(private data, private extra_key?) {
+    }
 
-  get(keys) {
-    return this.slice(keys).filter((k) => typeof k.value === 'string');
-  }
+    get(keys) {
+        return this.slice(keys).filter((k) => typeof k.value === 'string');
+    }
 
-  slice(keys) {
-    if (!this.data)
-      return [];
+    slice(keys) {
+        if (!this.data)
+            return [];
 
-    if (this.extra_key)
-      return this.slice_with_extra_key(keys);
-    else
-      return this.slice_without_extra_key(keys);
-  }
+        if (this.extra_key)
+            return this.slice_with_extra_key(keys);
+        else
+            return this.slice_without_extra_key(keys);
+    }
 
-  slice_with_extra_key(keys) {
-    const data = [];
+    slice_with_extra_key(keys) {
+        const data = [];
 
-    keys.forEach((k) => {
-      if (this.data[k] && this.data[k][this.extra_key])
-        data.push({class: k, value: this.data[k][this.extra_key]});
-    });
+        keys.forEach((k) => {
+            if (this.data[k] && this.data[k][this.extra_key])
+                data.push({class: k, value: this.data[k][this.extra_key]});
+        });
 
-    return data;
-  }
+        return data;
+    }
 
-  slice_without_extra_key(keys) {
-    const data = [];
+    slice_without_extra_key(keys) {
+        const data = [];
 
-    keys.forEach((k) => {
-      if (this.data[k])
-        data.push({class: k, value: this.data[k]});
-    });
+        keys.forEach((k) => {
+            if (this.data[k])
+                data.push({class: k, value: this.data[k]});
+        });
 
-    return data;
-  }
+        return data;
+    }
 }

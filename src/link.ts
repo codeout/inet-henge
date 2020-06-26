@@ -4,264 +4,264 @@ import {classify} from './util';
 import * as d3 from 'd3';
 
 export class Link {
-  private static groups: object;
+    private static groups: object;
 
-  private source;
-  private target;
-  private meta;
-  private source_meta;
-  private target_meta;
-  private extra_class;
-  private width;
-  private default_margin;
-  private label_x_offset;
-  private label_y_offset;
-  private color;
-  private _margin;
+    private source;
+    private target;
+    private meta;
+    private source_meta;
+    private target_meta;
+    private extra_class;
+    private width;
+    private default_margin;
+    private label_x_offset;
+    private label_y_offset;
+    private color;
+    private _margin;
 
-  constructor(data, public id, meta_keys, link_width) {
-    this.source = Node.id_by_name(data.source);
-    this.target = Node.id_by_name(data.target);
-    this.meta = new MetaData(data.meta).get(meta_keys);
-    this.source_meta = new MetaData(data.meta, 'source').get(meta_keys);
-    this.target_meta = new MetaData(data.meta, 'target').get(meta_keys);
-    this.extra_class = data.class || '';
+    constructor(data, public id, meta_keys, link_width) {
+        this.source = Node.id_by_name(data.source);
+        this.target = Node.id_by_name(data.target);
+        this.meta = new MetaData(data.meta).get(meta_keys);
+        this.source_meta = new MetaData(data.meta, 'source').get(meta_keys);
+        this.target_meta = new MetaData(data.meta, 'target').get(meta_keys);
+        this.extra_class = data.class || '';
 
-    if (typeof link_width === 'function')
-      this.width = link_width(data.meta) || 3;
-    else
-      this.width = link_width || 3;
+        if (typeof link_width === 'function')
+            this.width = link_width(data.meta) || 3;
+        else
+            this.width = link_width || 3;
 
-    this.default_margin = 15;
-    this.label_x_offset = 20;
-    this.label_y_offset = 1.5; // em
-    this.color = '#7a4e4e';
+        this.default_margin = 15;
+        this.label_x_offset = 20;
+        this.label_y_offset = 1.5; // em
+        this.color = '#7a4e4e';
 
-    this.register(id, this.source, this.target);
-  }
-
-  is_named_path() {
-    return this.meta.length > 0;
-  }
-
-  is_reverse_path() {
-    return this.target_meta.length > 0;
-  }
-
-  d() {
-    return `M ${this.source.x} ${this.source.y} L ${this.target.x} ${this.target.y}`;
-  }
-
-  path_id() {
-    return `path${this.id}`;
-  }
-
-  link_id() {
-    return `link${this.id}`;
-  }
-
-  margin() {
-    if (!this._margin) {
-      const margin = window.getComputedStyle(document.getElementById(this.link_id())).margin;
-
-      // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
-      // or "0px" even when not defined in .css
-      if (!margin || margin === '0px') {
-        this._margin = this.default_margin;
-      } else {
-        this._margin = parseInt(margin);
-      }
+        this.register(id, this.source, this.target);
     }
 
-    return this._margin;
-  }
+    is_named_path() {
+        return this.meta.length > 0;
+    }
 
-  // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
-  tspan_x_offset() {
-    if (this.is_named_path())
-      return 0;
-    else if (this.is_reverse_path())
-      return -this.label_x_offset;
-    else
-      return this.label_x_offset;
-  }
+    is_reverse_path() {
+        return this.target_meta.length > 0;
+    }
 
-  tspan_y_offset() {
-    if (this.is_named_path())
-      return `${-this.label_y_offset + 0.7}em`;
-    else
-      return `${this.label_y_offset}em`;
-  }
+    d() {
+        return `M ${this.source.x} ${this.source.y} L ${this.target.x} ${this.target.y}`;
+    }
 
-  rotate(bbox) {
-    if (this.source.x > this.target.x)
-      return `rotate(180 ${bbox.x + bbox.width / 2} ${bbox.y + bbox.height / 2})`;
-    else
-      return 'rotate(0)';
-  }
+    path_id() {
+        return `path${this.id}`;
+    }
 
-  split() {
-    if (!this.meta && !this.source_meta && !this.target_meta)
-      return [this];
+    link_id() {
+        return `link${this.id}`;
+    }
 
-    const meta = [];
-    ['meta', 'source_meta', 'target_meta'].forEach((key, i, keys) => {
-      if (this[key]) {
-        const duped = Object.assign(Object.create(this), this);
+    margin() {
+        if (!this._margin) {
+            const margin = window.getComputedStyle(document.getElementById(this.link_id())).margin;
 
-        keys.filter((k) => k !== key).forEach((k) => duped[k] = []);
-        meta.push(duped);
-      }
-    });
+            // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
+            // or "0px" even when not defined in .css
+            if (!margin || margin === '0px') {
+                this._margin = this.default_margin;
+            } else {
+                this._margin = parseInt(margin);
+            }
+        }
 
-    return meta;
-  }
+        return this._margin;
+    }
 
-  has_meta() {
-    return this.meta.length > 0 || this.source_meta.length > 0 || this.target_meta.length > 0;
-  }
+    // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
+    tspan_x_offset() {
+        if (this.is_named_path())
+            return 0;
+        else if (this.is_reverse_path())
+            return -this.label_x_offset;
+        else
+            return this.label_x_offset;
+    }
 
-  class() {
-    // eslint-disable-next-line max-len
-    return `link ${classify(this.source.name)} ${classify(this.target.name)} ${classify(this.source.name)}-${classify(this.target.name)} ${this.extra_class}`;
-  }
+    tspan_y_offset() {
+        if (this.is_named_path())
+            return `${-this.label_y_offset + 0.7}em`;
+        else
+            return `${this.label_y_offset}em`;
+    }
 
-  static render(linkLayer, labelLayer, links) {
-    // Render lines
-    const pathGroup = linkLayer.selectAll('.link')
-      .data(links)
-      .enter()
-      .append('g')
-      .attr('class', (d) => d.class());
+    rotate(bbox) {
+        if (this.source.x > this.target.x)
+            return `rotate(180 ${bbox.x + bbox.width / 2} ${bbox.y + bbox.height / 2})`;
+        else
+            return 'rotate(0)';
+    }
 
-    const link = pathGroup.append('line')
-      .attr('x1', (d) => d.source.x)
-      .attr('y1', (d) => d.source.y)
-      .attr('x2', (d) => d.target.x)
-      .attr('y2', (d) => d.target.y)
-      .attr('stroke', (d) => d.color)
-      .attr('stroke-width', (d) => d.width)
-      .attr('id', (d) => d.link_id())
-      .on('mouseover.line', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', true))
-      .on('mouseout.line', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', false));
+    split() {
+        if (!this.meta && !this.source_meta && !this.target_meta)
+            return [this];
 
-    const path = pathGroup.append('path')
-      .attr('d', (d) => d.d())
-      .attr('id', (d) => d.path_id());
+        const meta = [];
+        ['meta', 'source_meta', 'target_meta'].forEach((key, i, keys) => {
+            if (this[key]) {
+                const duped = Object.assign(Object.create(this), this);
 
-    // Render texts
-    const textGroup = labelLayer.selectAll('.link')
-      .data(links)
-      .enter()
-      .append('g')
-      .attr('class', (d) => d.class());
+                keys.filter((k) => k !== key).forEach((k) => duped[k] = []);
+                meta.push(duped);
+            }
+        });
 
-    const text = textGroup.selectAll('text')
-      .data((d) => d.split().filter((l) => l.has_meta()))
-      .enter()
-      .append('text')
-      .attr('class', (d) => d.path_id()); // Bind text with path_id as class
+        return meta;
+    }
 
-    const text_path = text.append('textPath')
-      .attr('xlink:href', (d) => `#${d.path_id()}`);
+    has_meta() {
+        return this.meta.length > 0 || this.source_meta.length > 0 || this.target_meta.length > 0;
+    }
 
-    text_path.each(function (d) {
-      Link.append_tspans(this, d.meta);
-      Link.append_tspans(this, d.source_meta);
-      Link.append_tspans(this, d.target_meta);
+    class() {
+        // eslint-disable-next-line max-len
+        return `link ${classify(this.source.name)} ${classify(this.target.name)} ${classify(this.source.name)}-${classify(this.target.name)} ${this.extra_class}`;
+    }
 
-      if (d.is_named_path())
-        Link.center(this);
+    static render(linkLayer, labelLayer, links) {
+        // Render lines
+        const pathGroup = linkLayer.selectAll('.link')
+            .data(links)
+            .enter()
+            .append('g')
+            .attr('class', (d) => d.class());
 
-      if (d.is_reverse_path())
-        Link.the_other_end(this);
-    });
+        const link = pathGroup.append('line')
+            .attr('x1', (d) => d.source.x)
+            .attr('y1', (d) => d.source.y)
+            .attr('x2', (d) => d.target.x)
+            .attr('y2', (d) => d.target.y)
+            .attr('stroke', (d) => d.color)
+            .attr('stroke-width', (d) => d.width)
+            .attr('id', (d) => d.link_id())
+            .on('mouseover.line', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', true))
+            .on('mouseout.line', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', false));
 
-    Link.zoom(); // Initialize
-    return [link, path, text];
-  }
+        const path = pathGroup.append('path')
+            .attr('d', (d) => d.d())
+            .attr('id', (d) => d.path_id());
 
-  static the_other_end(container) {
-    d3.select(container)
-      .attr('class', 'reverse')
-      .attr('text-anchor', 'end')
-      .attr('startOffset', '100%');
-  }
+        // Render texts
+        const textGroup = labelLayer.selectAll('.link')
+            .data(links)
+            .enter()
+            .append('g')
+            .attr('class', (d) => d.class());
 
-  static center(container) {
-    d3.select(container)
-      .attr('class', 'center')
-      .attr('text-anchor', 'middle')
-      .attr('startOffset', '50%');
-  }
+        const text = textGroup.selectAll('text')
+            .data((d) => d.split().filter((l) => l.has_meta()))
+            .enter()
+            .append('text')
+            .attr('class', (d) => d.path_id()); // Bind text with path_id as class
 
-  static append_tspans(container, meta) {
-    meta.forEach((m, i) => {
-      d3.select(container).append('tspan')
-        .attr('x', (d: Link) => d.tspan_x_offset())
-        .attr('dy', (d: Link) => d.tspan_y_offset())
-        .attr('class', m.class)
-        .text(m.value);
-    });
-  }
+        const text_path = text.append('textPath')
+            .attr('xlink:href', (d) => `#${d.path_id()}`);
 
-  static tick(link, path, label) {
-    link.attr('x1', (d) => d.source.x)
-      .attr('y1', (d) => d.source.y)
-      .attr('x2', (d) => d.target.x)
-      .attr('y2', (d) => d.target.y);
+        text_path.each(function (d) {
+            Link.append_tspans(this, d.meta);
+            Link.append_tspans(this, d.source_meta);
+            Link.append_tspans(this, d.target_meta);
 
-    if (path)
-      path.attr('d', (d) => d.d());
-    if (label)
-      label.attr('transform', function (d) {
-        return d.rotate(this.getBBox());
-      });
-  }
+            if (d.is_named_path())
+                Link.center(this);
 
-  static zoom(scale?) {
-    let visibility = 'hidden';
-    if (scale && scale > 1.5)
-      visibility = 'visible';
+            if (d.is_reverse_path())
+                Link.the_other_end(this);
+        });
 
-    d3.selectAll('.link text')
-      .style('visibility', visibility);
-  }
+        Link.zoom(); // Initialize
+        return [link, path, text];
+    }
 
-  static set_position(link, position) {
-    link.attr('x1', (d, i) => position[i].x1)
-      .attr('y1', (d, i) => position[i].y1)
-      .attr('x2', (d, i) => position[i].x2)
-      .attr('y2', (d, i) => position[i].y2);
-  }
+    static the_other_end(container) {
+        d3.select(container)
+            .attr('class', 'reverse')
+            .attr('text-anchor', 'end')
+            .attr('startOffset', '100%');
+    }
 
-  register(id, source, target) {
-    Link.groups = Link.groups || {};
-    const key = [source, target].sort().toString();
-    Link.groups[key] = Link.groups[key] || [];
-    Link.groups[key].push(id);
-  }
+    static center(container) {
+        d3.select(container)
+            .attr('class', 'center')
+            .attr('text-anchor', 'middle')
+            .attr('startOffset', '50%');
+    }
 
-  static shift_multiplier(link) {
-    const members = Link.groups[[link.source.id, link.target.id].sort().toString()] || [];
-    return members.indexOf(link.id) - (members.length - 1) / 2;
-  }
+    static append_tspans(container, meta) {
+        meta.forEach((m, i) => {
+            d3.select(container).append('tspan')
+                .attr('x', (d: Link) => d.tspan_x_offset())
+                .attr('dy', (d: Link) => d.tspan_y_offset())
+                .attr('class', m.class)
+                .text(m.value);
+        });
+    }
 
-  static shift_bundle(link, path, label) {
-    const transform = (d) => d.shift_bundle(Link.shift_multiplier(d));
+    static tick(link, path, label) {
+        link.attr('x1', (d) => d.source.x)
+            .attr('y1', (d) => d.source.y)
+            .attr('x2', (d) => d.target.x)
+            .attr('y2', (d) => d.target.y);
 
-    link.attr('transform', transform);
-    path.attr('transform', transform);
-    label.attr('transform', transform);
-  }
+        if (path)
+            path.attr('d', (d) => d.d());
+        if (label)
+            label.attr('transform', function (d) {
+                return d.rotate(this.getBBox());
+            });
+    }
 
-  shift_bundle(multiplier) {
-    const gap = this.margin() * multiplier;
+    static zoom(scale?) {
+        let visibility = 'hidden';
+        if (scale && scale > 1.5)
+            visibility = 'visible';
 
-    const width = Math.abs(this.target.x - this.source.x);
-    const height = Math.abs(this.source.y - this.target.y);
-    const length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
+        d3.selectAll('.link text')
+            .style('visibility', visibility);
+    }
 
-    return `translate(${gap * height / length}, ${gap * width / length})`;
-  }
+    static set_position(link, position) {
+        link.attr('x1', (d, i) => position[i].x1)
+            .attr('y1', (d, i) => position[i].y1)
+            .attr('x2', (d, i) => position[i].x2)
+            .attr('y2', (d, i) => position[i].y2);
+    }
+
+    register(id, source, target) {
+        Link.groups = Link.groups || {};
+        const key = [source, target].sort().toString();
+        Link.groups[key] = Link.groups[key] || [];
+        Link.groups[key].push(id);
+    }
+
+    static shift_multiplier(link) {
+        const members = Link.groups[[link.source.id, link.target.id].sort().toString()] || [];
+        return members.indexOf(link.id) - (members.length - 1) / 2;
+    }
+
+    static shift_bundle(link, path, label) {
+        const transform = (d) => d.shift_bundle(Link.shift_multiplier(d));
+
+        link.attr('transform', transform);
+        path.attr('transform', transform);
+        label.attr('transform', transform);
+    }
+
+    shift_bundle(multiplier) {
+        const gap = this.margin() * multiplier;
+
+        const width = Math.abs(this.target.x - this.source.x);
+        const height = Math.abs(this.source.y - this.target.y);
+        const length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
+
+        return `translate(${gap * height / length}, ${gap * width / length})`;
+    }
 }
