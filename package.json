@@ -36,7 +36,7 @@
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint src",
-    "build": "./node_modules/.bin/browserify -t babelify src/diagram.js -o inet-henge.js",
-    "watch": "./node_modules/.bin/watchify src/*.js -t babelify src/diagram.js -o inet-henge.js -v"
+    "build": "./node_modules/.bin/webpack",
+    "watch": "./node_modules/.bin/webpack --watch"
   }
 }
