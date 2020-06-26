@@ -1,7 +1,5 @@
-class MetaData {
-  constructor(data, extra_key) {
-    this.data = data;
-    this.extra_key = extra_key;
+export class MetaData {
+  constructor(private data, private extra_key?) {
   }
 
   get(keys) {
@@ -40,5 +38,3 @@ class MetaData {
     return data;
   }
 }
-
-module.exports = MetaData;

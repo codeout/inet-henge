@@ -1,5 +1,5 @@
 /* eslint-disable */
-// ported from WebCola/cola.js
+// Ported from WebCola/cola.js and overrode jaccardLinkLengths()
 
 function unionCount(a, b) {
     var u = {};

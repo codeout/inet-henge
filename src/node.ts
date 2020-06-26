@@ -1,15 +1,28 @@
-import MetaData from './meta_data';
+import {MetaData} from './meta_data';
 import {classify} from './util';
+import * as d3 from 'd3';
 
-class Node {
-  constructor(data, id, meta_keys, color) {
-    this.id = id;
+export class Node {
+  private static all;
+
+  private name;
+  private group;
+  private icon;
+  private meta;
+  private extra_class;
+  private width;
+  private height;
+  private padding;
+  private tspan_offset;
+  private x;
+  private y;
+
+  constructor(data, private id, meta_keys, private color) {
     this.name = data.name;
     this.group = typeof data.group === 'string' ? [data.group] : (data.group || []);
     this.icon = data.icon;
     this.meta = new MetaData(data.meta).get(meta_keys);
     this.extra_class = data.class || '';
-    this.color = color;
 
     this.width = 60;
     this.height = 40;
@@ -76,13 +89,13 @@ class Node {
   static append_text(container) {
     const text = d3.select(container).append('text')
       .attr('text-anchor', 'middle')
-      .attr('x', (d) => d.x_for_text())
-      .attr('y', (d) => d.y_for_text());
+      .attr('x', (d: Node) => d.x_for_text())
+      .attr('y', (d: Node) => d.y_for_text());
     text.append('tspan')
-      .text((d) => d.name)
-      .attr('x', (d) => d.x_for_text());
+      .text((d: Node) => d.name)
+      .attr('x', (d: Node) => d.x_for_text());
 
-    text.each((d) => {
+    text.each((d: Node) => {
       Node.append_tspans(text, d.meta);
     });
   }
@@ -98,21 +111,21 @@ class Node {
   }
 
   static append_image(container) {
-    d3.select(container).attr('class', (d) => `node image ${classify(d.name)} ${d.extra_class}`)
+    d3.select(container).attr('class', (d: Node) => `node image ${classify(d.name)} ${d.extra_class}`)
       .append('image')
-      .attr('xlink:href', (d) => d.icon)
-      .attr('width', (d) => d.node_width())
-      .attr('height', (d) => d.node_height());
+      .attr('xlink:href', (d: Node) => d.icon)
+      .attr('width', (d: Node) => d.node_width())
+      .attr('height', (d: Node) => d.node_height());
   }
 
   static append_rect(container) {
-    d3.select(container).attr('class', (d) => `node rect ${classify(d.name)} ${d.extra_class}`)
+    d3.select(container).attr('class', (d: Node) => `node rect ${classify(d.name)} ${d.extra_class}`)
       .append('rect')
-      .attr('width', (d) => d.node_width())
-      .attr('height', (d) => d.node_height())
+      .attr('width', (d: Node) => d.node_width())
+      .attr('height', (d: Node) => d.node_height())
       .attr('rx', 5)
       .attr('ry', 5)
-      .style('fill', (d) => d.color());
+      .style('fill', (d: Node) => d.color());
   }
 
   static tick(container) {
@@ -127,5 +140,3 @@ class Node {
     });
   }
 }
-
-module.exports = Node;

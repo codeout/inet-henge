@@ -1,10 +1,12 @@
-const crypto = require('crypto');
+import * as crypto from 'crypto';
 
-class PositionCache {
-  constructor(data, pop, sha1, group, node, link) {
-    this.data = data;
-    this.pop = pop;
+export class PositionCache {
+  cached_sha1
+  group
+  node
+  link
 
+  constructor(public data, public pop?, sha1?) {
     // NOTE: properties below can be undefined
     this.cached_sha1 = sha1;
   }
@@ -29,7 +31,7 @@ class PositionCache {
     localStorage.setItem('position_cache', JSON.stringify(cache));
   }
 
-  sha1(data, pop) {
+  sha1(data?, pop?) {
     data = Object.assign({}, data || this.data);
     data.pop = pop || this.pop;
     if (data.pop) {
@@ -112,5 +114,3 @@ class PositionCache {
     }
   }
 }
-
-module.exports = PositionCache;

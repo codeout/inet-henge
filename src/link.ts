@@ -1,10 +1,25 @@
-import MetaData from './meta_data';
-import Node from './node';
+import {MetaData} from './meta_data';
+import {Node} from './node';
 import {classify} from './util';
+import * as d3 from 'd3';
 
-class Link {
-  constructor(data, id, meta_keys, link_width) {
-    this.id = id;
+export class Link {
+  private static groups: object;
+
+  private source;
+  private target;
+  private meta;
+  private source_meta;
+  private target_meta;
+  private extra_class;
+  private width;
+  private default_margin;
+  private label_x_offset;
+  private label_y_offset;
+  private color;
+  private _margin;
+
+  constructor(data, public id, meta_keys, link_width) {
     this.source = Node.id_by_name(data.source);
     this.target = Node.id_by_name(data.target);
     this.meta = new MetaData(data.meta).get(meta_keys);
@@ -183,8 +198,8 @@ class Link {
   static append_tspans(container, meta) {
     meta.forEach((m, i) => {
       d3.select(container).append('tspan')
-        .attr('x', (d) => d.tspan_x_offset())
-        .attr('dy', (d) => d.tspan_y_offset())
+        .attr('x', (d: Link) => d.tspan_x_offset())
+        .attr('dy', (d: Link) => d.tspan_y_offset())
         .attr('class', m.class)
         .text(m.value);
     });
@@ -204,7 +219,7 @@ class Link {
       });
   }
 
-  static zoom(scale) {
+  static zoom(scale?) {
     let visibility = 'hidden';
     if (scale && scale > 1.5)
       visibility = 'visible';
@@ -222,13 +237,13 @@ class Link {
 
   register(id, source, target) {
     Link.groups = Link.groups || {};
-    const key = [source, target].sort();
+    const key = [source, target].sort().toString();
     Link.groups[key] = Link.groups[key] || [];
     Link.groups[key].push(id);
   }
 
   static shift_multiplier(link) {
-    const members = Link.groups[[link.source.id, link.target.id].sort()] || [];
+    const members = Link.groups[[link.source.id, link.target.id].sort().toString()] || [];
     return members.indexOf(link.id) - (members.length - 1) / 2;
   }
 
@@ -250,5 +265,3 @@ class Link {
     return `translate(${gap * height / length}, ${gap * width / length})`;
   }
 }
-
-module.exports = Link;

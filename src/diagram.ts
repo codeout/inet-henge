@@ -1,14 +1,28 @@
-import Group from './group';
-import Link from './link';
-import Node from './node';
-import PositionCache from './position_cache';
+import {Group} from './group';
+import {Link} from './link';
+import {Node} from './node';
+import {PositionCache} from './position_cache';
+import * as d3 from 'd3';
+
 import './hack_cola';
+const cola = require('cola');
 
-class Diagram {
+export class Diagram {
+  private options;
+  private set_distance;
+  private dispatch;
+  private get_link_width;
+  private zoom;
+  private cola;
+  private unique_url;
+  private position_cache;
+  private indicator;
+  private initial_translate;
+  private initial_scale;
+  private svg;
+
   constructor(container, urlOrData, options) {
-    options = options || {};
-
-    this.options = {};
+    this.options = options || {};
     this.options.selector = container;
     this.options.urlOrData = urlOrData;
     this.options.group_pattern = options.pop;
@@ -38,6 +52,7 @@ class Diagram {
   linkWidth(func) {
     this.get_link_width = func;
   }
+
   link_width(func) { // Deprecated
     console.warn('link_width() is deprecated. Use linkWidth()');
     this.linkWidth(func);
@@ -182,7 +197,7 @@ class Diagram {
     }
   }
 
-  configure_tick(group, node, link, path, label) {
+  configure_tick(group, node, link, path?, label?) {
     this.cola.on('tick', () => {
       Node.tick(node);
       Link.tick(link, path, label);
@@ -190,7 +205,7 @@ class Diagram {
     });
   }
 
-  ticks_forward(count) {
+  ticks_forward(count?) {
     count = count || this.options.max_ticks;
 
     for (let i = 0; i < count; i++)
@@ -211,16 +226,16 @@ class Diagram {
       this.save_initial_translate();
     }
 
-    d3.event.scale *= this.initial_scale;
-    d3.event.translate[0] += this.initial_translate[0];
-    d3.event.translate[1] += this.initial_translate[1];
+    (<d3.ZoomEvent>d3.event).scale *= this.initial_scale;
+    (<d3.ZoomEvent>d3.event).translate[0] += this.initial_translate[0];
+    (<d3.ZoomEvent>d3.event).translate[1] += this.initial_translate[1];
 
-    Link.zoom(d3.event.scale);
-    container.attr('transform', `translate(${d3.event.translate}) scale(${d3.event.scale})`);
+    Link.zoom((<d3.ZoomEvent>d3.event).scale);
+    container.attr('transform', `translate(${(<d3.ZoomEvent>d3.event).translate}) scale(${(<d3.ZoomEvent>d3.event).scale})`);
   }
 
   dragstart_callback() {
-    d3.event.sourceEvent.stopPropagation();
+    (<d3.ZoomEvent>d3.event).sourceEvent.stopPropagation();
   }
 
   display_load_message() {
@@ -269,4 +284,5 @@ class Diagram {
   }
 }
 
-module.exports = window.Diagram = Diagram;
+// @ts-ignore
+window.Diagram = Diagram;

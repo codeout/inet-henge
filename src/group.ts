@@ -1,9 +1,10 @@
 import {classify} from './util';
 
-class Group {
-  constructor(name, color) {
-    this.name = name;
-    this.color = color;
+export class Group {
+  private leaves;
+  private bounds;
+
+  constructor(private name, private color) {
     this.leaves = [];
   }
 
@@ -25,7 +26,7 @@ class Group {
 
   static divide(nodes, pattern, color) {
     const groups = {};
-    const register = (name, node, parent) => {
+    const register = (name, node, parent?) => {
       const key = `${parent}:${name}`;
       groups[key] = groups[key] || new Group(name, color);
       groups[key].push(node);
@@ -90,5 +91,3 @@ class Group {
       .attr('height', (d, i) => position[i].height);
   }
 }
-
-module.exports = Group;
