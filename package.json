@@ -30,6 +30,7 @@
     "d3": "~3",
     "ts-loader": "^7.0.5",
     "typescript": "^3.9.5",
+    "webcola": "^3.4.0",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.12"
   },
