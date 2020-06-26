@@ -39,6 +39,7 @@
     "lint": "./node_modules/.bin/eslint src",
     "dev": "./node_modules/.bin/webpack --config webpack.dev.js",
     "prod": "./node_modules/.bin/webpack --config webpack.prod.js",
+    "clean": "rm -rf inet-henge*.js*",
     "watch": "./node_modules/.bin/webpack --config webpack.dev.js --watch"
   }
 }
