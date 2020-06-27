@@ -37,12 +37,13 @@ export class Group {
 
             if (pattern) {
                 result = node.name.match(pattern);
-                if (result)
+                if (result) {
                     register(result[1] || result[0], node);
+                }
             }
 
             // Node type based group
-            node.group.forEach((name) => register(name, node, result));
+            node.group.forEach((name) => register(name, node, result.toString()));
         });
 
         return this.array(groups);
