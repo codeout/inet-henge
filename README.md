@@ -31,6 +31,10 @@ JSON example:
 ## Getting Started
 
 ```zsh
+npm install inet-henge
+
+# or
+
 git clone https://github.com/codeout/inet-henge.git
 ```
 

@@ -1,3 +1,12 @@
+## [1.0.1] - 2020-06-28
+
+### Added
+
+* Create an npm package of inet-henge so that users can use it in other projects, even customize and rebuild.
+* Rewrote all .js with .ts to reuse in typescript projects.
+* Update the build environment, which was .js + babel + browserify, with .ts + webpack + ts-loader.
+
+
 ## [1.0.0] - 2020-02-25
 
 ### Added
