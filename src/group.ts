@@ -4,10 +4,12 @@ import {classify} from './util';
 
 export class Group {
     private leaves: number[];
-    private bounds: any;  // Not appropriately defined in @types/d3/index.d.ts
+    // Not appropriately defined in @types/d3/index.d.ts
+    private bounds: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
     // Also, it should have accepted undefined
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     constructor(private name: string, private color: any) {
         this.leaves = [];
     }
@@ -30,6 +32,7 @@ export class Group {
 
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
     // Also, it should have accepted undefined
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     static divide(nodes: Node[], pattern: RegExp, color: any): Group[] {
         const groups = {};
         const register = (name: string, node: Node, parent?: string) => {
@@ -55,10 +58,11 @@ export class Group {
         return this.array(groups);
     }
 
-    static array(groups: object): Group[] {
+    static array(groups: Record<string, any>): Group[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
         return Object.keys(groups).map((g) => groups[g]);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer: d3.Selection<any>, groups: Group[]): d3.Selection<Group> {
         const group = layer.selectAll('.group')
             .data(groups)

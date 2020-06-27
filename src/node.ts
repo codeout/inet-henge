@@ -1,21 +1,25 @@
-import {MetaData, MetaDataType} from './meta_data';
-import {classify} from './util';
 import * as d3 from 'd3';
+
+import {MetaData, MetaDataType} from './meta_data';
 import {NodePosition} from './position_cache';
+import {classify} from './util';
 
 export type NodeDataType = {
     name: string,
     group: string[],
     icon: string,
-    meta: object,
+    meta: Record<string, any>,  // eslint-disable-line @typescript-eslint/no-explicit-any
     class: string,
 }
 
 export class Node {
-    private static all: object;
+    private static all: Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
     public name: string;
     public group: string[];
+    public x: number;
+    public y: number;
+
     private icon: string;
     private meta: MetaDataType[];
     private extra_class: string;
@@ -23,11 +27,10 @@ export class Node {
     private height: number;
     private padding: number;
     private tspan_offset: string;
-    public x: number;
-    public y: number;
 
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
     // Also, it should have accepted undefined
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     constructor(data: NodeDataType, public id: number, meta_keys: string[], private color: any) {
         this.name = data.name;
         this.group = typeof data.group === 'string' ? [data.group] : (data.group || []);
@@ -76,6 +79,7 @@ export class Node {
         return Node.all[name];
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer: d3.Selection<any>, nodes: Node[]): d3.Selection<Node> {
         const node = layer.selectAll('.node')
             .data(nodes)
@@ -111,6 +115,7 @@ export class Node {
         });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static append_tspans(container: d3.Selection<any>, meta: MetaDataType[]): void {
         meta.forEach((m) => {
             container.append('tspan')
@@ -139,7 +144,7 @@ export class Node {
             .style('fill', (d: Node) => d.color());
     }
 
-    static tick(node:d3.Selection<Node>): void {
+    static tick(node: d3.Selection<Node>): void {
         node.attr('transform', (d) => d.transform());
     }
 

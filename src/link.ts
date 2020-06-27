@@ -1,18 +1,19 @@
+import * as d3 from 'd3';
+
+import {LinkPosition} from './position_cache';
 import {MetaData, MetaDataType} from './meta_data';
 import {Node} from './node';
 import {classify} from './util';
-import * as d3 from 'd3';
-import {LinkPosition} from './position_cache';
 
 export type LinkDataType = {
     source: string,
     target: string,
-    meta: object,
+    meta: Record<string, any>,  // eslint-disable-line @typescript-eslint/no-explicit-any
     class: string,
 }
 
 export class Link {
-    private static groups: object;
+    private static groups: Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
     private source: number | Node;
     private target: number | Node;
@@ -26,7 +27,7 @@ export class Link {
     private label_y_offset: number;
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
     // Also, it should have accepted undefined
-    private color: any;
+    private color: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
     private _margin: number;
 
     constructor(data: LinkDataType, public id: number, meta_keys: string[], link_width: (object) => number) {
@@ -110,7 +111,7 @@ export class Link {
             return 'rotate(0)';
     }
 
-    split(): object[] {
+    split(): Record<string, any>[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!this.meta && !this.source_meta && !this.target_meta)
             return [this];
 
@@ -136,6 +137,7 @@ export class Link {
         return `link ${classify((<Node>this.source).name)} ${classify((<Node>this.target).name)} ${classify((<Node>this.source).name)}-${classify((<Node>this.target).name)} ${this.extra_class}`;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(linkLayer: d3.Selection<any>, labelLayer: d3.Selection<any>, links: Link[]): [d3.Selection<Link>, d3.Selection<Link>, d3.Selection<any>] {
         // Render lines
         const pathGroup = linkLayer.selectAll('.link')
@@ -206,7 +208,7 @@ export class Link {
     }
 
     static append_tspans(container: string, meta: MetaDataType[]): void {
-        meta.forEach((m, i) => {
+        meta.forEach((m) => {
             d3.select(container).append('tspan')
                 .attr('x', (d: Link) => d.tspan_x_offset())
                 .attr('dy', (d: Link) => d.tspan_y_offset())
@@ -215,6 +217,7 @@ export class Link {
         });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static tick(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>): void {
         link.attr('x1', (d) => (<Node>d.source).x)
             .attr('y1', (d) => (<Node>d.source).y)
@@ -245,7 +248,7 @@ export class Link {
             .attr('y2', (d, i) => position[i].y2);
     }
 
-    register(id: number, source: number, target: number) {
+    register(id: number, source: number, target: number): void {
         Link.groups = Link.groups || {};
         const key = [source, target].sort().toString();
         Link.groups[key] = Link.groups[key] || [];
@@ -257,6 +260,7 @@ export class Link {
         return members.indexOf(link.id) - (members.length - 1) / 2;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static shift_bundle(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>): void {
         const transform = (d) => d.shift_bundle(Link.shift_multiplier(d));
 

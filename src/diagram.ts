@@ -1,12 +1,13 @@
+import * as d3 from 'd3';
+
 import {Group} from './group';
 import {Link, LinkDataType} from './link';
 import {Node, NodeDataType} from './node';
 import {PositionCache} from './position_cache';
-import * as d3 from 'd3';
 
 import './hack_cola';
 
-const cola = require('cola');
+const cola = require('cola');  // eslint-disable-line @typescript-eslint/no-var-requires
 
 type LinkWidthFunction = (object) => number;
 export type InetHengeDataType = { nodes: NodeDataType[], links: LinkDataType[] }
@@ -38,13 +39,13 @@ export class Diagram {
     private dispatch: d3.Dispatch;
     private get_link_width: LinkWidthFunction;
     private zoom: d3.behavior.Zoom<unknown>;
-    private cola: any;
+    private cola: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
     private unique_url: string;
     private position_cache: PositionCache;
-    private indicator: d3.Selection<any>;
+    private indicator: d3.Selection<any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
     private initial_translate: [number, number];
     private initial_scale: number;
-    private svg: d3.Selection<any>;
+    private svg: d3.Selection<any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
     constructor(container: string, urlOrData: string | InetHengeDataType, options: DiagramOptionType) {
         this.options = options || <DiagramOptionType>{};
@@ -104,14 +105,14 @@ export class Diagram {
         }
     }
 
-    init_cola(): any {
+    init_cola(): any {  // eslint-disable-line @typescript-eslint/no-explicit-any
         return cola.d3adaptor()
             .avoidOverlaps(true)
             .handleDisconnected(false)
             .size([this.options.width, this.options.height]);
     }
 
-    init_svg(): d3.Selection<any> {
+    init_svg(): d3.Selection<any> {  // eslint-disable-line @typescript-eslint/no-explicit-any
         this.zoom = d3.behavior.zoom();
         const container = d3.select(this.options.selector).append('svg')
             .attr('width', this.options.width)
@@ -223,7 +224,7 @@ export class Diagram {
         }
     }
 
-    configure_tick(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>, path?: d3.Selection<Link>, label?: d3.Selection<any>): void {
+    configure_tick(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>, path?: d3.Selection<Link>, label?: d3.Selection<any>): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
         this.cola.on('tick', () => {
             Node.tick(node);
             Link.tick(link, path, label);
@@ -239,7 +240,7 @@ export class Diagram {
         this.cola.stop();
     }
 
-    freeze(container: d3.Selection<any>): void {
+    freeze(container: d3.Selection<any>): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
         container.each((d) => d.fixed = true);
     }
 
@@ -247,7 +248,7 @@ export class Diagram {
         d3.select('body svg').remove();
     }
 
-    zoom_callback(container: d3.Selection<any>): void {
+    zoom_callback(container: d3.Selection<any>): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!this.initial_translate) {
             this.save_initial_translate();
         }
@@ -305,10 +306,11 @@ export class Diagram {
         this.zoom.translate(transform.translate);
     }
 
-    on(name: string, callback: () => any): void {
+    on(name: string, callback: () => any): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
         this.dispatch.on(name, callback);
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 window.Diagram = Diagram;

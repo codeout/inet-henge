@@ -1,8 +1,9 @@
-import {InetHengeDataType} from './diagram'
-import {Group} from './group';
-import {Node} from './node';
-import {Link} from './link';
 import * as crypto from 'crypto';
+
+import {Group} from './group';
+import {InetHengeDataType} from './diagram'
+import {Link} from './link';
+import {Node} from './node';
 
 export type GroupPosition = { x: number, y: number, width: number, height: number }
 export type NodePosition = { x: number, y: number }
@@ -66,7 +67,7 @@ export class PositionCache {
         return sha1.digest('hex');
     }
 
-    group_position(group: d3.Selection<any>): GroupPosition[] {
+    group_position(group: d3.Selection<any>): GroupPosition[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
         const position = [];
 
         group.each((d) => {
@@ -81,7 +82,7 @@ export class PositionCache {
         return position;
     }
 
-    node_position(node: d3.Selection<any>): NodePosition[] {
+    node_position(node: d3.Selection<any>): NodePosition[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
         const position = [];
 
         node.each((d: Node) => {
@@ -94,7 +95,7 @@ export class PositionCache {
         return position;
     }
 
-    link_position(link: d3.Selection<any>): LinkPosition[] {
+    link_position(link: d3.Selection<any>): LinkPosition[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
         const position = [];
 
         link.each((d) => {
