@@ -40,9 +40,10 @@
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint src",
+    "tsc": "./node_modules/.bin/tsc",
     "dev": "./node_modules/.bin/webpack --config webpack.dev.js",
     "prod": "./node_modules/.bin/webpack --config webpack.prod.js",
-    "clean": "rm -rf inet-henge*.js*",
+    "clean": "rm -rf inet-henge*.js* dist",
     "watch": "./node_modules/.bin/webpack --config webpack.dev.js --watch"
   }
 }
