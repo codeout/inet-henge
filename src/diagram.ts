@@ -1,6 +1,6 @@
 import {Group} from './group';
-import {Link} from './link';
-import {Node} from './node';
+import {Link, LinkDataType} from './link';
+import {Node, NodeDataType} from './node';
 import {PositionCache} from './position_cache';
 import * as d3 from 'd3';
 
@@ -8,22 +8,46 @@ import './hack_cola';
 
 const cola = require('cola');
 
-export class Diagram {
-    private options;
-    private set_distance;
-    private dispatch;
-    private get_link_width;
-    private zoom;
-    private cola;
-    private unique_url;
-    private position_cache;
-    private indicator;
-    private initial_translate;
-    private initial_scale;
-    private svg;
+type LinkWidthFunction = (object) => number;
+export type InetHengeDataType = { nodes: NodeDataType[], links: LinkDataType[] }
+type DiagramOptionType = {
+    // Options publicly available
+    width: number,
+    height: number,
+    ticks: number,
+    positionCache: boolean | string,
+    bundle: boolean,
+    pop: RegExp,
+    distance: LinkWidthFunction,
 
-    constructor(container, urlOrData, options) {
-        this.options = options || {};
+    // Internal options
+    selector: string,
+    urlOrData: string | InetHengeDataType,
+    group_pattern: RegExp | undefined,
+    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+    color: d3.scale.Ordinal<any, string>;  // eslint-disable-line @typescript-eslint/no-explicit-any
+    max_ticks: number,
+    position_cache: boolean | string,
+
+    meta: string[],
+};
+
+export class Diagram {
+    private options: DiagramOptionType;
+    private set_distance: (number) => void;
+    private dispatch: d3.Dispatch;
+    private get_link_width: LinkWidthFunction;
+    private zoom: d3.behavior.Zoom<unknown>;
+    private cola: any;
+    private unique_url: string;
+    private position_cache: PositionCache;
+    private indicator: d3.Selection<any>;
+    private initial_translate: [number, number];
+    private initial_scale: number;
+    private svg: d3.Selection<any>;
+
+    constructor(container: string, urlOrData: string | InetHengeDataType, options: DiagramOptionType) {
+        this.options = options || <DiagramOptionType>{};
         this.options.selector = container;
         this.options.urlOrData = urlOrData;
         this.options.group_pattern = options.pop;
@@ -43,23 +67,23 @@ export class Diagram {
         this.dispatch = d3.dispatch('rendered');
     }
 
-    link_distance(distance) {
+    link_distance(distance: number | ((any) => number)): (any) => number {
         if (typeof distance === 'function')
             return distance;
         else
             return (cola) => cola.linkDistance(distance);
     }
 
-    linkWidth(func) {
+    linkWidth(func: LinkWidthFunction): void {
         this.get_link_width = func;
     }
 
-    link_width(func) { // Deprecated
+    link_width(func: LinkWidthFunction): void { // Deprecated
         console.warn('link_width() is deprecated. Use linkWidth()');
         this.linkWidth(func);
     }
 
-    init(...meta) {
+    init(...meta: string[]): void {
         this.options.meta = meta;
         this.cola = this.init_cola();
         this.svg = this.init_svg();
@@ -67,7 +91,7 @@ export class Diagram {
         this.display_load_message();
 
         if (typeof this.options.urlOrData === 'object') {
-            this.render(this.options.urlOrData);
+            this.render(<InetHengeDataType>this.options.urlOrData);
         } else {
             d3.json(this.url(), (error, data) => {
                 if (error) {
@@ -80,14 +104,14 @@ export class Diagram {
         }
     }
 
-    init_cola() {
+    init_cola(): any {
         return cola.d3adaptor()
             .avoidOverlaps(true)
             .handleDisconnected(false)
             .size([this.options.width, this.options.height]);
     }
 
-    init_svg() {
+    init_svg(): d3.Selection<any> {
         this.zoom = d3.behavior.zoom();
         const container = d3.select(this.options.selector).append('svg')
             .attr('width', this.options.width)
@@ -106,7 +130,7 @@ export class Diagram {
         return container;
     }
 
-    url() {
+    url(): string {
         if (this.unique_url) {
             return this.unique_url;
         }
@@ -115,7 +139,7 @@ export class Diagram {
         return this.unique_url;
     }
 
-    render(data) {
+    render(data: InetHengeDataType): void {
         try {
             const nodes = data.nodes ?
                 data.nodes.map((n, i) => new Node(n, i, this.options.meta, this.options.color)) : [];
@@ -127,7 +151,8 @@ export class Diagram {
                 .links(links)
                 .groups(groups);
             this.set_distance(this.cola);
-            this.cola.start();
+
+            this.cola.start(); // Update Link.source and Link.target with Node object
 
             const groupLayer = this.svg.append('g').attr('id', 'groups');
             const linkLayer = this.svg.append('g').attr('id', 'links');
@@ -198,7 +223,7 @@ export class Diagram {
         }
     }
 
-    configure_tick(group, node, link, path?, label?) {
+    configure_tick(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>, path?: d3.Selection<Link>, label?: d3.Selection<any>): void {
         this.cola.on('tick', () => {
             Node.tick(node);
             Link.tick(link, path, label);
@@ -206,7 +231,7 @@ export class Diagram {
         });
     }
 
-    ticks_forward(count?) {
+    ticks_forward(count?: number): void {
         count = count || this.options.max_ticks;
 
         for (let i = 0; i < count; i++)
@@ -214,15 +239,15 @@ export class Diagram {
         this.cola.stop();
     }
 
-    freeze(container) {
+    freeze(container: d3.Selection<any>): void {
         container.each((d) => d.fixed = true);
     }
 
-    destroy() {
+    destroy(): void {
         d3.select('body svg').remove();
     }
 
-    zoom_callback(container) {
+    zoom_callback(container: d3.Selection<any>): void {
         if (!this.initial_translate) {
             this.save_initial_translate();
         }
@@ -235,11 +260,11 @@ export class Diagram {
         container.attr('transform', `translate(${(<d3.ZoomEvent>d3.event).translate}) scale(${(<d3.ZoomEvent>d3.event).scale})`);
     }
 
-    dragstart_callback() {
+    dragstart_callback(): void {
         (<d3.ZoomEvent>d3.event).sourceEvent.stopPropagation();
     }
 
-    display_load_message() {
+    display_load_message(): void {
         this.indicator = this.svg.append('text')
             .attr('x', this.options.width / 2)
             .attr('y', this.options.height / 2)
@@ -248,27 +273,27 @@ export class Diagram {
             .text('Simulating. Just a moment ...');
     }
 
-    hide_load_message() {
+    hide_load_message(): void {
         if (this.indicator)
             this.indicator.remove();
     }
 
-    show_message(message) {
+    show_message(message: string): void {
         if (this.indicator)
             this.indicator.text(message);
     }
 
-    save_position(group, node, link) {
+    save_position(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>): void {
         this.position_cache.save(group, node, link);
     }
 
-    save_initial_translate() {
+    save_initial_translate(): void {
         const transform = d3.transform(this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
         this.initial_scale = transform.scale[0]; // NOTE: Assuming ky = kx
         this.initial_translate = transform.translate;
     }
 
-    attr(name, value) {
+    attr(name: string, value: string): void {
         if (!this.initial_translate) {
             this.save_initial_translate();
         }
@@ -280,7 +305,7 @@ export class Diagram {
         this.zoom.translate(transform.translate);
     }
 
-    on(name, callback) {
+    on(name: string, callback: () => any): void {
         this.dispatch.on(name, callback);
     }
 }

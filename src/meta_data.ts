@@ -1,12 +1,14 @@
+export type MetaDataType = { class: string, value: any }
+
 export class MetaData {
-    constructor(private data, private extra_key?) {
+    constructor(private data: object, private extra_key?: string) {
     }
 
-    get(keys) {
+    get(keys: string[]): MetaDataType[] {
         return this.slice(keys).filter((k) => typeof k.value === 'string');
     }
 
-    slice(keys) {
+    slice(keys: string[]): MetaDataType[] {
         if (!this.data)
             return [];
 
@@ -16,7 +18,7 @@ export class MetaData {
             return this.slice_without_extra_key(keys);
     }
 
-    slice_with_extra_key(keys) {
+    slice_with_extra_key(keys: string[]): MetaDataType[] {
         const data = [];
 
         keys.forEach((k) => {
@@ -27,7 +29,7 @@ export class MetaData {
         return data;
     }
 
-    slice_without_extra_key(keys) {
+    slice_without_extra_key(keys: string[]): MetaDataType[] {
         const data = [];
 
         keys.forEach((k) => {

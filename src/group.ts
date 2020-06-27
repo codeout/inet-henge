@@ -1,32 +1,38 @@
+import {GroupPosition} from './position_cache';
+import {Node} from './node';
 import {classify} from './util';
 
 export class Group {
-    private leaves;
-    private bounds;
+    private leaves: number[];
+    private bounds: any;  // Not appropriately defined in @types/d3/index.d.ts
 
-    constructor(private name, private color) {
+    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+    // Also, it should have accepted undefined
+    constructor(private name: string, private color: any) {
         this.leaves = [];
     }
 
-    push(node) {
+    push(node: Node): void {
         this.leaves.push(node.id);
     }
 
-    transform() {
+    transform(): string {
         return `translate(${this.bounds.x}, ${this.bounds.y})`;
     }
 
-    group_width() {
+    group_width(): number {
         return this.bounds.width();
     }
 
-    group_height() {
+    group_height(): number {
         return this.bounds.height();
     }
 
-    static divide(nodes, pattern, color) {
+    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+    // Also, it should have accepted undefined
+    static divide(nodes: Node[], pattern: RegExp, color: any): Group[] {
         const groups = {};
-        const register = (name, node, parent?) => {
+        const register = (name: string, node: Node, parent?: string) => {
             const key = `${parent}:${name}`;
             groups[key] = groups[key] || new Group(name, color);
             groups[key].push(node);
@@ -49,11 +55,11 @@ export class Group {
         return this.array(groups);
     }
 
-    static array(groups) {
+    static array(groups: object): Group[] {
         return Object.keys(groups).map((g) => groups[g]);
     }
 
-    static render(layer, groups) {
+    static render(layer: d3.Selection<any>, groups: Group[]): d3.Selection<Group> {
         const group = layer.selectAll('.group')
             .data(groups)
             .enter()
@@ -74,14 +80,14 @@ export class Group {
         return group;
     }
 
-    static tick(group) {
+    static tick(group: d3.Selection<Group>): void {
         group.attr('transform', (d) => d.transform());
         group.selectAll('rect')
             .attr('width', (d) => d.group_width())
             .attr('height', (d) => d.group_height());
     }
 
-    static set_position(group, position) {
+    static set_position(group: d3.Selection<Group>, position: GroupPosition[]): void {
         group.attr('transform', (d, i) => {
             d.bounds.x = position[i].x;
             d.bounds.y = position[i].y;

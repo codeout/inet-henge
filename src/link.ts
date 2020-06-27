@@ -1,25 +1,35 @@
-import {MetaData} from './meta_data';
+import {MetaData, MetaDataType} from './meta_data';
 import {Node} from './node';
 import {classify} from './util';
 import * as d3 from 'd3';
+import {LinkPosition} from './position_cache';
+
+export type LinkDataType = {
+    source: string,
+    target: string,
+    meta: object,
+    class: string,
+}
 
 export class Link {
     private static groups: object;
 
-    private source;
-    private target;
-    private meta;
-    private source_meta;
-    private target_meta;
-    private extra_class;
-    private width;
-    private default_margin;
-    private label_x_offset;
-    private label_y_offset;
-    private color;
-    private _margin;
+    private source: number | Node;
+    private target: number | Node;
+    private meta: MetaDataType[];
+    private source_meta: MetaDataType[];
+    private target_meta: MetaDataType[];
+    private extra_class: string;
+    private width: number;
+    private default_margin: number;
+    private label_x_offset: number;
+    private label_y_offset: number;
+    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+    // Also, it should have accepted undefined
+    private color: any;
+    private _margin: number;
 
-    constructor(data, public id, meta_keys, link_width) {
+    constructor(data: LinkDataType, public id: number, meta_keys: string[], link_width: (object) => number) {
         this.source = Node.id_by_name(data.source);
         this.target = Node.id_by_name(data.target);
         this.meta = new MetaData(data.meta).get(meta_keys);
@@ -40,27 +50,27 @@ export class Link {
         this.register(id, this.source, this.target);
     }
 
-    is_named_path() {
+    is_named_path(): boolean {
         return this.meta.length > 0;
     }
 
-    is_reverse_path() {
+    is_reverse_path(): boolean {
         return this.target_meta.length > 0;
     }
 
-    d() {
-        return `M ${this.source.x} ${this.source.y} L ${this.target.x} ${this.target.y}`;
+    d(): string {
+        return `M ${(<Node>this.source).x} ${(<Node>this.source).y} L ${(<Node>this.target).x} ${(<Node>this.target).y}`;
     }
 
-    path_id() {
+    path_id(): string {
         return `path${this.id}`;
     }
 
-    link_id() {
+    link_id(): string {
         return `link${this.id}`;
     }
 
-    margin() {
+    margin(): number {
         if (!this._margin) {
             const margin = window.getComputedStyle(document.getElementById(this.link_id())).margin;
 
@@ -77,7 +87,7 @@ export class Link {
     }
 
     // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
-    tspan_x_offset() {
+    tspan_x_offset(): number {
         if (this.is_named_path())
             return 0;
         else if (this.is_reverse_path())
@@ -86,21 +96,21 @@ export class Link {
             return this.label_x_offset;
     }
 
-    tspan_y_offset() {
+    tspan_y_offset(): string {
         if (this.is_named_path())
             return `${-this.label_y_offset + 0.7}em`;
         else
             return `${this.label_y_offset}em`;
     }
 
-    rotate(bbox) {
-        if (this.source.x > this.target.x)
+    rotate(bbox: SVGRect): string {
+        if ((<Node>this.source).x > (<Node>this.target).x)
             return `rotate(180 ${bbox.x + bbox.width / 2} ${bbox.y + bbox.height / 2})`;
         else
             return 'rotate(0)';
     }
 
-    split() {
+    split(): object[] {
         if (!this.meta && !this.source_meta && !this.target_meta)
             return [this];
 
@@ -117,16 +127,16 @@ export class Link {
         return meta;
     }
 
-    has_meta() {
+    has_meta(): boolean {
         return this.meta.length > 0 || this.source_meta.length > 0 || this.target_meta.length > 0;
     }
 
-    class() {
+    class(): string {
         // eslint-disable-next-line max-len
-        return `link ${classify(this.source.name)} ${classify(this.target.name)} ${classify(this.source.name)}-${classify(this.target.name)} ${this.extra_class}`;
+        return `link ${classify((<Node>this.source).name)} ${classify((<Node>this.target).name)} ${classify((<Node>this.source).name)}-${classify((<Node>this.target).name)} ${this.extra_class}`;
     }
 
-    static render(linkLayer, labelLayer, links) {
+    static render(linkLayer: d3.Selection<any>, labelLayer: d3.Selection<any>, links: Link[]): [d3.Selection<Link>, d3.Selection<Link>, d3.Selection<any>] {
         // Render lines
         const pathGroup = linkLayer.selectAll('.link')
             .data(links)
@@ -135,10 +145,10 @@ export class Link {
             .attr('class', (d) => d.class());
 
         const link = pathGroup.append('line')
-            .attr('x1', (d) => d.source.x)
-            .attr('y1', (d) => d.source.y)
-            .attr('x2', (d) => d.target.x)
-            .attr('y2', (d) => d.target.y)
+            .attr('x1', (d) => (<Node>d.source).x)
+            .attr('y1', (d) => (<Node>d.source).y)
+            .attr('x2', (d) => (<Node>d.target).x)
+            .attr('y2', (d) => (<Node>d.target).y)
             .attr('stroke', (d) => d.color)
             .attr('stroke-width', (d) => d.width)
             .attr('id', (d) => d.link_id())
@@ -157,15 +167,15 @@ export class Link {
             .attr('class', (d) => d.class());
 
         const text = textGroup.selectAll('text')
-            .data((d) => d.split().filter((l) => l.has_meta()))
+            .data((d: Link) => d.split().filter((l: Link) => l.has_meta()))
             .enter()
             .append('text')
-            .attr('class', (d) => d.path_id()); // Bind text with path_id as class
+            .attr('class', (d: Link) => d.path_id()); // Bind text with path_id as class
 
         const text_path = text.append('textPath')
-            .attr('xlink:href', (d) => `#${d.path_id()}`);
+            .attr('xlink:href', (d: Link) => `#${d.path_id()}`);
 
-        text_path.each(function (d) {
+        text_path.each(function (d: Link) {
             Link.append_tspans(this, d.meta);
             Link.append_tspans(this, d.source_meta);
             Link.append_tspans(this, d.target_meta);
@@ -181,21 +191,21 @@ export class Link {
         return [link, path, text];
     }
 
-    static the_other_end(container) {
+    static the_other_end(container: string): void {
         d3.select(container)
             .attr('class', 'reverse')
             .attr('text-anchor', 'end')
             .attr('startOffset', '100%');
     }
 
-    static center(container) {
+    static center(container: string): void {
         d3.select(container)
             .attr('class', 'center')
             .attr('text-anchor', 'middle')
             .attr('startOffset', '50%');
     }
 
-    static append_tspans(container, meta) {
+    static append_tspans(container: string, meta: MetaDataType[]): void {
         meta.forEach((m, i) => {
             d3.select(container).append('tspan')
                 .attr('x', (d: Link) => d.tspan_x_offset())
@@ -205,21 +215,21 @@ export class Link {
         });
     }
 
-    static tick(link, path, label) {
-        link.attr('x1', (d) => d.source.x)
-            .attr('y1', (d) => d.source.y)
-            .attr('x2', (d) => d.target.x)
-            .attr('y2', (d) => d.target.y);
+    static tick(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>): void {
+        link.attr('x1', (d) => (<Node>d.source).x)
+            .attr('y1', (d) => (<Node>d.source).y)
+            .attr('x2', (d) => (<Node>d.target).x)
+            .attr('y2', (d) => (<Node>d.target).y);
 
         if (path)
             path.attr('d', (d) => d.d());
         if (label)
-            label.attr('transform', function (d) {
+            label.attr('transform', function (d: Link) {
                 return d.rotate(this.getBBox());
             });
     }
 
-    static zoom(scale?) {
+    static zoom(scale?: number): void {
         let visibility = 'hidden';
         if (scale && scale > 1.5)
             visibility = 'visible';
@@ -228,26 +238,26 @@ export class Link {
             .style('visibility', visibility);
     }
 
-    static set_position(link, position) {
+    static set_position(link: d3.Selection<Link>, position: LinkPosition[]): void {
         link.attr('x1', (d, i) => position[i].x1)
             .attr('y1', (d, i) => position[i].y1)
             .attr('x2', (d, i) => position[i].x2)
             .attr('y2', (d, i) => position[i].y2);
     }
 
-    register(id, source, target) {
+    register(id: number, source: number, target: number) {
         Link.groups = Link.groups || {};
         const key = [source, target].sort().toString();
         Link.groups[key] = Link.groups[key] || [];
         Link.groups[key].push(id);
     }
 
-    static shift_multiplier(link) {
-        const members = Link.groups[[link.source.id, link.target.id].sort().toString()] || [];
+    static shift_multiplier(link: Link): number {
+        const members = Link.groups[[(<Node>link.source).id, (<Node>link.target).id].sort().toString()] || [];
         return members.indexOf(link.id) - (members.length - 1) / 2;
     }
 
-    static shift_bundle(link, path, label) {
+    static shift_bundle(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>): void {
         const transform = (d) => d.shift_bundle(Link.shift_multiplier(d));
 
         link.attr('transform', transform);
@@ -255,11 +265,11 @@ export class Link {
         label.attr('transform', transform);
     }
 
-    shift_bundle(multiplier) {
+    shift_bundle(multiplier: number): string {
         const gap = this.margin() * multiplier;
 
-        const width = Math.abs(this.target.x - this.source.x);
-        const height = Math.abs(this.source.y - this.target.y);
+        const width = Math.abs((<Node>this.target).x - (<Node>this.source).x);
+        const height = Math.abs((<Node>this.source).y - (<Node>this.target).y);
         const length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
 
         return `translate(${gap * height / length}, ${gap * width / length})`;

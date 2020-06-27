@@ -1,25 +1,40 @@
+import {InetHengeDataType} from './diagram'
+import {Group} from './group';
+import {Node} from './node';
+import {Link} from './link';
 import * as crypto from 'crypto';
 
-export class PositionCache {
-    cached_sha1
-    group
-    node
-    link
+export type GroupPosition = { x: number, y: number, width: number, height: number }
+export type NodePosition = { x: number, y: number }
+export type LinkPosition = { x1: number, y1: number, x2: number, y2: number }
+type ExtendedInetHengeDataType = InetHengeDataType & { pop: string }
+type CacheDataType = {
+    sha1: string,
+    group: GroupPosition[],
+    node: NodePosition[],
+    link: LinkPosition[],
+}
 
-    constructor(public data, public pop?, sha1?) {
+export class PositionCache {
+    private cached_sha1: string
+    public group: GroupPosition[]
+    public node: NodePosition[]
+    public link: LinkPosition[]
+
+    constructor(public data: InetHengeDataType, public pop?: RegExp, sha1?: string) {
         // NOTE: properties below can be undefined
         this.cached_sha1 = sha1;
     }
 
-    static get_all() {
+    static get_all(): CacheDataType[] {
         return JSON.parse(localStorage.getItem('position_cache')) || {};
     }
 
-    static get() {
+    static get(): CacheDataType {
         return this.get_all()[location.pathname] || {};
     }
 
-    save(group, node, link) {
+    save(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>): void {
         const cache = PositionCache.get_all();
         cache[location.pathname] = {
             sha1: this.sha1(),
@@ -31,13 +46,11 @@ export class PositionCache {
         localStorage.setItem('position_cache', JSON.stringify(cache));
     }
 
-    sha1(data?, pop?) {
-        data = Object.assign({}, data || this.data);
-        data.pop = pop || this.pop;
-        if (data.pop) {
-            data.pop = data.pop.toString();
-        } else {
-            data.pop = null; // NOTE: unify undefined with null
+    sha1(data?: ExtendedInetHengeDataType, pop?: RegExp): string {
+        data = <ExtendedInetHengeDataType>Object.assign({}, data || this.data);
+        data.pop = String(pop || this.pop);
+        if (data.pop === 'undefined') {
+            data.pop = 'null'; // NOTE: unify undefined with null
         }
 
         data.nodes && data.nodes.forEach((i) => {
@@ -53,7 +66,7 @@ export class PositionCache {
         return sha1.digest('hex');
     }
 
-    group_position(group) {
+    group_position(group: d3.Selection<any>): GroupPosition[] {
         const position = [];
 
         group.each((d) => {
@@ -68,10 +81,10 @@ export class PositionCache {
         return position;
     }
 
-    node_position(node) {
+    node_position(node: d3.Selection<any>): NodePosition[] {
         const position = [];
 
-        node.each((d) => {
+        node.each((d: Node) => {
             position.push({
                 x: d.x,
                 y: d.y
@@ -81,7 +94,7 @@ export class PositionCache {
         return position;
     }
 
-    link_position(link) {
+    link_position(link: d3.Selection<any>): LinkPosition[] {
         const position = [];
 
         link.each((d) => {
@@ -96,11 +109,11 @@ export class PositionCache {
         return position;
     }
 
-    match(data, pop) {
-        return this.cached_sha1 === this.sha1(data, pop);
+    match(data: InetHengeDataType, pop: RegExp): boolean {
+        return this.cached_sha1 === this.sha1(<ExtendedInetHengeDataType>data, pop);
     }
 
-    static load(data, pop) {
+    static load(data: InetHengeDataType, pop: RegExp): PositionCache | undefined {
         const cache = this.get();
         if (cache) {
             const position = new PositionCache(data, pop, cache.sha1);
