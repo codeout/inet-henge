@@ -40,6 +40,7 @@
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint src",
+    "build": "npm run clean && npm run dev && npm run prod",
     "tsc": "./node_modules/.bin/tsc",
     "dev": "./node_modules/.bin/webpack --config webpack.dev.js",
     "prod": "./node_modules/.bin/webpack --config webpack.prod.js",
