@@ -23588,7 +23588,9 @@ class Diagram {
         this.svg = this.init_svg();
         this.display_load_message();
         if (typeof this.options.urlOrData === 'object') {
-            this.render(this.options.urlOrData);
+            setTimeout(() => {
+                this.render(this.options.urlOrData);
+            });
         }
         else {
             d3__WEBPACK_IMPORTED_MODULE_0__["json"](this.url(), (error, data) => {
