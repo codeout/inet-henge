@@ -92,7 +92,9 @@ export class Diagram {
         this.display_load_message();
 
         if (typeof this.options.urlOrData === 'object') {
-            this.render(<InetHengeDataType>this.options.urlOrData);
+            setTimeout(() => {  // Run asynchronously
+                this.render(<InetHengeDataType>this.options.urlOrData);
+            });
         } else {
             d3.json(this.url(), (error, data) => {
                 if (error) {
