@@ -155,4 +155,8 @@ export class Node {
             return d.transform();
         });
     }
+
+    static reset(): void {
+        Node.all = null;
+    }
 }

@@ -23715,6 +23715,8 @@ class Diagram {
     }
     destroy() {
         d3__WEBPACK_IMPORTED_MODULE_0__["select"]('body svg').remove();
+        _node__WEBPACK_IMPORTED_MODULE_3__["Node"].reset();
+        _link__WEBPACK_IMPORTED_MODULE_2__["Link"].reset();
     }
     zoom_callback(container) {
         if (!this.initial_translate) {
@@ -24161,6 +24163,9 @@ class Link {
         const length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
         return `translate(${gap * height / length}, ${gap * width / length})`;
     }
+    static reset() {
+        Link.groups = null;
+    }
 }
 
 
@@ -24340,6 +24345,9 @@ class Node {
             d.y = position[i].y;
             return d.transform();
         });
+    }
+    static reset() {
+        Node.all = null;
     }
 }
 
