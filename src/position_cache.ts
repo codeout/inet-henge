@@ -1,5 +1,7 @@
 import * as crypto from 'crypto';
 
+const cloneDeep = require('lodash.clonedeep')  // eslint-disable-line @typescript-eslint/no-var-requires
+
 import {Group} from './group';
 import {InetHengeDataType} from './diagram'
 import {Link} from './link';
@@ -48,7 +50,7 @@ export class PositionCache {
     }
 
     sha1(data?: ExtendedInetHengeDataType, pop?: RegExp): string {
-        data = <ExtendedInetHengeDataType>Object.assign({}, data || this.data);
+        data = <ExtendedInetHengeDataType>cloneDeep(data || this.data);
         data.pop = String(pop || this.pop);
         if (data.pop === 'undefined') {
             data.pop = 'null'; // NOTE: unify undefined with null
