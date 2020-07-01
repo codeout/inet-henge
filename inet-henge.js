@@ -23823,7 +23823,7 @@ class Group {
                 }
             }
             // Node type based group
-            node.group.forEach((name) => register(name, node, result.toString()));
+            node.group.forEach((name) => register(name, node, String(result)));
         });
         return this.array(groups);
     }
