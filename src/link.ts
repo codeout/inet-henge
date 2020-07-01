@@ -278,4 +278,8 @@ export class Link {
 
         return `translate(${gap * height / length}, ${gap * width / length})`;
     }
+
+    static reset(): void {
+        Link.groups = null;
+    }
 }

@@ -248,6 +248,8 @@ export class Diagram {
 
     destroy(): void {
         d3.select('body svg').remove();
+        Node.reset();
+        Link.reset();
     }
 
     zoom_callback(container: d3.Selection<any>): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
