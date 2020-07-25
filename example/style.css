@@ -32,5 +32,18 @@
   stroke: #00B0E8;
 }
 
+.tooltip {
+  font-size: 12px;
+  font-weight: bold;
+}
+.tooltip path {
+  stroke: #e2ddd9;
+  stroke-width: 3px;
+}
+.tooltip .name {
+  fill: #8d7966;
+}
+
+
 .loopback,
 .interface { fill: #333; }
