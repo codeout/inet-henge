@@ -17,11 +17,11 @@ export class Node {
 
     public name: string;
     public group: string[];
+    public meta: MetaDataType[];
     public x: number;
     public y: number;
 
     private icon: string;
-    private meta: MetaDataType[];
     private extra_class: string;
     private width: number;
     private height: number;
@@ -31,7 +31,7 @@ export class Node {
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
     // Also, it should have accepted undefined
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-    constructor(data: NodeDataType, public id: number, meta_keys: string[], private color: any) {
+    constructor(data: NodeDataType, public id: number, meta_keys: string[], private color: any, private tooltip: boolean) {
         this.name = data.name;
         this.group = typeof data.group === 'string' ? [data.group] : (data.group || []);
         this.icon = data.icon;
@@ -111,7 +111,10 @@ export class Node {
             .attr('x', (d: Node) => d.x_for_text());
 
         text.each((d: Node) => {
-            Node.append_tspans(text, d.meta);
+            // Show meta only when "tooltip" option is not configured
+            if (!d.tooltip) {
+                Node.append_tspans(text, d.meta);
+            }
         });
     }
 

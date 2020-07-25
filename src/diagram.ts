@@ -4,6 +4,7 @@ import {Group} from './group';
 import {Link, LinkDataType} from './link';
 import {Node, NodeDataType} from './node';
 import {PositionCache} from './position_cache';
+import {Tooltip} from './tooltip';
 
 import './hack_cola';
 
@@ -20,6 +21,7 @@ type DiagramOptionType = {
     bundle: boolean,
     pop: RegExp,
     distance: LinkWidthFunction,
+    tooltip: string;
 
     // Internal options
     selector: string,
@@ -61,6 +63,7 @@ export class Diagram {
         this.options.position_cache = 'positionCache' in options ? options.positionCache : true;
         // NOTE: This is an experimental option
         this.options.bundle = 'bundle' in options ? options.bundle : false;
+        this.options.tooltip = options.tooltip;
 
         this.set_distance = this.link_distance(options.distance || 150);
 
@@ -145,10 +148,11 @@ export class Diagram {
     render(data: InetHengeDataType): void {
         try {
             const nodes = data.nodes ?
-                data.nodes.map((n, i) => new Node(n, i, this.options.meta, this.options.color)) : [];
+                data.nodes.map((n, i) => new Node(n, i, this.options.meta, this.options.color, this.options.tooltip !== undefined)) : [];
             const links = data.links ?
                 data.links.map((l, i) => new Link(l, i, this.options.meta, this.get_link_width)) : [];
             const groups = Group.divide(nodes, this.options.group_pattern, this.options.color);
+            const tooltips = nodes.map((n) => new Tooltip(n, this.options.tooltip));
 
             this.cola.nodes(nodes)
                 .links(links)
@@ -161,6 +165,7 @@ export class Diagram {
             const linkLayer = this.svg.append('g').attr('id', 'links');
             const nodeLayer = this.svg.append('g').attr('id', 'nodes');
             const linkLabelLayer = this.svg.append('g').attr('id', 'link-labels');
+            const tooltipLayer = this.svg.append('g').attr('id', 'tooltips');
 
             const [link, path, label] = Link.render(linkLayer, linkLabelLayer, links);
 
@@ -181,6 +186,8 @@ export class Diagram {
                         if (this.options.bundle) {
                             Link.shift_bundle(link, path, label);
                         }
+
+                        Tooltip.followNode(tooltip);
                     })
             );
 
@@ -212,6 +219,9 @@ export class Diagram {
 
             path.attr('d', (d) => d.d()); // make sure path calculation is done
             this.freeze(node);
+
+            const tooltip = Tooltip.render(tooltipLayer, tooltips);
+
             this.dispatch.rendered();
 
             // NOTE: This is an experimental option
