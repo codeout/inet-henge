@@ -302,7 +302,7 @@ inet-henge generates an SVG image, so you can customize the style by using CSS.
 
 ### Display bundles
 
-You can display multiple links between nodes by setting `bundle: true` in constructor like:
+You can display multiple links between nodes by setting `bundle: true` in the constructor like:
 
 ```html
 <script>
@@ -317,7 +317,7 @@ Nodes are connected to each other with a single link by default.
 
 ### Save positions after dragging nodes
 
-You can save positions of all nodes in browser even after dragging them by setting `positionCache: 'fixed'` in constructor like:
+You can save positions of all nodes in browser even after dragging them by setting `positionCache: 'fixed'` in the constructor like:
 
 ```html
 <script>
