@@ -111,7 +111,7 @@ Object is also acceptable:
 
 ```html
   <script>
-    var data = {
+    const data = {
       "nodes": [{ "name": "A" }, { "name": "B" }],
       "links": [{ "source": "A", "target": "B" }]
     };
@@ -132,7 +132,7 @@ Nodes get rendered in groups when you specify which node belongs to which group 
 When the first three characters describe POP name, you can group nodes by doing this:
 
 ``` javascript
-var diagram = new Diagram('#diagram', 'data.json', {pop: /^.{3}/})
+const diagram = new Diagram('#diagram', 'data.json', {pop: /^.{3}/})
 ```
 
 
@@ -234,7 +234,7 @@ You can use ```linkWidth()``` API to customize link widths. The argument should 
 :warning: Deprecation Warning: Use ```linkWidth()``` instead of ```link_width()``` :warning:
 
 ```js
-var diagram = new Diagram('#diagram', 'index.json');
+const diagram = new Diagram('#diagram', 'index.json');
 diagram.linkWidth(function (link) {
   if (!link)
     return 1;  // px
@@ -265,7 +265,7 @@ diagram.init('bandwidth');
 You can specify the number of steps (called as ticks) to calculate with [d3-force](https://github.com/d3/d3-force/blob/master/README.md) layout. Bigger ticks typically converge on a better layout, but it will take much longer until settlement. The default value is 1000.
 
 ``` javascript
-var diagram = new Diagram('#diagram', 'data.json', {ticks: 3000});
+const diagram = new Diagram('#diagram', 'data.json', {ticks: 3000});
 ```
 
 ### Position Cache
@@ -273,7 +273,7 @@ var diagram = new Diagram('#diagram', 'data.json', {ticks: 3000});
 inet-henge caches a calculated position of nodes, groups, and links for the next rendering. If you load the same JSON data, the cache will be used as a position hint. You can disable this behavior with `positionCache` option.
 
 ``` javascript
-var diagram = new Diagram('#diagram', 'data.json', {positionCache: false});
+const diagram = new Diagram('#diagram', 'data.json', {positionCache: false});
 ```
 
 ### SVG viewport size
@@ -281,7 +281,7 @@ var diagram = new Diagram('#diagram', 'data.json', {positionCache: false});
 You can change svg's viewport size:
 
 ```js
-var diagram = new Diagram('#diagram', 'data.json', {width: 1200, height: 600});
+const diagram = new Diagram('#diagram', 'data.json', {width: 1200, height: 600});
 ```
 
 This will generate:
@@ -306,7 +306,7 @@ You can display multiple links between nodes by setting `bundle: true` in constr
 
 ```html
 <script>
- var diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, bundle: true});
+ const diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, bundle: true});
  diagram.init('loopback', 'interface');
 </script>
 ```
@@ -321,7 +321,7 @@ You can save positions of all nodes in browser even after dragging them by setti
 
 ```html
 <script>
- var diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, positionCache: 'fixed'});
+ const diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, positionCache: 'fixed'});
  diagram.init('loopback', 'interface');
 </script>
 ```
