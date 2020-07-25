@@ -25302,8 +25302,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _link__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./link */ "./src/link.ts");
 /* harmony import */ var _node__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node */ "./src/node.ts");
 /* harmony import */ var _position_cache__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./position_cache */ "./src/position_cache.ts");
-/* harmony import */ var _hack_cola__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./hack_cola */ "./src/hack_cola.js");
-/* harmony import */ var _hack_cola__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_hack_cola__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _tooltip__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./tooltip */ "./src/tooltip.ts");
+/* harmony import */ var _hack_cola__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./hack_cola */ "./src/hack_cola.js");
+/* harmony import */ var _hack_cola__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_hack_cola__WEBPACK_IMPORTED_MODULE_6__);
+
 
 
 
@@ -25325,6 +25327,7 @@ class Diagram {
         this.options.position_cache = 'positionCache' in options ? options.positionCache : true;
         // NOTE: This is an experimental option
         this.options.bundle = 'bundle' in options ? options.bundle : false;
+        this.options.tooltip = options.tooltip;
         this.set_distance = this.link_distance(options.distance || 150);
         // Create events
         this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__["dispatch"]('rendered');
@@ -25392,10 +25395,11 @@ class Diagram {
     render(data) {
         try {
             const nodes = data.nodes ?
-                data.nodes.map((n, i) => new _node__WEBPACK_IMPORTED_MODULE_3__["Node"](n, i, this.options.meta, this.options.color)) : [];
+                data.nodes.map((n, i) => new _node__WEBPACK_IMPORTED_MODULE_3__["Node"](n, i, this.options.meta, this.options.color, this.options.tooltip !== undefined)) : [];
             const links = data.links ?
                 data.links.map((l, i) => new _link__WEBPACK_IMPORTED_MODULE_2__["Link"](l, i, this.options.meta, this.get_link_width)) : [];
             const groups = _group__WEBPACK_IMPORTED_MODULE_1__["Group"].divide(nodes, this.options.group_pattern, this.options.color);
+            const tooltips = nodes.map((n) => new _tooltip__WEBPACK_IMPORTED_MODULE_5__["Tooltip"](n, this.options.tooltip));
             this.cola.nodes(nodes)
                 .links(links)
                 .groups(groups);
@@ -25405,6 +25409,7 @@ class Diagram {
             const linkLayer = this.svg.append('g').attr('id', 'links');
             const nodeLayer = this.svg.append('g').attr('id', 'nodes');
             const linkLabelLayer = this.svg.append('g').attr('id', 'link-labels');
+            const tooltipLayer = this.svg.append('g').attr('id', 'tooltips');
             const [link, path, label] = _link__WEBPACK_IMPORTED_MODULE_2__["Link"].render(linkLayer, linkLabelLayer, links);
             const group = _group__WEBPACK_IMPORTED_MODULE_1__["Group"].render(groupLayer, groups).call(this.cola.drag()
                 .on('dragstart', this.dragstart_callback)
@@ -25419,6 +25424,7 @@ class Diagram {
                 if (this.options.bundle) {
                     _link__WEBPACK_IMPORTED_MODULE_2__["Link"].shift_bundle(link, path, label);
                 }
+                _tooltip__WEBPACK_IMPORTED_MODULE_5__["Tooltip"].followNode(tooltip);
             }));
             // without path calculation
             this.configure_tick(group, node, link);
@@ -25444,6 +25450,7 @@ class Diagram {
             }
             path.attr('d', (d) => d.d()); // make sure path calculation is done
             this.freeze(node);
+            const tooltip = _tooltip__WEBPACK_IMPORTED_MODULE_5__["Tooltip"].render(tooltipLayer, tooltips);
             this.dispatch.rendered();
             // NOTE: This is an experimental option
             if (this.options.position_cache === 'fixed') {
@@ -26000,9 +26007,10 @@ class Node {
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
     // Also, it should have accepted undefined
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-    constructor(data, id, meta_keys, color) {
+    constructor(data, id, meta_keys, color, tooltip) {
         this.id = id;
         this.color = color;
+        this.tooltip = tooltip;
         this.name = data.name;
         this.group = typeof data.group === 'string' ? [data.group] : (data.group || []);
         this.icon = data.icon;
@@ -26067,7 +26075,10 @@ class Node {
             .text((d) => d.name)
             .attr('x', (d) => d.x_for_text());
         text.each((d) => {
-            Node.append_tspans(text, d.meta);
+            // Show meta only when "tooltip" option is not configured
+            if (!d.tooltip) {
+                Node.append_tspans(text, d.meta);
+            }
         });
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26216,6 +26227,155 @@ class PositionCache {
                 return position;
             }
         }
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/tooltip.ts":
+/*!************************!*\
+  !*** ./src/tooltip.ts ***!
+  \************************/
+/*! exports provided: Tooltip */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tooltip", function() { return Tooltip; });
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util */ "./src/util.ts");
+
+
+class Tooltip {
+    constructor(node, eventType) {
+        this.node = node;
+        this.eventType = eventType;
+        this.offsetX = 30;
+        this.visibility = 'hidden';
+    }
+    tspanOffsetY(isHeader) {
+        return isHeader ? '2em' : '1.1em';
+    }
+    transform() {
+        return `translate(${this.node.x}, ${this.node.y})`;
+    }
+    class() {
+        return `tooltip ${this.nodeId()}`;
+    }
+    nodeId() {
+        return Object(_util__WEBPACK_IMPORTED_MODULE_1__["classify"])(this.node.name);
+    }
+    // This doesn't actually toggle visibility, but returns string for toggled visibility
+    toggleVisibility() {
+        if (this.visibility === 'hidden') {
+            this.visibility = 'visible';
+            return 'visible';
+        }
+        else {
+            this.visibility = 'hidden';
+            return 'hidden';
+        }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    toggleVisibilityCallback(element) {
+        return () => {
+            // Do nothing for dragging
+            if (event.defaultPrevented) {
+                return;
+            }
+            d3__WEBPACK_IMPORTED_MODULE_0__["select"](element).attr('visibility', this.toggleVisibility());
+        };
+    }
+    configureNodeClickCallback(element) {
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](`#${this.nodeId()}`).on('click', this.toggleVisibilityCallback(element));
+    }
+    configureNodeHoverCallback(element) {
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](`#${this.nodeId()}`).on('mouseenter', this.toggleVisibilityCallback(element));
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](`#${this.nodeId()}`).on('mouseleave', this.toggleVisibilityCallback(element));
+    }
+    disableZoom(element) {
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](element).on('mousedown', () => {
+            d3__WEBPACK_IMPORTED_MODULE_0__["event"].stopPropagation();
+        });
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    static render(layer, tooltips) {
+        const tooltip = layer.selectAll('.tooltip')
+            .data(tooltips)
+            .enter()
+            .append('g')
+            .attr('visibility', (d) => d.visibility)
+            .attr('class', (d) => d.class())
+            .attr('transform', (d) => d.transform());
+        tooltip.each(function (d) {
+            Tooltip.appendText(this);
+            if (d.eventType === 'hover') {
+                d.configureNodeHoverCallback(this);
+            }
+            else {
+                d.configureNodeClickCallback(this);
+            }
+            d.disableZoom(this);
+        });
+        return tooltip;
+    }
+    static fill(element) {
+        // If no "fill" style is defined
+        if (getComputedStyle(element).fill.match(/\(0,\s*0,\s*0\)/)) {
+            return '#f8f1e9';
+        }
+    }
+    static pathD(x, y, width, height) {
+        const round = 8;
+        return `M ${x},${y} L ${x + 20},${y - 10} ${x + 20},${y - 20}` +
+            `Q ${x + 20},${y - 20 - round} ${x + 20 + round},${y - 20 - round}` +
+            `L ${x + 20 + width - round},${y - 20 - round}` +
+            `Q ${x + 20 + width},${y - 20 - round} ${x + 20 + width},${y - 20}` +
+            `L ${x + 20 + width},${y - 20 + height}` +
+            `Q ${x + 20 + width},${y - 20 + height + round} ${x + 20 + width - round},${y - 20 + height + round}` +
+            `L ${x + 20 + round},${y - 20 + height + round}` +
+            `Q ${x + 20},${y - 20 + height + round} ${x + 20},${y - 20 + height}` +
+            `L ${x + 20},${y + 10} Z`;
+    }
+    static appendText(container) {
+        const path = d3__WEBPACK_IMPORTED_MODULE_0__["select"](container).append('path');
+        const text = d3__WEBPACK_IMPORTED_MODULE_0__["select"](container).append('text');
+        text.append('tspan')
+            .attr('x', (d) => d.offsetX + 40)
+            .attr('class', 'name')
+            .text('node:');
+        text.append('tspan')
+            .attr('dx', 10)
+            .attr('class', 'value')
+            .text((d) => d.node.name);
+        text.each(function (d) {
+            Tooltip.appendTspans(text, d.node.meta);
+            // Add "d" after bbox calculation
+            const bbox = this.getBBox();
+            path.attr('d', Tooltip.pathD(30, 0, bbox.width + 40, bbox.height + 20))
+                .style('fill', function () {
+                return Tooltip.fill(this);
+            });
+        });
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    static appendTspans(container, meta) {
+        meta.forEach((m, i) => {
+            container.append('tspan')
+                .attr('x', (d) => d.offsetX + 40)
+                .attr('dy', (d) => d.tspanOffsetY(i === 0))
+                .attr('class', 'name')
+                .text(`${m.class}:`);
+            container.append('tspan')
+                .attr('dx', 10)
+                .attr('class', 'value')
+                .text(m.value);
+        });
+    }
+    static followNode(tooltip) {
+        tooltip.attr('transform', (d) => d.transform());
     }
 }
 
