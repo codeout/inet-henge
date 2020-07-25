@@ -101,7 +101,7 @@ export class Node {
         return node;
     }
 
-    static append_text(container: string): void {
+    static append_text(container: SVGGElement): void {
         const text = d3.select(container).append('text')
             .attr('text-anchor', 'middle')
             .attr('x', (d: Node) => d.x_for_text())
@@ -126,7 +126,7 @@ export class Node {
         });
     }
 
-    static append_image(container: string): void {
+    static append_image(container: SVGGElement): void {
         d3.select(container).attr('class', (d: Node) => `node image ${classify(d.name)} ${d.extra_class}`)
             .append('image')
             .attr('xlink:href', (d: Node) => d.icon)
@@ -134,7 +134,7 @@ export class Node {
             .attr('height', (d: Node) => d.node_height());
     }
 
-    static append_rect(container: string): void {
+    static append_rect(container: SVGGElement): void {
         d3.select(container).attr('class', (d: Node) => `node rect ${classify(d.name)} ${d.extra_class}`)
             .append('rect')
             .attr('width', (d: Node) => d.node_width())

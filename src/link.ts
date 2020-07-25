@@ -193,21 +193,21 @@ export class Link {
         return [link, path, text];
     }
 
-    static the_other_end(container: string): void {
+    static the_other_end(container: SVGGElement): void {
         d3.select(container)
             .attr('class', 'reverse')
             .attr('text-anchor', 'end')
             .attr('startOffset', '100%');
     }
 
-    static center(container: string): void {
+    static center(container: SVGGElement): void {
         d3.select(container)
             .attr('class', 'center')
             .attr('text-anchor', 'middle')
             .attr('startOffset', '50%');
     }
 
-    static append_tspans(container: string, meta: MetaDataType[]): void {
+    static append_tspans(container: SVGGElement, meta: MetaDataType[]): void {
         meta.forEach((m) => {
             d3.select(container).append('tspan')
                 .attr('x', (d: Link) => d.tspan_x_offset())
