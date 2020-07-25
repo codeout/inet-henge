@@ -296,10 +296,6 @@ This will generate:
 inet-henge generates an SVG image, so you can customize the style by using CSS.
 
 
-## Experimental Features
-
-:warning: Those features may work, but still under development. The behavior might be changed :warning:
-
 ### Display bundles
 
 You can display multiple links between nodes by setting `bundle: true` in the constructor like:
@@ -326,6 +322,11 @@ You can save positions of all nodes in browser even after dragging them by setti
 </script>
 ```
 
+
+## Experimental Features
+
+:warning: Those features may work, but still under development. The behavior might be changed :warning:
+
 ### Internal groups
 
 You can display node type based groups in POP-based [Node group](#Node-Group) by `group` definition in each node.
@@ -338,6 +339,33 @@ You can display node type based groups in POP-based [Node group](#Node-Group) by
 ```
 
 ![Internal group](example/images/internal_group.png)
+
+### Metadata tooltip
+
+:warning: This feature is available in `master` branch only, not published as the npm package. :warning:
+
+You can display node metadata in the tooltip, instead of always showing as node text, by setting `tooltip: 'click'` in the constructor like:
+
+```html
+<script>
+ const diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, tooltip: 'click'});
+ diagram.init('description', 'type');
+</script>
+```
+
+In the example above, `description` and `type` will be displayed.
+
+```json
+  "nodes": [
+    { "name": "POP01-bb01", "meta": {"description": "This is a router", "type": "Backbone"}, "icon": "./images/router.png" },
+    { "name": "POP01-bb02", "meta": {"description": "This is a router", "type": "Backbone"}, "icon": "./images/router.png" },
+    { "name": "POP01-ag01", "meta": {"description": "This is a router", "type": "Aggregation"}, "icon": "./images/switch.png" },
+    { "name": "POP01-ag02", "meta": {"description": "This is a router", "type": "Aggregation"}, "icon": "./images/switch.png" },
+```
+
+![Metadata tooltip](example/images/tooltip.png)
+
+:bulb: `tooltip: 'hover'` is also available.
 
 
 ## Contributing
