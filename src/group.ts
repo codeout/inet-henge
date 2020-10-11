@@ -22,11 +22,11 @@ export class Group {
         return `translate(${this.bounds.x}, ${this.bounds.y})`;
     }
 
-    group_width(): number {
+    groupWidth(): number {
         return this.bounds.width();
     }
 
-    group_height(): number {
+    groupHeight(): number {
         return this.bounds.height();
     }
 
@@ -74,8 +74,8 @@ export class Group {
         group.append('rect')
             .attr('rx', 8)
             .attr('ry', 8)
-            .attr('width', (d) => d.group_width())
-            .attr('height', (d) => d.group_height())
+            .attr('width', (d) => d.groupWidth())
+            .attr('height', (d) => d.groupHeight())
             .style('fill', (d, i) => d.color(i));
 
         group.append('text')
@@ -87,11 +87,11 @@ export class Group {
     static tick(group: d3.Selection<Group>): void {
         group.attr('transform', (d) => d.transform());
         group.selectAll('rect')
-            .attr('width', (d) => d.group_width())
-            .attr('height', (d) => d.group_height());
+            .attr('width', (d) => d.groupWidth())
+            .attr('height', (d) => d.groupHeight());
     }
 
-    static set_position(group: d3.Selection<Group>, position: GroupPosition[]): void {
+    static setPosition(group: d3.Selection<Group>, position: GroupPosition[]): void {
         group.attr('transform', (d, i) => {
             d.bounds.x = position[i].x;
             d.bounds.y = position[i].y;

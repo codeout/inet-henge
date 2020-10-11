@@ -18,67 +18,67 @@ export class Link {
     private source: number | Node;
     private target: number | Node;
     private meta: MetaDataType[];
-    private source_meta: MetaDataType[];
-    private target_meta: MetaDataType[];
-    private extra_class: string;
+    private sourceMeta: MetaDataType[];
+    private targetMeta: MetaDataType[];
+    private extraClass: string;
     private width: number;
-    private default_margin: number;
-    private label_x_offset: number;
-    private label_y_offset: number;
+    private defaultMargin: number;
+    private labelXOffset: number;
+    private labelYOffset: number;
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
     // Also, it should have accepted undefined
     private color: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
     private _margin: number;
 
-    constructor(data: LinkDataType, public id: number, meta_keys: string[], link_width: (object) => number) {
-        this.source = Node.id_by_name(data.source);
-        this.target = Node.id_by_name(data.target);
-        this.meta = new MetaData(data.meta).get(meta_keys);
-        this.source_meta = new MetaData(data.meta, 'source').get(meta_keys);
-        this.target_meta = new MetaData(data.meta, 'target').get(meta_keys);
-        this.extra_class = data.class || '';
+    constructor(data: LinkDataType, public id: number, metaKeys: string[], linkWidth: (object) => number) {
+        this.source = Node.idByName(data.source);
+        this.target = Node.idByName(data.target);
+        this.meta = new MetaData(data.meta).get(metaKeys);
+        this.sourceMeta = new MetaData(data.meta, 'source').get(metaKeys);
+        this.targetMeta = new MetaData(data.meta, 'target').get(metaKeys);
+        this.extraClass = data.class || '';
 
-        if (typeof link_width === 'function')
-            this.width = link_width(data.meta) || 3;
+        if (typeof linkWidth === 'function')
+            this.width = linkWidth(data.meta) || 3;
         else
-            this.width = link_width || 3;
+            this.width = linkWidth || 3;
 
-        this.default_margin = 15;
-        this.label_x_offset = 20;
-        this.label_y_offset = 1.5; // em
+        this.defaultMargin = 15;
+        this.labelXOffset = 20;
+        this.labelYOffset = 1.5; // em
         this.color = '#7a4e4e';
 
         this.register(id, this.source, this.target);
     }
 
-    is_named_path(): boolean {
+    isNamedPath(): boolean {
         return this.meta.length > 0;
     }
 
-    is_reverse_path(): boolean {
-        return this.target_meta.length > 0;
+    isReversePath(): boolean {
+        return this.targetMeta.length > 0;
     }
 
     d(): string {
         return `M ${(<Node>this.source).x} ${(<Node>this.source).y} L ${(<Node>this.target).x} ${(<Node>this.target).y}`;
     }
 
-    path_id(): string {
+    pathId(): string {
         return `path${this.id}`;
     }
 
-    link_id(): string {
+    linkId(): string {
         return `link${this.id}`;
     }
 
     margin(): number {
         if (!this._margin) {
-            const margin = window.getComputedStyle(document.getElementById(this.link_id())).margin;
+            const margin = window.getComputedStyle(document.getElementById(this.linkId())).margin;
 
             // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
             // or "0px" even when not defined in .css
             if (!margin || margin === '0px') {
-                this._margin = this.default_margin;
+                this._margin = this.defaultMargin;
             } else {
                 this._margin = parseInt(margin);
             }
@@ -88,20 +88,20 @@ export class Link {
     }
 
     // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
-    tspan_x_offset(): number {
-        if (this.is_named_path())
+    tspanXOffset(): number {
+        if (this.isNamedPath())
             return 0;
-        else if (this.is_reverse_path())
-            return -this.label_x_offset;
+        else if (this.isReversePath())
+            return -this.labelXOffset;
         else
-            return this.label_x_offset;
+            return this.labelXOffset;
     }
 
-    tspan_y_offset(): string {
-        if (this.is_named_path())
-            return `${-this.label_y_offset + 0.7}em`;
+    tspanYOffset(): string {
+        if (this.isNamedPath())
+            return `${-this.labelYOffset + 0.7}em`;
         else
-            return `${this.label_y_offset}em`;
+            return `${this.labelYOffset}em`;
     }
 
     rotate(bbox: SVGRect): string {
@@ -112,11 +112,11 @@ export class Link {
     }
 
     split(): Record<string, any>[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
-        if (!this.meta && !this.source_meta && !this.target_meta)
+        if (!this.meta && !this.sourceMeta && !this.targetMeta)
             return [this];
 
         const meta = [];
-        ['meta', 'source_meta', 'target_meta'].forEach((key, i, keys) => {
+        ['meta', 'sourceMeta', 'targetMeta'].forEach((key, i, keys) => {
             if (this[key]) {
                 const duped = Object.assign(Object.create(this), this);
 
@@ -128,13 +128,13 @@ export class Link {
         return meta;
     }
 
-    has_meta(): boolean {
-        return this.meta.length > 0 || this.source_meta.length > 0 || this.target_meta.length > 0;
+    hasMeta(): boolean {
+        return this.meta.length > 0 || this.sourceMeta.length > 0 || this.targetMeta.length > 0;
     }
 
     class(): string {
         // eslint-disable-next-line max-len
-        return `link ${classify((<Node>this.source).name)} ${classify((<Node>this.target).name)} ${classify((<Node>this.source).name)}-${classify((<Node>this.target).name)} ${this.extra_class}`;
+        return `link ${classify((<Node>this.source).name)} ${classify((<Node>this.target).name)} ${classify((<Node>this.source).name)}-${classify((<Node>this.target).name)} ${this.extraClass}`;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -153,13 +153,13 @@ export class Link {
             .attr('y2', (d) => (<Node>d.target).y)
             .attr('stroke', (d) => d.color)
             .attr('stroke-width', (d) => d.width)
-            .attr('id', (d) => d.link_id())
-            .on('mouseover.line', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', true))
-            .on('mouseout.line', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', false));
+            .attr('id', (d) => d.linkId())
+            .on('mouseover.line', (d) => textGroup.selectAll(`text.${d.pathId()}`).classed('hover', true))
+            .on('mouseout.line', (d) => textGroup.selectAll(`text.${d.pathId()}`).classed('hover', false));
 
         const path = pathGroup.append('path')
             .attr('d', (d) => d.d())
-            .attr('id', (d) => d.path_id());
+            .attr('id', (d) => d.pathId());
 
         // Render texts
         const textGroup = labelLayer.selectAll('.link')
@@ -169,31 +169,31 @@ export class Link {
             .attr('class', (d) => d.class());
 
         const text = textGroup.selectAll('text')
-            .data((d: Link) => d.split().filter((l: Link) => l.has_meta()))
+            .data((d: Link) => d.split().filter((l: Link) => l.hasMeta()))
             .enter()
             .append('text')
-            .attr('class', (d: Link) => d.path_id()); // Bind text with path_id as class
+            .attr('class', (d: Link) => d.pathId()); // Bind text with pathId as class
 
-        const text_path = text.append('textPath')
-            .attr('xlink:href', (d: Link) => `#${d.path_id()}`);
+        const textPath = text.append('textPath')
+            .attr('xlink:href', (d: Link) => `#${d.pathId()}`);
 
-        text_path.each(function (d: Link) {
-            Link.append_tspans(this, d.meta);
-            Link.append_tspans(this, d.source_meta);
-            Link.append_tspans(this, d.target_meta);
+        textPath.each(function (d: Link) {
+            Link.appendTspans(this, d.meta);
+            Link.appendTspans(this, d.sourceMeta);
+            Link.appendTspans(this, d.targetMeta);
 
-            if (d.is_named_path())
+            if (d.isNamedPath())
                 Link.center(this);
 
-            if (d.is_reverse_path())
-                Link.the_other_end(this);
+            if (d.isReversePath())
+                Link.theOtherEnd(this);
         });
 
         Link.zoom(); // Initialize
         return [link, path, text];
     }
 
-    static the_other_end(container: SVGGElement): void {
+    static theOtherEnd(container: SVGGElement): void {
         d3.select(container)
             .attr('class', 'reverse')
             .attr('text-anchor', 'end')
@@ -207,11 +207,11 @@ export class Link {
             .attr('startOffset', '50%');
     }
 
-    static append_tspans(container: SVGGElement, meta: MetaDataType[]): void {
+    static appendTspans(container: SVGGElement, meta: MetaDataType[]): void {
         meta.forEach((m) => {
             d3.select(container).append('tspan')
-                .attr('x', (d: Link) => d.tspan_x_offset())
-                .attr('dy', (d: Link) => d.tspan_y_offset())
+                .attr('x', (d: Link) => d.tspanXOffset())
+                .attr('dy', (d: Link) => d.tspanYOffset())
                 .attr('class', m.class)
                 .text(m.value);
         });
@@ -241,7 +241,7 @@ export class Link {
             .style('visibility', visibility);
     }
 
-    static set_position(link: d3.Selection<Link>, position: LinkPosition[]): void {
+    static setPosition(link: d3.Selection<Link>, position: LinkPosition[]): void {
         link.attr('x1', (d, i) => position[i].x1)
             .attr('y1', (d, i) => position[i].y1)
             .attr('x2', (d, i) => position[i].x2)
@@ -255,21 +255,21 @@ export class Link {
         Link.groups[key].push(id);
     }
 
-    static shift_multiplier(link: Link): number {
+    static shiftMultiplier(link: Link): number {
         const members = Link.groups[[(<Node>link.source).id, (<Node>link.target).id].sort().toString()] || [];
         return members.indexOf(link.id) - (members.length - 1) / 2;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    static shift_bundle(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>): void {
-        const transform = (d) => d.shift_bundle(Link.shift_multiplier(d));
+    static shiftBundle(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>): void {
+        const transform = (d) => d.shiftBundle(Link.shiftMultiplier(d));
 
         link.attr('transform', transform);
         path.attr('transform', transform);
         label.attr('transform', transform);
     }
 
-    shift_bundle(multiplier: number): string {
+    shiftBundle(multiplier: number): string {
         const gap = this.margin() * multiplier;
 
         const width = Math.abs((<Node>this.target).x - (<Node>this.source).x);

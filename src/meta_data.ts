@@ -2,7 +2,7 @@ export type MetaDataType = { class: string, value: any }  // eslint-disable-line
 
 export class MetaData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(private data: Record<string, any>, private extra_key?: string) {
+    constructor(private data: Record<string, any>, private extraKey?: string) {
     }
 
     get(keys: string[]): MetaDataType[] {
@@ -13,24 +13,24 @@ export class MetaData {
         if (!this.data)
             return [];
 
-        if (this.extra_key)
-            return this.slice_with_extra_key(keys);
+        if (this.extraKey)
+            return this.sliceWithExtraKey(keys);
         else
-            return this.slice_without_extra_key(keys);
+            return this.sliceWithoutExtraKey(keys);
     }
 
-    slice_with_extra_key(keys: string[]): MetaDataType[] {
+    sliceWithExtraKey(keys: string[]): MetaDataType[] {
         const data = [];
 
         keys.forEach((k) => {
-            if (this.data[k] && this.data[k][this.extra_key])
-                data.push({class: k, value: this.data[k][this.extra_key]});
+            if (this.data[k] && this.data[k][this.extraKey])
+                data.push({class: k, value: this.data[k][this.extraKey]});
         });
 
         return data;
     }
 
-    slice_without_extra_key(keys: string[]): MetaDataType[] {
+    sliceWithoutExtraKey(keys: string[]): MetaDataType[] {
         const data = [];
 
         keys.forEach((k) => {

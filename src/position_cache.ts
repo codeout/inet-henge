@@ -19,34 +19,34 @@ type CacheDataType = {
 }
 
 export class PositionCache {
-    private cached_sha1: string
+    private cachedSha1: string
     public group: GroupPosition[]
     public node: NodePosition[]
     public link: LinkPosition[]
 
     constructor(public data: InetHengeDataType, public pop?: RegExp, sha1?: string) {
         // NOTE: properties below can be undefined
-        this.cached_sha1 = sha1;
+        this.cachedSha1 = sha1;
     }
 
-    static get_all(): CacheDataType[] {
-        return JSON.parse(localStorage.getItem('position_cache')) || {};
+    static getAll(): CacheDataType[] {
+        return JSON.parse(localStorage.getItem('positionCache')) || {};
     }
 
     static get(): CacheDataType {
-        return this.get_all()[location.pathname] || {};
+        return this.getAll()[location.pathname] || {};
     }
 
     save(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>): void {
-        const cache = PositionCache.get_all();
+        const cache = PositionCache.getAll();
         cache[location.pathname] = {
             sha1: this.sha1(),
-            group: this.group_position(group),
-            node: this.node_position(node),
-            link: this.link_position(link)
+            group: this.groupPosition(group),
+            node: this.nodePosition(node),
+            link: this.linkPosition(link)
         };
 
-        localStorage.setItem('position_cache', JSON.stringify(cache));
+        localStorage.setItem('positionCache', JSON.stringify(cache));
     }
 
     sha1(data?: ExtendedInetHengeDataType, pop?: RegExp): string {
@@ -69,7 +69,7 @@ export class PositionCache {
         return sha1.digest('hex');
     }
 
-    group_position(group: d3.Selection<any>): GroupPosition[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
+    groupPosition(group: d3.Selection<any>): GroupPosition[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
         const position = [];
 
         group.each((d) => {
@@ -84,7 +84,7 @@ export class PositionCache {
         return position;
     }
 
-    node_position(node: d3.Selection<any>): NodePosition[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
+    nodePosition(node: d3.Selection<any>): NodePosition[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
         const position = [];
 
         node.each((d: Node) => {
@@ -97,7 +97,7 @@ export class PositionCache {
         return position;
     }
 
-    link_position(link: d3.Selection<any>): LinkPosition[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
+    linkPosition(link: d3.Selection<any>): LinkPosition[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
         const position = [];
 
         link.each((d) => {
@@ -113,7 +113,7 @@ export class PositionCache {
     }
 
     match(data: InetHengeDataType, pop: RegExp): boolean {
-        return this.cached_sha1 === this.sha1(<ExtendedInetHengeDataType>data, pop);
+        return this.cachedSha1 === this.sha1(<ExtendedInetHengeDataType>data, pop);
     }
 
     static load(data: InetHengeDataType, pop: RegExp): PositionCache | undefined {
