@@ -248,7 +248,6 @@ export class Diagram {
 
         for (let i = 0; i < count; i++)
             this.cola.tick();
-        this.cola.stop();
     }
 
     freeze(container: d3.Selection<any>): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
