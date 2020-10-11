@@ -212,7 +212,6 @@ export class Diagram {
             // render path
             this.configure_tick(group, node, link, path, label);
 
-            this.cola.start();
             if (this.options.bundle) {
                 Link.shift_bundle(link, path, label);
             }
