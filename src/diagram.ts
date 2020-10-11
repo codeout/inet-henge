@@ -16,6 +16,7 @@ type DiagramOptionType = {
     // Options publicly available
     width: number,
     height: number,
+    initialTicks: number,
     ticks: number,
     positionCache: boolean | string,
     bundle: boolean,
@@ -57,6 +58,7 @@ export class Diagram {
         this.options.height = options.height || 600;
 
         this.options.color = d3.scale.category20();
+        this.options.initialTicks = options.initialTicks || 0;
         this.options.maxTicks = options.ticks || 1000;
         // NOTE: true or 'fixed' (experimental) affects behavior
         this.options.positionCache = 'positionCache' in options ? options.positionCache : true;
@@ -158,7 +160,9 @@ export class Diagram {
                 .groups(groups);
             this.setDistance(this.cola);
 
-            this.cola.start(); // Update Link.source and Link.target with Node object
+            // Start to update Link.source and Link.target with Node object after
+            // initial layout iterations without any constraints.
+            this.cola.start(this.options.initialTicks, 0, 0, 0);
 
             const groupLayer = this.svg.append('g').attr('id', 'groups');
             const linkLayer = this.svg.append('g').attr('id', 'links');
