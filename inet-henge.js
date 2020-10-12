@@ -25318,28 +25318,29 @@ class Diagram {
         this.options = options || {};
         this.options.selector = container;
         this.options.urlOrData = urlOrData;
-        this.options.group_pattern = options.pop;
+        this.options.groupPattern = options.pop;
         this.options.width = options.width || 960;
         this.options.height = options.height || 600;
         this.options.color = d3__WEBPACK_IMPORTED_MODULE_0__["scale"].category20();
-        this.options.max_ticks = options.ticks || 1000;
+        this.options.initialTicks = options.initialTicks || 0;
+        this.options.maxTicks = options.ticks || 1000;
         // NOTE: true or 'fixed' (experimental) affects behavior
-        this.options.position_cache = 'positionCache' in options ? options.positionCache : true;
+        this.options.positionCache = 'positionCache' in options ? options.positionCache : true;
         // NOTE: This is an experimental option
         this.options.bundle = 'bundle' in options ? options.bundle : false;
         this.options.tooltip = options.tooltip;
-        this.set_distance = this.link_distance(options.distance || 150);
+        this.setDistance = this.linkDistance(options.distance || 150);
         // Create events
         this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__["dispatch"]('rendered');
     }
-    link_distance(distance) {
+    linkDistance(distance) {
         if (typeof distance === 'function')
             return distance;
         else
             return (cola) => cola.linkDistance(distance);
     }
     linkWidth(func) {
-        this.get_link_width = func;
+        this.getLinkWidth = func;
     }
     link_width(func) {
         console.warn('link_width() is deprecated. Use linkWidth()');
@@ -25347,9 +25348,9 @@ class Diagram {
     }
     init(...meta) {
         this.options.meta = meta;
-        this.cola = this.init_cola();
-        this.svg = this.init_svg();
-        this.display_load_message();
+        this.cola = this.initCola();
+        this.svg = this.initSvg();
+        this.displayLoadMessage();
         if (typeof this.options.urlOrData === 'object') {
             setTimeout(() => {
                 this.render(this.options.urlOrData);
@@ -25359,25 +25360,25 @@ class Diagram {
             d3__WEBPACK_IMPORTED_MODULE_0__["json"](this.url(), (error, data) => {
                 if (error) {
                     console.error(error);
-                    this.show_message(`Failed to load "${this.url()}"`);
+                    this.showMessage(`Failed to load "${this.url()}"`);
                 }
                 this.render(data);
             });
         }
     }
-    init_cola() {
+    initCola() {
         return cola.d3adaptor()
             .avoidOverlaps(true)
             .handleDisconnected(false)
             .size([this.options.width, this.options.height]);
     }
-    init_svg() {
+    initSvg() {
         this.zoom = d3__WEBPACK_IMPORTED_MODULE_0__["behavior"].zoom();
         const container = d3__WEBPACK_IMPORTED_MODULE_0__["select"](this.options.selector).append('svg')
             .attr('width', this.options.width)
             .attr('height', this.options.height)
             .append('g')
-            .call(this.zoom.on('zoom', () => this.zoom_callback(container))).append('g');
+            .call(this.zoom.on('zoom', () => this.zoomCallback(container))).append('g');
         container.append('rect')
             .attr('width', this.options.width * 10) // 10 is huge enough
             .attr('height', this.options.height * 10)
@@ -25386,25 +25387,27 @@ class Diagram {
         return container;
     }
     url() {
-        if (this.unique_url) {
-            return this.unique_url;
+        if (this.uniqueUrl) {
+            return this.uniqueUrl;
         }
-        this.unique_url = `${this.options.urlOrData}?${new Date().getTime()}`;
-        return this.unique_url;
+        this.uniqueUrl = `${this.options.urlOrData}?${new Date().getTime()}`;
+        return this.uniqueUrl;
     }
     render(data) {
         try {
             const nodes = data.nodes ?
                 data.nodes.map((n, i) => new _node__WEBPACK_IMPORTED_MODULE_3__["Node"](n, i, this.options.meta, this.options.color, this.options.tooltip !== undefined)) : [];
             const links = data.links ?
-                data.links.map((l, i) => new _link__WEBPACK_IMPORTED_MODULE_2__["Link"](l, i, this.options.meta, this.get_link_width)) : [];
-            const groups = _group__WEBPACK_IMPORTED_MODULE_1__["Group"].divide(nodes, this.options.group_pattern, this.options.color);
+                data.links.map((l, i) => new _link__WEBPACK_IMPORTED_MODULE_2__["Link"](l, i, this.options.meta, this.getLinkWidth)) : [];
+            const groups = _group__WEBPACK_IMPORTED_MODULE_1__["Group"].divide(nodes, this.options.groupPattern, this.options.color);
             const tooltips = nodes.map((n) => new _tooltip__WEBPACK_IMPORTED_MODULE_5__["Tooltip"](n, this.options.tooltip));
             this.cola.nodes(nodes)
                 .links(links)
                 .groups(groups);
-            this.set_distance(this.cola);
-            this.cola.start(); // Update Link.source and Link.target with Node object
+            this.setDistance(this.cola);
+            // Start to update Link.source and Link.target with Node object after
+            // initial layout iterations without any constraints.
+            this.cola.start(this.options.initialTicks, 0, 0, 0);
             const groupLayer = this.svg.append('g').attr('id', 'groups');
             const linkLayer = this.svg.append('g').attr('id', 'links');
             const nodeLayer = this.svg.append('g').attr('id', 'nodes');
@@ -25412,70 +25415,68 @@ class Diagram {
             const tooltipLayer = this.svg.append('g').attr('id', 'tooltips');
             const [link, path, label] = _link__WEBPACK_IMPORTED_MODULE_2__["Link"].render(linkLayer, linkLabelLayer, links);
             const group = _group__WEBPACK_IMPORTED_MODULE_1__["Group"].render(groupLayer, groups).call(this.cola.drag()
-                .on('dragstart', this.dragstart_callback)
+                .on('dragstart', this.dragstartCallback)
                 .on('drag', () => {
                 if (this.options.bundle) {
-                    _link__WEBPACK_IMPORTED_MODULE_2__["Link"].shift_bundle(link, path, label);
+                    _link__WEBPACK_IMPORTED_MODULE_2__["Link"].shiftBundle(link, path, label);
                 }
             }));
             const node = _node__WEBPACK_IMPORTED_MODULE_3__["Node"].render(nodeLayer, nodes).call(this.cola.drag()
-                .on('dragstart', this.dragstart_callback)
+                .on('dragstart', this.dragstartCallback)
                 .on('drag', () => {
                 if (this.options.bundle) {
-                    _link__WEBPACK_IMPORTED_MODULE_2__["Link"].shift_bundle(link, path, label);
+                    _link__WEBPACK_IMPORTED_MODULE_2__["Link"].shiftBundle(link, path, label);
                 }
                 _tooltip__WEBPACK_IMPORTED_MODULE_5__["Tooltip"].followNode(tooltip);
             }));
             // without path calculation
-            this.configure_tick(group, node, link);
-            this.position_cache = _position_cache__WEBPACK_IMPORTED_MODULE_4__["PositionCache"].load(data, this.options.group_pattern);
-            if (this.options.position_cache && this.position_cache) {
+            this.configureTick(group, node, link);
+            this.positionCache = _position_cache__WEBPACK_IMPORTED_MODULE_4__["PositionCache"].load(data, this.options.groupPattern);
+            if (this.options.positionCache && this.positionCache) {
                 // NOTE: Evaluate only when positionCache: true or 'fixed', and
                 //       when the stored position cache matches pair of given data and pop
-                _group__WEBPACK_IMPORTED_MODULE_1__["Group"].set_position(group, this.position_cache.group);
-                _node__WEBPACK_IMPORTED_MODULE_3__["Node"].set_position(node, this.position_cache.node);
-                _link__WEBPACK_IMPORTED_MODULE_2__["Link"].set_position(link, this.position_cache.link);
+                _group__WEBPACK_IMPORTED_MODULE_1__["Group"].setPosition(group, this.positionCache.group);
+                _node__WEBPACK_IMPORTED_MODULE_3__["Node"].setPosition(node, this.positionCache.node);
+                _link__WEBPACK_IMPORTED_MODULE_2__["Link"].setPosition(link, this.positionCache.link);
             }
             else {
-                this.ticks_forward();
-                this.position_cache = new _position_cache__WEBPACK_IMPORTED_MODULE_4__["PositionCache"](data, this.options.group_pattern);
-                this.save_position(group, node, link);
+                this.ticksForward();
+                this.positionCache = new _position_cache__WEBPACK_IMPORTED_MODULE_4__["PositionCache"](data, this.options.groupPattern);
+                this.savePosition(group, node, link);
             }
-            this.hide_load_message();
+            this.hideLoadMessage();
             // render path
-            this.configure_tick(group, node, link, path, label);
-            this.cola.start();
+            this.configureTick(group, node, link, path, label);
             if (this.options.bundle) {
-                _link__WEBPACK_IMPORTED_MODULE_2__["Link"].shift_bundle(link, path, label);
+                _link__WEBPACK_IMPORTED_MODULE_2__["Link"].shiftBundle(link, path, label);
             }
             path.attr('d', (d) => d.d()); // make sure path calculation is done
             this.freeze(node);
             const tooltip = _tooltip__WEBPACK_IMPORTED_MODULE_5__["Tooltip"].render(tooltipLayer, tooltips);
             this.dispatch.rendered();
             // NOTE: This is an experimental option
-            if (this.options.position_cache === 'fixed') {
+            if (this.options.positionCache === 'fixed') {
                 this.cola.on('end', () => {
-                    this.save_position(group, node, link);
+                    this.savePosition(group, node, link);
                 });
             }
         }
         catch (e) {
-            this.show_message(e);
+            this.showMessage(e);
             throw e;
         }
     }
-    configure_tick(group, node, link, path, label) {
+    configureTick(group, node, link, path, label) {
         this.cola.on('tick', () => {
             _node__WEBPACK_IMPORTED_MODULE_3__["Node"].tick(node);
             _link__WEBPACK_IMPORTED_MODULE_2__["Link"].tick(link, path, label);
             _group__WEBPACK_IMPORTED_MODULE_1__["Group"].tick(group);
         });
     }
-    ticks_forward(count) {
-        count = count || this.options.max_ticks;
+    ticksForward(count) {
+        count = count || this.options.maxTicks;
         for (let i = 0; i < count; i++)
             this.cola.tick();
-        this.cola.stop();
     }
     freeze(container) {
         container.each((d) => d.fixed = true);
@@ -25485,20 +25486,20 @@ class Diagram {
         _node__WEBPACK_IMPORTED_MODULE_3__["Node"].reset();
         _link__WEBPACK_IMPORTED_MODULE_2__["Link"].reset();
     }
-    zoom_callback(container) {
-        if (!this.initial_translate) {
-            this.save_initial_translate();
+    zoomCallback(container) {
+        if (!this.initialTranslate) {
+            this.saveInitialTranslate();
         }
-        d3__WEBPACK_IMPORTED_MODULE_0__["event"].scale *= this.initial_scale;
-        d3__WEBPACK_IMPORTED_MODULE_0__["event"].translate[0] += this.initial_translate[0];
-        d3__WEBPACK_IMPORTED_MODULE_0__["event"].translate[1] += this.initial_translate[1];
+        d3__WEBPACK_IMPORTED_MODULE_0__["event"].scale *= this.initialScale;
+        d3__WEBPACK_IMPORTED_MODULE_0__["event"].translate[0] += this.initialTranslate[0];
+        d3__WEBPACK_IMPORTED_MODULE_0__["event"].translate[1] += this.initialTranslate[1];
         _link__WEBPACK_IMPORTED_MODULE_2__["Link"].zoom(d3__WEBPACK_IMPORTED_MODULE_0__["event"].scale);
         container.attr('transform', `translate(${d3__WEBPACK_IMPORTED_MODULE_0__["event"].translate}) scale(${d3__WEBPACK_IMPORTED_MODULE_0__["event"].scale})`);
     }
-    dragstart_callback() {
+    dragstartCallback() {
         d3__WEBPACK_IMPORTED_MODULE_0__["event"].sourceEvent.stopPropagation();
     }
-    display_load_message() {
+    displayLoadMessage() {
         this.indicator = this.svg.append('text')
             .attr('x', this.options.width / 2)
             .attr('y', this.options.height / 2)
@@ -25506,25 +25507,25 @@ class Diagram {
             .style('text-anchor', 'middle')
             .text('Simulating. Just a moment ...');
     }
-    hide_load_message() {
+    hideLoadMessage() {
         if (this.indicator)
             this.indicator.remove();
     }
-    show_message(message) {
+    showMessage(message) {
         if (this.indicator)
             this.indicator.text(message);
     }
-    save_position(group, node, link) {
-        this.position_cache.save(group, node, link);
+    savePosition(group, node, link) {
+        this.positionCache.save(group, node, link);
     }
-    save_initial_translate() {
+    saveInitialTranslate() {
         const transform = d3__WEBPACK_IMPORTED_MODULE_0__["transform"](this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
-        this.initial_scale = transform.scale[0]; // NOTE: Assuming ky = kx
-        this.initial_translate = transform.translate;
+        this.initialScale = transform.scale[0]; // NOTE: Assuming ky = kx
+        this.initialTranslate = transform.translate;
     }
     attr(name, value) {
-        if (!this.initial_translate) {
-            this.save_initial_translate();
+        if (!this.initialTranslate) {
+            this.saveInitialTranslate();
         }
         this.svg.attr(name, value);
         const transform = d3__WEBPACK_IMPORTED_MODULE_0__["transform"](this.svg.attr('transform')); // FIXME: This is valid only for d3.js v3
@@ -25569,10 +25570,10 @@ class Group {
     transform() {
         return `translate(${this.bounds.x}, ${this.bounds.y})`;
     }
-    group_width() {
+    groupWidth() {
         return this.bounds.width();
     }
-    group_height() {
+    groupHeight() {
         return this.bounds.height();
     }
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
@@ -25612,8 +25613,8 @@ class Group {
         group.append('rect')
             .attr('rx', 8)
             .attr('ry', 8)
-            .attr('width', (d) => d.group_width())
-            .attr('height', (d) => d.group_height())
+            .attr('width', (d) => d.groupWidth())
+            .attr('height', (d) => d.groupHeight())
             .style('fill', (d, i) => d.color(i));
         group.append('text')
             .text((d) => d.name);
@@ -25622,10 +25623,10 @@ class Group {
     static tick(group) {
         group.attr('transform', (d) => d.transform());
         group.selectAll('rect')
-            .attr('width', (d) => d.group_width())
-            .attr('height', (d) => d.group_height());
+            .attr('width', (d) => d.groupWidth())
+            .attr('height', (d) => d.groupHeight());
     }
-    static set_position(group, position) {
+    static setPosition(group, position) {
         group.attr('transform', (d, i) => {
             d.bounds.x = position[i].x;
             d.bounds.y = position[i].y;
@@ -25725,46 +25726,46 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Link {
-    constructor(data, id, meta_keys, link_width) {
+    constructor(data, id, metaKeys, linkWidth) {
         this.id = id;
-        this.source = _node__WEBPACK_IMPORTED_MODULE_2__["Node"].id_by_name(data.source);
-        this.target = _node__WEBPACK_IMPORTED_MODULE_2__["Node"].id_by_name(data.target);
-        this.meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__["MetaData"](data.meta).get(meta_keys);
-        this.source_meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__["MetaData"](data.meta, 'source').get(meta_keys);
-        this.target_meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__["MetaData"](data.meta, 'target').get(meta_keys);
-        this.extra_class = data.class || '';
-        if (typeof link_width === 'function')
-            this.width = link_width(data.meta) || 3;
+        this.source = _node__WEBPACK_IMPORTED_MODULE_2__["Node"].idByName(data.source);
+        this.target = _node__WEBPACK_IMPORTED_MODULE_2__["Node"].idByName(data.target);
+        this.meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__["MetaData"](data.meta).get(metaKeys);
+        this.sourceMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__["MetaData"](data.meta, 'source').get(metaKeys);
+        this.targetMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__["MetaData"](data.meta, 'target').get(metaKeys);
+        this.extraClass = data.class || '';
+        if (typeof linkWidth === 'function')
+            this.width = linkWidth(data.meta) || 3;
         else
-            this.width = link_width || 3;
-        this.default_margin = 15;
-        this.label_x_offset = 20;
-        this.label_y_offset = 1.5; // em
+            this.width = linkWidth || 3;
+        this.defaultMargin = 15;
+        this.labelXOffset = 20;
+        this.labelYOffset = 1.5; // em
         this.color = '#7a4e4e';
         this.register(id, this.source, this.target);
     }
-    is_named_path() {
+    isNamedPath() {
         return this.meta.length > 0;
     }
-    is_reverse_path() {
-        return this.target_meta.length > 0;
+    isReversePath() {
+        return this.targetMeta.length > 0;
     }
     d() {
         return `M ${this.source.x} ${this.source.y} L ${this.target.x} ${this.target.y}`;
     }
-    path_id() {
+    pathId() {
         return `path${this.id}`;
     }
-    link_id() {
+    linkId() {
         return `link${this.id}`;
     }
     margin() {
         if (!this._margin) {
-            const margin = window.getComputedStyle(document.getElementById(this.link_id())).margin;
+            const margin = window.getComputedStyle(document.getElementById(this.linkId())).margin;
             // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
             // or "0px" even when not defined in .css
             if (!margin || margin === '0px') {
-                this._margin = this.default_margin;
+                this._margin = this.defaultMargin;
             }
             else {
                 this._margin = parseInt(margin);
@@ -25773,19 +25774,19 @@ class Link {
         return this._margin;
     }
     // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
-    tspan_x_offset() {
-        if (this.is_named_path())
+    tspanXOffset() {
+        if (this.isNamedPath())
             return 0;
-        else if (this.is_reverse_path())
-            return -this.label_x_offset;
+        else if (this.isReversePath())
+            return -this.labelXOffset;
         else
-            return this.label_x_offset;
+            return this.labelXOffset;
     }
-    tspan_y_offset() {
-        if (this.is_named_path())
-            return `${-this.label_y_offset + 0.7}em`;
+    tspanYOffset() {
+        if (this.isNamedPath())
+            return `${-this.labelYOffset + 0.7}em`;
         else
-            return `${this.label_y_offset}em`;
+            return `${this.labelYOffset}em`;
     }
     rotate(bbox) {
         if (this.source.x > this.target.x)
@@ -25794,10 +25795,10 @@ class Link {
             return 'rotate(0)';
     }
     split() {
-        if (!this.meta && !this.source_meta && !this.target_meta)
+        if (!this.meta && !this.sourceMeta && !this.targetMeta)
             return [this];
         const meta = [];
-        ['meta', 'source_meta', 'target_meta'].forEach((key, i, keys) => {
+        ['meta', 'sourceMeta', 'targetMeta'].forEach((key, i, keys) => {
             if (this[key]) {
                 const duped = Object.assign(Object.create(this), this);
                 keys.filter((k) => k !== key).forEach((k) => duped[k] = []);
@@ -25806,12 +25807,12 @@ class Link {
         });
         return meta;
     }
-    has_meta() {
-        return this.meta.length > 0 || this.source_meta.length > 0 || this.target_meta.length > 0;
+    hasMeta() {
+        return this.meta.length > 0 || this.sourceMeta.length > 0 || this.targetMeta.length > 0;
     }
     class() {
         // eslint-disable-next-line max-len
-        return `link ${Object(_util__WEBPACK_IMPORTED_MODULE_3__["classify"])(this.source.name)} ${Object(_util__WEBPACK_IMPORTED_MODULE_3__["classify"])(this.target.name)} ${Object(_util__WEBPACK_IMPORTED_MODULE_3__["classify"])(this.source.name)}-${Object(_util__WEBPACK_IMPORTED_MODULE_3__["classify"])(this.target.name)} ${this.extra_class}`;
+        return `link ${Object(_util__WEBPACK_IMPORTED_MODULE_3__["classify"])(this.source.name)} ${Object(_util__WEBPACK_IMPORTED_MODULE_3__["classify"])(this.target.name)} ${Object(_util__WEBPACK_IMPORTED_MODULE_3__["classify"])(this.source.name)}-${Object(_util__WEBPACK_IMPORTED_MODULE_3__["classify"])(this.target.name)} ${this.extraClass}`;
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(linkLayer, labelLayer, links) {
@@ -25828,12 +25829,12 @@ class Link {
             .attr('y2', (d) => d.target.y)
             .attr('stroke', (d) => d.color)
             .attr('stroke-width', (d) => d.width)
-            .attr('id', (d) => d.link_id())
-            .on('mouseover.line', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', true))
-            .on('mouseout.line', (d) => textGroup.selectAll(`text.${d.path_id()}`).classed('hover', false));
+            .attr('id', (d) => d.linkId())
+            .on('mouseover.line', (d) => textGroup.selectAll(`text.${d.pathId()}`).classed('hover', true))
+            .on('mouseout.line', (d) => textGroup.selectAll(`text.${d.pathId()}`).classed('hover', false));
         const path = pathGroup.append('path')
             .attr('d', (d) => d.d())
-            .attr('id', (d) => d.path_id());
+            .attr('id', (d) => d.pathId());
         // Render texts
         const textGroup = labelLayer.selectAll('.link')
             .data(links)
@@ -25841,25 +25842,25 @@ class Link {
             .append('g')
             .attr('class', (d) => d.class());
         const text = textGroup.selectAll('text')
-            .data((d) => d.split().filter((l) => l.has_meta()))
+            .data((d) => d.split().filter((l) => l.hasMeta()))
             .enter()
             .append('text')
-            .attr('class', (d) => d.path_id()); // Bind text with path_id as class
-        const text_path = text.append('textPath')
-            .attr('xlink:href', (d) => `#${d.path_id()}`);
-        text_path.each(function (d) {
-            Link.append_tspans(this, d.meta);
-            Link.append_tspans(this, d.source_meta);
-            Link.append_tspans(this, d.target_meta);
-            if (d.is_named_path())
+            .attr('class', (d) => d.pathId()); // Bind text with pathId as class
+        const textPath = text.append('textPath')
+            .attr('xlink:href', (d) => `#${d.pathId()}`);
+        textPath.each(function (d) {
+            Link.appendTspans(this, d.meta);
+            Link.appendTspans(this, d.sourceMeta);
+            Link.appendTspans(this, d.targetMeta);
+            if (d.isNamedPath())
                 Link.center(this);
-            if (d.is_reverse_path())
-                Link.the_other_end(this);
+            if (d.isReversePath())
+                Link.theOtherEnd(this);
         });
         Link.zoom(); // Initialize
         return [link, path, text];
     }
-    static the_other_end(container) {
+    static theOtherEnd(container) {
         d3__WEBPACK_IMPORTED_MODULE_0__["select"](container)
             .attr('class', 'reverse')
             .attr('text-anchor', 'end')
@@ -25871,11 +25872,11 @@ class Link {
             .attr('text-anchor', 'middle')
             .attr('startOffset', '50%');
     }
-    static append_tspans(container, meta) {
+    static appendTspans(container, meta) {
         meta.forEach((m) => {
             d3__WEBPACK_IMPORTED_MODULE_0__["select"](container).append('tspan')
-                .attr('x', (d) => d.tspan_x_offset())
-                .attr('dy', (d) => d.tspan_y_offset())
+                .attr('x', (d) => d.tspanXOffset())
+                .attr('dy', (d) => d.tspanYOffset())
                 .attr('class', m.class)
                 .text(m.value);
         });
@@ -25900,7 +25901,7 @@ class Link {
         d3__WEBPACK_IMPORTED_MODULE_0__["selectAll"]('.link text')
             .style('visibility', visibility);
     }
-    static set_position(link, position) {
+    static setPosition(link, position) {
         link.attr('x1', (d, i) => position[i].x1)
             .attr('y1', (d, i) => position[i].y1)
             .attr('x2', (d, i) => position[i].x2)
@@ -25912,18 +25913,18 @@ class Link {
         Link.groups[key] = Link.groups[key] || [];
         Link.groups[key].push(id);
     }
-    static shift_multiplier(link) {
+    static shiftMultiplier(link) {
         const members = Link.groups[[link.source.id, link.target.id].sort().toString()] || [];
         return members.indexOf(link.id) - (members.length - 1) / 2;
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    static shift_bundle(link, path, label) {
-        const transform = (d) => d.shift_bundle(Link.shift_multiplier(d));
+    static shiftBundle(link, path, label) {
+        const transform = (d) => d.shiftBundle(Link.shiftMultiplier(d));
         link.attr('transform', transform);
         path.attr('transform', transform);
         label.attr('transform', transform);
     }
-    shift_bundle(multiplier) {
+    shiftBundle(multiplier) {
         const gap = this.margin() * multiplier;
         const width = Math.abs(this.target.x - this.source.x);
         const height = Math.abs(this.source.y - this.target.y);
@@ -25950,9 +25951,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MetaData", function() { return MetaData; });
 class MetaData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(data, extra_key) {
+    constructor(data, extraKey) {
         this.data = data;
-        this.extra_key = extra_key;
+        this.extraKey = extraKey;
     }
     get(keys) {
         return this.slice(keys).filter((k) => typeof k.value === 'string');
@@ -25960,20 +25961,20 @@ class MetaData {
     slice(keys) {
         if (!this.data)
             return [];
-        if (this.extra_key)
-            return this.slice_with_extra_key(keys);
+        if (this.extraKey)
+            return this.sliceWithExtraKey(keys);
         else
-            return this.slice_without_extra_key(keys);
+            return this.sliceWithoutExtraKey(keys);
     }
-    slice_with_extra_key(keys) {
+    sliceWithExtraKey(keys) {
         const data = [];
         keys.forEach((k) => {
-            if (this.data[k] && this.data[k][this.extra_key])
-                data.push({ class: k, value: this.data[k][this.extra_key] });
+            if (this.data[k] && this.data[k][this.extraKey])
+                data.push({ class: k, value: this.data[k][this.extraKey] });
         });
         return data;
     }
-    slice_without_extra_key(keys) {
+    sliceWithoutExtraKey(keys) {
         const data = [];
         keys.forEach((k) => {
             if (this.data[k])
@@ -26007,19 +26008,19 @@ class Node {
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
     // Also, it should have accepted undefined
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-    constructor(data, id, meta_keys, color, tooltip) {
+    constructor(data, id, metaKeys, color, tooltip) {
         this.id = id;
         this.color = color;
         this.tooltip = tooltip;
         this.name = data.name;
         this.group = typeof data.group === 'string' ? [data.group] : (data.group || []);
         this.icon = data.icon;
-        this.meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__["MetaData"](data.meta).get(meta_keys);
-        this.extra_class = data.class || '';
+        this.meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__["MetaData"](data.meta).get(metaKeys);
+        this.extraClass = data.class || '';
         this.width = 60;
         this.height = 40;
         this.padding = 3;
-        this.tspan_offset = '1.1em';
+        this.tspanOffset = '1.1em';
         this.register(id, data.name);
     }
     register(id, name) {
@@ -26031,19 +26032,19 @@ class Node {
         const y = this.y - this.height / 2 + this.padding;
         return `translate(${x}, ${y})`;
     }
-    node_width() {
+    nodeWidth() {
         return this.width - 2 * this.padding;
     }
-    node_height() {
+    nodeHeight() {
         return this.height - 2 * this.padding;
     }
-    x_for_text() {
+    xForText() {
         return this.width / 2;
     }
-    y_for_text() {
+    yForText() {
         return this.height / 2;
     }
-    static id_by_name(name) {
+    static idByName(name) {
         if (Node.all[name] === undefined)
             throw `Unknown node "${name}"`;
         return Node.all[name];
@@ -26059,50 +26060,50 @@ class Node {
             .attr('transform', (d) => d.transform());
         node.each(function (d) {
             if (d.icon)
-                Node.append_image(this);
+                Node.appendImage(this);
             else
-                Node.append_rect(this);
-            Node.append_text(this);
+                Node.appendRect(this);
+            Node.appendText(this);
         });
         return node;
     }
-    static append_text(container) {
+    static appendText(container) {
         const text = d3__WEBPACK_IMPORTED_MODULE_0__["select"](container).append('text')
             .attr('text-anchor', 'middle')
-            .attr('x', (d) => d.x_for_text())
-            .attr('y', (d) => d.y_for_text());
+            .attr('x', (d) => d.xForText())
+            .attr('y', (d) => d.yForText());
         text.append('tspan')
             .text((d) => d.name)
-            .attr('x', (d) => d.x_for_text());
+            .attr('x', (d) => d.xForText());
         text.each((d) => {
             // Show meta only when "tooltip" option is not configured
             if (!d.tooltip) {
-                Node.append_tspans(text, d.meta);
+                Node.appendTspans(text, d.meta);
             }
         });
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    static append_tspans(container, meta) {
+    static appendTspans(container, meta) {
         meta.forEach((m) => {
             container.append('tspan')
-                .attr('x', (d) => d.x_for_text())
-                .attr('dy', (d) => d.tspan_offset)
+                .attr('x', (d) => d.xForText())
+                .attr('dy', (d) => d.tspanOffset)
                 .attr('class', m.class)
                 .text(m.value);
         });
     }
-    static append_image(container) {
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"](container).attr('class', (d) => `node image ${Object(_util__WEBPACK_IMPORTED_MODULE_2__["classify"])(d.name)} ${d.extra_class}`)
+    static appendImage(container) {
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](container).attr('class', (d) => `node image ${Object(_util__WEBPACK_IMPORTED_MODULE_2__["classify"])(d.name)} ${d.extraClass}`)
             .append('image')
             .attr('xlink:href', (d) => d.icon)
-            .attr('width', (d) => d.node_width())
-            .attr('height', (d) => d.node_height());
+            .attr('width', (d) => d.nodeWidth())
+            .attr('height', (d) => d.nodeHeight());
     }
-    static append_rect(container) {
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"](container).attr('class', (d) => `node rect ${Object(_util__WEBPACK_IMPORTED_MODULE_2__["classify"])(d.name)} ${d.extra_class}`)
+    static appendRect(container) {
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](container).attr('class', (d) => `node rect ${Object(_util__WEBPACK_IMPORTED_MODULE_2__["classify"])(d.name)} ${d.extraClass}`)
             .append('rect')
-            .attr('width', (d) => d.node_width())
-            .attr('height', (d) => d.node_height())
+            .attr('width', (d) => d.nodeWidth())
+            .attr('height', (d) => d.nodeHeight())
             .attr('rx', 5)
             .attr('ry', 5)
             .style('fill', (d) => d.color());
@@ -26110,7 +26111,7 @@ class Node {
     static tick(node) {
         node.attr('transform', (d) => d.transform());
     }
-    static set_position(node, position) {
+    static setPosition(node, position) {
         node.attr('transform', (d, i) => {
             d.x = position[i].x;
             d.y = position[i].y;
@@ -26144,23 +26145,23 @@ class PositionCache {
         this.data = data;
         this.pop = pop;
         // NOTE: properties below can be undefined
-        this.cached_sha1 = sha1;
+        this.cachedSha1 = sha1;
     }
-    static get_all() {
-        return JSON.parse(localStorage.getItem('position_cache')) || {};
+    static getAll() {
+        return JSON.parse(localStorage.getItem('positionCache')) || {};
     }
     static get() {
-        return this.get_all()[location.pathname] || {};
+        return this.getAll()[location.pathname] || {};
     }
     save(group, node, link) {
-        const cache = PositionCache.get_all();
+        const cache = PositionCache.getAll();
         cache[location.pathname] = {
             sha1: this.sha1(),
-            group: this.group_position(group),
-            node: this.node_position(node),
-            link: this.link_position(link)
+            group: this.groupPosition(group),
+            node: this.nodePosition(node),
+            link: this.linkPosition(link)
         };
-        localStorage.setItem('position_cache', JSON.stringify(cache));
+        localStorage.setItem('positionCache', JSON.stringify(cache));
     }
     sha1(data, pop) {
         data = cloneDeep(data || this.data);
@@ -26179,7 +26180,7 @@ class PositionCache {
         sha1.update(JSON.stringify(data));
         return sha1.digest('hex');
     }
-    group_position(group) {
+    groupPosition(group) {
         const position = [];
         group.each((d) => {
             position.push({
@@ -26191,7 +26192,7 @@ class PositionCache {
         });
         return position;
     }
-    node_position(node) {
+    nodePosition(node) {
         const position = [];
         node.each((d) => {
             position.push({
@@ -26201,7 +26202,7 @@ class PositionCache {
         });
         return position;
     }
-    link_position(link) {
+    linkPosition(link) {
         const position = [];
         link.each((d) => {
             position.push({
@@ -26214,7 +26215,7 @@ class PositionCache {
         return position;
     }
     match(data, pop) {
-        return this.cached_sha1 === this.sha1(data, pop);
+        return this.cachedSha1 === this.sha1(data, pop);
     }
     static load(data, pop) {
         const cache = this.get();
