@@ -1,49 +1,67 @@
-.group rect { opacity: 0.5; }
+.group rect {
+    opacity: 0.5;
+}
 
 .node,
-.group rect { cursor: move; }
-.link text { cursor: default; }
+.group rect {
+    cursor: move;
+}
+
+.link text {
+    cursor: default;
+}
 
 .node rect,
 .group rect {
-  stroke: #fff;
-  stroke-width: 1.5px;
+    stroke: #fff;
+    stroke-width: 1.5px;
 }
 
-.node text { font-size: 10px; }
+.node text {
+    font-size: 10px;
+}
 
 .link line {
-  stroke: #7a4e4e;
-  stroke-width: 3px;
-  stroke-opacity: 1;
+    stroke: #7a4e4e;
+    stroke-width: 3px;
+    stroke-opacity: 1;
 }
 
-.link text { font-size: 7px; }
+.link text {
+    font-size: 7px;
+}
+
 .link text:hover tspan,
 .link text.hover tspan {
-  fill: #00B0E8;
-  font-weight: bold;
-  visibility: visible !important;
+    fill: #00B0E8;
+    font-weight: bold;
+    visibility: visible !important;
 }
+
 .link text.hover tspan {
-  font-size: 10px;
+    font-size: 10px;
 }
+
 .link line:hover {
-  stroke: #00B0E8;
+    stroke: #00B0E8;
 }
 
 .tooltip {
-  font-size: 12px;
-  font-weight: bold;
+    font-size: 12px;
+    font-weight: bold;
 }
+
 .tooltip path {
-  stroke: #e2ddd9;
-  stroke-width: 3px;
+    stroke: #e2ddd9;
+    stroke-width: 3px;
 }
+
 .tooltip .name {
-  fill: #8d7966;
+    fill: #8d7966;
 }
 
 
 .loopback,
-.interface { fill: #333; }
+.interface {
+    fill: #333;
+}
