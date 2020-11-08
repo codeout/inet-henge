@@ -268,6 +268,21 @@ You can specify the number of steps (called as ticks) to calculate with [d3-forc
 const diagram = new Diagram('#diagram', 'data.json', {ticks: 3000});
 ```
 
+For large scale network diagrams, you can also specify the number of initial unconstrained ticks.
+
+``` javascript
+const diagram = new Diagram('#diagram', 'data.json', {initialTicks: 100, ticks: 100});
+```
+
+inet-henge calculates the layout in two iteration phases:
+
+1. Initial iteration with no constraints. ( default: 0 tick )
+2. The main iteration with constraints that apply groups as bounding boxes, prevent nodes and groups from overlapping with each other, and so on. ( default: 1000 ticks )
+
+If you increase `initialTicks`, inet-henge calculates faster in exchange for network diagram precision so that you can decrease `ticks` which is the number of main iteration steps.
+
+20 ~ 100 `initialTicks` and 70 ~ 100 `ticks` should be good start for 800 nodes with 950 links for example. It takes 20 ~ 30 seconds to render in the benchmark environment.
+
 ### Position Cache
 
 inet-henge caches a calculated position of nodes, groups, and links for the next rendering. If you load the same JSON data, the cache will be used as a position hint. You can disable this behavior with `positionCache` option.
