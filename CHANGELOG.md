@@ -1,3 +1,10 @@
+## [1.1.0] - 2020-11-09
+
+### Added
+
+* Introduce "initialTicks" option for unconstrained initial layout iterations.
+
+
 ## [1.0.2] - 2020-06-29
 
 ### Added
