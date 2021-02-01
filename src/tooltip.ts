@@ -25,8 +25,14 @@ export class Tooltip {
         return `tooltip ${this.nodeId()}`;
     }
 
-    nodeId(): string {
-        return classify((<Node>this.node).name);
+    nodeId(escape = false): string {
+        let id = classify((<Node>this.node).name);
+
+        if (escape) {
+            id = CSS.escape(id);
+        }
+
+        return id;
     }
 
     // This doesn't actually toggle visibility, but returns string for toggled visibility
@@ -53,12 +59,12 @@ export class Tooltip {
     }
 
     configureNodeClickCallback(element: SVGGElement): void {
-        d3.select(`#${this.nodeId()}`).on('click', this.toggleVisibilityCallback(element));
+        d3.select(`#${this.nodeId(true)}`).on('click', this.toggleVisibilityCallback(element));
     }
 
     configureNodeHoverCallback(element: SVGGElement): void {
-        d3.select(`#${this.nodeId()}`).on('mouseenter', this.toggleVisibilityCallback(element));
-        d3.select(`#${this.nodeId()}`).on('mouseleave', this.toggleVisibilityCallback(element));
+        d3.select(`#${this.nodeId(true)}`).on('mouseenter', this.toggleVisibilityCallback(element));
+        d3.select(`#${this.nodeId(true)}`).on('mouseleave', this.toggleVisibilityCallback(element));
     }
 
     disableZoom(element: SVGAElement): void {
