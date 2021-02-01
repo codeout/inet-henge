@@ -1,3 +1,10 @@
+## [1.1.1] - 2021-02-01
+
+### Fixed
+
+* CSS escape to avoid "Uncaught DOMException: Failed to execute 'querySelector' on 'Document'"
+
+
 ## [1.1.0] - 2020-11-09
 
 ### Added
