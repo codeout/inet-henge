@@ -26291,8 +26291,12 @@ class Tooltip {
     class() {
         return `tooltip ${this.nodeId()}`;
     }
-    nodeId() {
-        return Object(_util__WEBPACK_IMPORTED_MODULE_1__["classify"])(this.node.name);
+    nodeId(escape = false) {
+        let id = Object(_util__WEBPACK_IMPORTED_MODULE_1__["classify"])(this.node.name);
+        if (escape) {
+            id = CSS.escape(id);
+        }
+        return id;
     }
     // This doesn't actually toggle visibility, but returns string for toggled visibility
     toggleVisibility() {
@@ -26316,11 +26320,11 @@ class Tooltip {
         };
     }
     configureNodeClickCallback(element) {
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"](`#${this.nodeId()}`).on('click', this.toggleVisibilityCallback(element));
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](`#${this.nodeId(true)}`).on('click', this.toggleVisibilityCallback(element));
     }
     configureNodeHoverCallback(element) {
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"](`#${this.nodeId()}`).on('mouseenter', this.toggleVisibilityCallback(element));
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"](`#${this.nodeId()}`).on('mouseleave', this.toggleVisibilityCallback(element));
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](`#${this.nodeId(true)}`).on('mouseenter', this.toggleVisibilityCallback(element));
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](`#${this.nodeId(true)}`).on('mouseleave', this.toggleVisibilityCallback(element));
     }
     disableZoom(element) {
         d3__WEBPACK_IMPORTED_MODULE_0__["select"](element).on('mousedown', () => {
