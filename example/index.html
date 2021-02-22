@@ -11,7 +11,12 @@
 <body>
 <div id="diagram"></div>
 <script>
-  const diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, bundle: true, tooltip: 'click'});
+  const diagram = new Diagram('#diagram', 'index.json', {
+    // pop: /^([^\s-]+)-/,
+    bundle: true,
+    tooltip: 'click',
+    positionCache: false
+  });
   diagram.init('loopback', 'interface', 'description', 'type');
 </script>
 </body>

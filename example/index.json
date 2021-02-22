@@ -1,47 +1,188 @@
 {
   "nodes": [
-    { "name": "POP01-bb01", "meta": {"description": "This is a router", "type": "Backbone"}, "icon": "./images/router.png" },
-    { "name": "POP01-bb02", "meta": {"description": "This is a router", "type": "Backbone"}, "icon": "./images/router.png" },
-    { "name": "POP01-ag01", "meta": {"description": "This is a router", "type": "Aggregation"}, "icon": "./images/switch.png" },
-    { "name": "POP01-ag02", "meta": {"description": "This is a router", "type": "Aggregation"}, "icon": "./images/switch.png" },
-    { "name": "POP02-bb01", "meta": { "loopback": "10.0.0.1" } },
-    { "name": "POP02-bb02" },
-    { "name": "POP02-ag01" },
-    { "name": "POP02-ag02" },
-    { "name": "POP03-bb01" },
-    { "name": "POP03-bb02" },
-    { "name": "POP03-ag01" },
-    { "name": "POP03-ag02" }
+    {
+      "level": 1,
+      "name": "testPERMANENT-10.0.1.1",
+      "meta": {
+        "tenant-ip": "10.0.1.1"
+      },
+      "icon": "/static/images/router.png"
+    },
+    {
+      "level": 1,
+      "name": "testPERMANENT-10.0.1.2",
+      "meta": {
+        "tenant-ip": "10.0.1.2"
+      },
+      "icon": "/static/images/router.png"
+    },
+    {
+      "level": 2,
+      "name": "INTERNET",
+      "icon": "/static/images/router.png"
+    },
+    {
+      "level": 3,
+      "name": "AZ1-testpermanent-123-muc-vpn1",
+      "meta": {
+        "name": "vpn1"
+      },
+      "icon": "/static/images/router.png"
+    },
+    {
+      "level": 3,
+      "name": "AZ2-testpermanent-123-muc-vpn2",
+      "meta": {
+        "name": "vpn2"
+      },
+      "icon": "/static/images/router.png"
+    },
+    {
+      "level": 4,
+      "name": "AZ1-testpermanent-muc-rs1",
+      "meta": {
+        "name": "rs1"
+      },
+      "icon": "/static/images/router.png"
+    },
+    {
+      "level": 4,
+      "name": "AZ1-testpermanent-muc-rs2",
+      "meta": {
+        "name": "rs2"
+      },
+      "icon": "/static/images/router.png"
+    },
+    {
+      "level": 4,
+      "name": "AZ2-testpermanent-muc-rs3",
+      "meta": {
+        "name": "rs3"
+      },
+      "icon": "/static/images/router.png"
+    },
+    {
+      "level": 4,
+      "name": "AZ2-testpermanent-muc-rs4",
+      "meta": {
+        "name": "rs4"
+      },
+      "icon": "/static/images/router.png"
+    },
+    {
+      "level": 5,
+      "name": "10.0.0.0/24"
+    },
+    {
+      "level": 5,
+      "name": "10.0.1.0/24"
+    },
+    {
+      "level": 6,
+      "name": "POD1-FCIPOCLEAF101",
+      "meta": {
+        "name": "FCIPOCLEAF101"
+      },
+      "icon": "/static/images/router.png"
+    },
+    {
+      "level": 7,
+      "name": "POD1-FCIPOCLEAF102",
+      "meta": {
+        "name": "FCIPOCLEAF102"
+      },
+      "icon": "/static/images/router.png"
+    },
+    {
+      "level": 6,
+      "name": "POD2-FCIPOCLEAF202",
+      "meta": {
+        "name": "FCIPOCLEAF202"
+      },
+      "icon": "/static/images/router.png"
+    },
+    {
+      "level": 7,
+      "name": "POD2-FCIPOCLEAF201",
+      "meta": {
+        "name": "FCIPOCLEAF201"
+      },
+      "icon": "/static/images/router.png"
+    }
   ],
-
   "links": [
-    { "source": "POP01-bb01", "target": "POP01-bb02" },
-    { "source": "POP02-bb01", "target": "POP02-bb02" },
-    { "source": "POP03-bb01", "target": "POP03-bb02",
-      "meta": { "interface": { "source": "ge-0/0/0", "target": "Te0/0/0/0" } } },
-    { "source": "POP01-bb01", "target": "POP02-bb01" },
-    { "source": "POP01-bb01", "target": "POP03-bb01" },
-    { "source": "POP01-bb02", "target": "POP02-bb02" },
-    { "source": "POP01-bb02", "target": "POP03-bb02",
-      "meta": { "interface": { "source": "ge-0/0/0", "target": "Te0/0/0/0" } } },
-    { "source": "POP01-bb02", "target": "POP03-bb02",
-      "meta": { "interface": { "source": "ge-0/0/1", "target": "Te0/0/0/1" } } },
-    { "source": "POP02-bb01", "target": "POP03-bb02" },
-    { "source": "POP02-bb02", "target": "POP03-bb01" },
-    { "source": "POP01-ag01", "target": "POP01-ag02" },
-    { "source": "POP02-ag01", "target": "POP02-ag02" },
-    { "source": "POP03-ag01", "target": "POP03-ag02" },
-    { "source": "POP01-bb01", "target": "POP01-ag01" },
-    { "source": "POP01-bb01", "target": "POP01-ag02" },
-    { "source": "POP01-bb02", "target": "POP01-ag01" },
-    { "source": "POP01-bb02", "target": "POP01-ag02" },
-    { "source": "POP02-bb01", "target": "POP02-ag01" },
-    { "source": "POP02-bb01", "target": "POP02-ag02" },
-    { "source": "POP02-bb02", "target": "POP02-ag01" },
-    { "source": "POP02-bb02", "target": "POP02-ag02" },
-    { "source": "POP03-bb01", "target": "POP03-ag01" },
-    { "source": "POP03-bb01", "target": "POP03-ag02" },
-    { "source": "POP03-bb02", "target": "POP03-ag01" },
-    { "source": "POP03-bb02", "target": "POP03-ag02" }
+    {
+      "source": "10.0.0.0/24",
+      "target": "AZ1-testpermanent-muc-rs1"
+    },
+    {
+      "source": "10.0.0.0/24",
+      "target": "AZ1-testpermanent-muc-rs2"
+    },
+    {
+      "source": "10.0.0.0/24",
+      "target": "POD1-FCIPOCLEAF102"
+    },
+    {
+      "source": "10.0.0.0/24",
+      "target": "POD1-FCIPOCLEAF101"
+    },
+    {
+      "source": "10.0.0.0/24",
+      "target": "POD2-FCIPOCLEAF201"
+    },
+    {
+      "source": "10.0.0.0/24",
+      "target": "POD2-FCIPOCLEAF202"
+    },
+    {
+      "source": "10.0.1.0/24",
+      "target": "AZ2-testpermanent-muc-rs3"
+    },
+    {
+      "source": "10.0.1.0/24",
+      "target": "AZ2-testpermanent-muc-rs4"
+    },
+    {
+      "source": "10.0.1.0/24",
+      "target": "POD1-FCIPOCLEAF102"
+    },
+    {
+      "source": "10.0.1.0/24",
+      "target": "POD1-FCIPOCLEAF101"
+    },
+    {
+      "source": "10.0.1.0/24",
+      "target": "POD2-FCIPOCLEAF201"
+    },
+    {
+      "source": "10.0.1.0/24",
+      "target": "POD2-FCIPOCLEAF202"
+    },
+    {
+      "source": "INTERNET",
+      "target": "AZ1-testpermanent-123-muc-vpn1"
+    },
+    {
+      "source": "INTERNET",
+      "target": "AZ2-testpermanent-123-muc-vpn2"
+    },
+    {
+      "source": "INTERNET",
+      "target": "testPERMANENT-10.0.1.1"
+    },
+    {
+      "source": "INTERNET",
+      "target": "testPERMANENT-10.0.1.2"
+    },
+    {
+      "source": "10.0.0.0/24",
+      "target": "AZ1-testpermanent-123-muc-vpn1"
+    },
+    {
+      "source": "10.0.1.0/24",
+      "target": "AZ2-testpermanent-123-muc-vpn2"
+    }
   ]
 }
+

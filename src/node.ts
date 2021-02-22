@@ -10,6 +10,7 @@ export type NodeDataType = {
     icon: string,
     meta: Record<string, any>,  // eslint-disable-line @typescript-eslint/no-explicit-any
     class: string,
+    level: number,
 }
 
 export class Node {

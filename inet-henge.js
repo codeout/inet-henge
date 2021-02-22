@@ -25427,6 +25427,35 @@ class Diagram {
                 data.links.map((l, i) => new _link__WEBPACK_IMPORTED_MODULE_2__["Link"](l, i, this.options.meta, this.getLinkWidth)) : [];
             const groups = _group__WEBPACK_IMPORTED_MODULE_1__["Group"].divide(nodes, this.options.groupPattern, this.options.color);
             const tooltips = nodes.map((n) => new _tooltip__WEBPACK_IMPORTED_MODULE_5__["Tooltip"](n, this.options.tooltip));
+            // https://github.com/codeout/inet-henge/issues/27
+            function composeConstraints(nodes) {
+                let constraints = [];
+                // Align on x axis
+                nodes.forEach((n, i) => {
+                    constraints[n.level] = constraints[n.level] || { type: 'alignment', axis: 'y', offsets: [] };
+                    constraints[n.level].offsets.push({ node: i, offset: 0 });
+                });
+                constraints = constraints.filter((i) => i); // Remove empty
+                const levels = constraints.map((i) => i.offsets);
+                // Put nodes in defined order on x axis
+                levels.forEach((offsets) => {
+                    for (let j = 0; j < offsets.length - 1; j++) {
+                        constraints.push({ axis: 'x', left: offsets[j].node, right: offsets[j + 1].node, gap: 50 });
+                    }
+                });
+                // Put nodes in level order on y axis
+                for (let i = 0; i < levels.length - 1; i++) {
+                    constraints.push({
+                        axis: 'y', left: levels[i][0].node, right: levels[i + 1][0].node, gap: 50,
+                        // For debug
+                        left_name: data.nodes[levels[i][0].node].name,
+                        right_name: data.nodes[levels[i + 1][0].node].name,
+                    });
+                }
+                console.log(constraints); // For debug
+                return constraints;
+            }
+            this.cola.constraints(composeConstraints(data.nodes));
             this.cola.nodes(nodes)
                 .links(links)
                 .groups(groups);
