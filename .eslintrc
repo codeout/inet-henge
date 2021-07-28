@@ -4,8 +4,13 @@
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
+  "plugins": [
+    "simple-import-sort"
+  ],
   "rules": {
-//    "no-console": 0,
-//    "@typescript-eslint/indent": 0,
+    //    "no-console": 0,
+    //    "@typescript-eslint/indent": 0,
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
   }
 }
