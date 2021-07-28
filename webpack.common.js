@@ -1,21 +1,21 @@
 module.exports = {
-  entry: './src/diagram',
+  entry: "./src/diagram",
   output: {
-    path: __dirname,
+    path: __dirname
   },
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: [".ts", ".js"]
   },
   module: {
     rules: [
       {
         test: /\.ts$/,
-        use: ['ts-loader'],
+        use: ["ts-loader"]
       }
-    ],
+    ]
   },
   externals: {
-    cola: 'cola',
-    d3: 'd3',
-  },
+    cola: "cola",
+    d3: "d3"
+  }
 };

@@ -1,3 +1,3 @@
 export function classify(string: string): string {
-    return string.replace(' ', '-').toLowerCase();
+  return string.replace(" ", "-").toLowerCase();
 }

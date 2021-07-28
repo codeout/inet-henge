@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8"/>
-    <link href="style.css" rel="stylesheet"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
-    <script src="../vendor/cola.min.js"></script>
-    <script src="../inet-henge.js"></script>
+  <meta charset="utf-8" />
+  <link href="style.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
+  <script src="../vendor/cola.min.js"></script>
+  <script src="../inet-henge.js"></script>
 </head>
 
 <body>
 <div id="diagram"></div>
 <script>
-  const diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, bundle: true, tooltip: 'click'});
-  diagram.init('loopback', 'interface', 'description', 'type');
+  const diagram = new Diagram("#diagram", "index.json", { pop: /^([^\s-]+)-/, bundle: true, tooltip: "click" });
+  diagram.init("loopback", "interface", "description", "type");
 </script>
 </body>
 
