@@ -20,6 +20,7 @@ export class Node {
     public meta: MetaDataType[];
     public x: number;
     public y: number;
+    public display: string;
 
     private icon: string;
     private extraClass: string;
@@ -27,6 +28,7 @@ export class Node {
     private height: number;
     private padding: number;
     private tspanOffset: string;
+    private textcolor: string;
 
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
     // Also, it should have accepted undefined
@@ -44,6 +46,8 @@ export class Node {
         this.tspanOffset = '1.1em';
 
         this.register(id, data.name);
+        this.textcolor = 'black';
+        this.display = '';
     }
 
     register(id: number, name: string): void {
@@ -79,6 +83,56 @@ export class Node {
         return Node.all[name];
     }
 
+    hide(): string {
+        if (this.textcolor === 'red') {
+            this.display = 'none';
+            return 'none';
+        }
+    }
+
+    show(): string {
+        this.display = '';
+        return '';
+    }
+
+    hideCallback(element: SVGGElement): void {
+        d3.select(element).style('display', this.hide());
+    }
+
+    showCallback(element: SVGGElement): void {
+        d3.select(element).style('display', this.show());
+    }
+
+    toggleColor(): string {
+        if (this.textcolor === 'black') {
+            this.textcolor = 'red';
+            return 'red';
+        } else {
+            this.textcolor = 'black';
+            return 'black';
+        }
+    }
+
+    toggleTextColorCallback(element: SVGGElement): any {
+        return () => {
+            // Do nothing for dragging
+            if (event.defaultPrevented) {
+                return;
+            }
+            d3.select(element).select('text').select('tspan').style('fill', this.toggleColor());
+        };
+    }
+
+    configureNodeClickCallback(element: SVGGElement): void {
+        d3.select(element).on('click', this.toggleTextColorCallback(element));
+    }
+
+    disableZoom(element: SVGAElement): void {
+        d3.select(element).on('mousedown', () => {
+            (<MouseEvent>d3.event).stopPropagation();
+        })
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer: d3.Selection<any>, nodes: Node[]): d3.Selection<Node> {
         const node = layer.selectAll('.node')
@@ -87,7 +141,8 @@ export class Node {
             .append('g')
             .attr('id', (d) => classify(d.name))
             .attr('name', (d) => d.name)
-            .attr('transform', (d) => d.transform());
+            .attr('transform', (d) => d.transform())
+            .style('display', (d) => d.display);
 
         node.each(function (d) {
             if (d.icon)
@@ -96,6 +151,9 @@ export class Node {
                 Node.appendRect(this);
 
             Node.appendText(this);
+
+            d.configureNodeClickCallback(this);
+            d.disableZoom(this);
         });
 
         return node;
@@ -108,7 +166,8 @@ export class Node {
             .attr('y', (d: Node) => d.yForText());
         text.append('tspan')
             .text((d: Node) => d.name)
-            .attr('x', (d: Node) => d.xForText());
+            .attr('x', (d: Node) => d.xForText())
+            .style('fill', (d) => d.textcolor);
 
         text.each((d: Node) => {
             // Show meta only when "tooltip" option is not configured

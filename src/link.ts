@@ -28,6 +28,7 @@ export class Link {
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
     // Also, it should have accepted undefined
     private color: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
+    private display: string;
     private _margin: number;
 
     constructor(data: LinkDataType, public id: number, metaKeys: string[], linkWidth: (object) => number) {
@@ -47,6 +48,7 @@ export class Link {
         this.labelXOffset = 20;
         this.labelYOffset = 1.5; // em
         this.color = '#7a4e4e';
+        this.display = '';
 
         this.register(id, this.source, this.target);
     }
@@ -137,6 +139,26 @@ export class Link {
         return `link ${classify((<Node>this.source).name)} ${classify((<Node>this.target).name)} ${classify((<Node>this.source).name)}-${classify((<Node>this.target).name)} ${this.extraClass}`;
     }
 
+    hide(): string {
+        if ((<Node>this.source).display === 'none' || (<Node>this.target).display ) {
+            this.display = 'none';
+            return 'none';
+        }
+    }
+
+    show(): string {
+        this.display = '';
+        return '';
+    }
+
+    showCallback(element: SVGGElement): void {
+        d3.select(element).style('display', this.show());
+    }
+
+    hideCallback(element: SVGGElement): void {
+        d3.select(element).style('display', this.hide());
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(linkLayer: d3.Selection<any>, labelLayer: d3.Selection<any>, links: Link[]): [d3.Selection<Link>, d3.Selection<Link>, d3.Selection<any>] {
         // Render lines
@@ -144,7 +166,8 @@ export class Link {
             .data(links)
             .enter()
             .append('g')
-            .attr('class', (d) => d.class());
+            .attr('class', (d) => d.class())
+            .style('display', (d) => d.display);
 
         const link = pathGroup.append('line')
             .attr('x1', (d) => (<Node>d.source).x)
