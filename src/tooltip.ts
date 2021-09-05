@@ -59,16 +59,16 @@ export class Tooltip {
   }
 
   configureNodeClickCallback(element: SVGGElement): void {
-    d3.select(`#${this.nodeId(true)}`).on("click", this.toggleVisibilityCallback(element));
+    d3.select(`#${this.nodeId(true)}`).on("click.tooltip", this.toggleVisibilityCallback(element));
   }
 
   configureNodeHoverCallback(element: SVGGElement): void {
-    d3.select(`#${this.nodeId(true)}`).on("mouseenter", this.toggleVisibilityCallback(element));
-    d3.select(`#${this.nodeId(true)}`).on("mouseleave", this.toggleVisibilityCallback(element));
+    d3.select(`#${this.nodeId(true)}`).on("mouseenter.tooltip", this.toggleVisibilityCallback(element));
+    d3.select(`#${this.nodeId(true)}`).on("mouseleave.tooltip", this.toggleVisibilityCallback(element));
   }
 
   disableZoom(element: SVGAElement): void {
-    d3.select(element).on("mousedown", () => {
+    d3.select(element).on("mousedown.tooltip", () => {
       (<MouseEvent>d3.event).stopPropagation();
     });
   }
