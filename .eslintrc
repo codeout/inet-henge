@@ -8,8 +8,12 @@
     "simple-import-sort"
   ],
   "rules": {
-    //    "no-console": 0,
-    //    "@typescript-eslint/indent": 0,
+    "@typescript-eslint/consistent-type-assertions": [
+      "error",
+      {
+        "assertionStyle": "as"
+      }
+    ],
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error"
   }
