@@ -1,6 +1,5 @@
-import * as crypto from "crypto";
-
 const cloneDeep = require("lodash.clonedeep");  // eslint-disable-line @typescript-eslint/no-var-requires
+const md5 = require("md5");  // eslint-disable-line @typescript-eslint/no-var-requires
 
 import { Group } from "./group";
 import { InetHengeDataType } from "./diagram";
@@ -12,21 +11,21 @@ export type NodePosition = { x: number, y: number }
 export type LinkPosition = { x1: number, y1: number, x2: number, y2: number }
 type ExtendedInetHengeDataType = InetHengeDataType & { pop: string }
 type CacheDataType = {
-  sha1: string,
+  md5: string,
   group: GroupPosition[],
   node: NodePosition[],
   link: LinkPosition[],
 }
 
 export class PositionCache {
-  private cachedSha1: string;
+  private cachedMd5: string;
   public group: GroupPosition[];
   public node: NodePosition[];
   public link: LinkPosition[];
 
-  constructor(public data: InetHengeDataType, public pop?: RegExp, sha1?: string) {
+  constructor(public data: InetHengeDataType, public pop?: RegExp, md5?: string) {
     // NOTE: properties below can be undefined
-    this.cachedSha1 = sha1;
+    this.cachedMd5 = md5;
   }
 
   static getAll(): CacheDataType[] {
@@ -40,7 +39,7 @@ export class PositionCache {
   save(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>): void {
     const cache = PositionCache.getAll();
     cache[location.pathname] = {
-      sha1: this.sha1(),
+      md5: this.md5(),
       group: this.groupPosition(group),
       node: this.nodePosition(node),
       link: this.linkPosition(link)
@@ -49,7 +48,7 @@ export class PositionCache {
     localStorage.setItem("positionCache", JSON.stringify(cache));
   }
 
-  sha1(data?: ExtendedInetHengeDataType, pop?: RegExp): string {
+  md5(data?: ExtendedInetHengeDataType, pop?: RegExp): string {
     data = <ExtendedInetHengeDataType>cloneDeep(data || this.data);
     data.pop = String(pop || this.pop);
     if (data.pop === "undefined") {
@@ -64,9 +63,7 @@ export class PositionCache {
       delete i.meta;
     });
 
-    const sha1 = crypto.createHash("sha1");
-    sha1.update(JSON.stringify(data));
-    return sha1.digest("hex");
+    return md5(JSON.stringify(data));
   }
 
   groupPosition(group: d3.Selection<any>): GroupPosition[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -113,14 +110,14 @@ export class PositionCache {
   }
 
   match(data: InetHengeDataType, pop: RegExp): boolean {
-    return this.cachedSha1 === this.sha1(<ExtendedInetHengeDataType>data, pop);
+    return this.cachedMd5 === this.md5(<ExtendedInetHengeDataType>data, pop);
   }
 
   static load(data: InetHengeDataType, pop: RegExp): PositionCache | undefined {
     const cache = this.get();
     if (cache) {
-      const position = new PositionCache(data, pop, cache.sha1);
-      if (position.match(data, pop)) { // if data and pop match saved sha1
+      const position = new PositionCache(data, pop, cache.md5);
+      if (position.match(data, pop)) { // if data and pop match saved md5
         position.group = cache.group;
         position.node = cache.node;
         position.link = cache.link;
