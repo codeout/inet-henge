@@ -32,6 +32,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "lodash.clonedeep": "^4.5.0",
+    "md5": "^2.3.0",
     "prettier": "^2.3.2",
     "ts-loader": "^7.0.5",
     "typescript": "^3.9.5",
