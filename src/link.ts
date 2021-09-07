@@ -1,8 +1,8 @@
 import * as d3 from "d3";
 
-import { LinkPosition } from "./position_cache";
 import { MetaData, MetaDataType } from "./meta_data";
 import { Node } from "./node";
+import { LinkPosition } from "./position_cache";
 import { classify } from "./util";
 
 export type LinkDataType = {
@@ -60,7 +60,7 @@ export class Link {
   }
 
   d(): string {
-    return `M ${(<Node>this.source).x} ${(<Node>this.source).y} L ${(<Node>this.target).x} ${(<Node>this.target).y}`;
+    return `M ${(this.source as Node).x} ${(this.source as Node).y} L ${(this.target as Node).x} ${(this.target as Node).y}`;
   }
 
   pathId(): string {
@@ -105,7 +105,7 @@ export class Link {
   }
 
   rotate(bbox: SVGRect): string {
-    if ((<Node>this.source).x > (<Node>this.target).x)
+    if ((this.source as Node).x > (this.target as Node).x)
       return `rotate(180 ${bbox.x + bbox.width / 2} ${bbox.y + bbox.height / 2})`;
     else
       return "rotate(0)";
@@ -134,7 +134,7 @@ export class Link {
 
   class(): string {
     // eslint-disable-next-line max-len
-    return `link ${classify((<Node>this.source).name)} ${classify((<Node>this.target).name)} ${classify((<Node>this.source).name)}-${classify((<Node>this.target).name)} ${this.extraClass}`;
+    return `link ${classify((this.source as Node).name)} ${classify((this.target as Node).name)} ${classify((this.source as Node).name)}-${classify((this.target as Node).name)} ${this.extraClass}`;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -147,10 +147,10 @@ export class Link {
       .attr("class", (d) => d.class());
 
     const link = pathGroup.append("line")
-      .attr("x1", (d) => (<Node>d.source).x)
-      .attr("y1", (d) => (<Node>d.source).y)
-      .attr("x2", (d) => (<Node>d.target).x)
-      .attr("y2", (d) => (<Node>d.target).y)
+      .attr("x1", (d) => (d.source as Node).x)
+      .attr("y1", (d) => (d.source as Node).y)
+      .attr("x2", (d) => (d.target as Node).x)
+      .attr("y2", (d) => (d.target as Node).y)
       .attr("stroke", (d) => d.color)
       .attr("stroke-width", (d) => d.width)
       .attr("id", (d) => d.linkId())
@@ -219,10 +219,10 @@ export class Link {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static tick(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>): void {
-    link.attr("x1", (d) => (<Node>d.source).x)
-      .attr("y1", (d) => (<Node>d.source).y)
-      .attr("x2", (d) => (<Node>d.target).x)
-      .attr("y2", (d) => (<Node>d.target).y);
+    link.attr("x1", (d) => (d.source as Node).x)
+      .attr("y1", (d) => (d.source as Node).y)
+      .attr("x2", (d) => (d.target as Node).x)
+      .attr("y2", (d) => (d.target as Node).y);
 
     if (path)
       path.attr("d", (d) => d.d());
@@ -256,7 +256,7 @@ export class Link {
   }
 
   static shiftMultiplier(link: Link): number {
-    const members = Link.groups[[(<Node>link.source).id, (<Node>link.target).id].sort().toString()] || [];
+    const members = Link.groups[[(link.source as Node).id, (link.target as Node).id].sort().toString()] || [];
     return members.indexOf(link.id) - (members.length - 1) / 2;
   }
 
@@ -272,8 +272,8 @@ export class Link {
   shiftBundle(multiplier: number): string {
     const gap = this.margin() * multiplier;
 
-    const width = Math.abs((<Node>this.target).x - (<Node>this.source).x);
-    const height = Math.abs((<Node>this.source).y - (<Node>this.target).y);
+    const width = Math.abs((this.target as Node).x - (this.source as Node).x);
+    const height = Math.abs((this.source as Node).y - (this.target as Node).y);
     const length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
 
     return `translate(${gap * height / length}, ${gap * width / length})`;

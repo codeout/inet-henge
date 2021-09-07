@@ -89,7 +89,7 @@ export class Node {
       .attr("name", (d) => d.name)
       .attr("transform", (d) => d.transform());
 
-    node.each(function(d) {
+    node.each(function(this: SVGGElement, d) {
       if (d.icon)
         Node.appendImage(this);
       else

@@ -26,7 +26,7 @@ export class Tooltip {
   }
 
   nodeId(escape = false): string {
-    let id = classify((<Node>this.node).name);
+    let id = classify((this.node as Node).name);
 
     if (escape) {
       id = CSS.escape(id);
@@ -50,7 +50,7 @@ export class Tooltip {
   toggleVisibilityCallback(element: SVGGElement): any {
     return () => {
       // Do nothing for dragging
-      if (event.defaultPrevented) {
+      if ((d3.event as MouseEvent).defaultPrevented) {
         return;
       }
 
@@ -69,7 +69,7 @@ export class Tooltip {
 
   disableZoom(element: SVGAElement): void {
     d3.select(element).on("mousedown.tooltip", () => {
-      (<MouseEvent>d3.event).stopPropagation();
+      (d3.event as MouseEvent).stopPropagation();
     });
   }
 

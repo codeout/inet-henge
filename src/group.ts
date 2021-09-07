@@ -1,5 +1,5 @@
-import { GroupPosition } from "./position_cache";
 import { Node } from "./node";
+import { GroupPosition } from "./position_cache";
 import { classify } from "./util";
 
 export class Group {

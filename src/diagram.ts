@@ -1,3 +1,5 @@
+import "./hack_cola";
+
 import * as d3 from "d3";
 
 import { Group } from "./group";
@@ -5,8 +7,6 @@ import { Link, LinkDataType } from "./link";
 import { Node, NodeDataType } from "./node";
 import { PositionCache } from "./position_cache";
 import { Tooltip } from "./tooltip";
-
-import "./hack_cola";
 
 const cola = require("cola");  // eslint-disable-line @typescript-eslint/no-var-requires
 
@@ -50,7 +50,7 @@ export class Diagram {
   private svg: d3.Selection<any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
   constructor(container: string, urlOrData: string | InetHengeDataType, options: DiagramOptionType) {
-    this.options = options || <DiagramOptionType>{};
+    this.options = options || {} as DiagramOptionType;
     this.options.selector = container;
     this.options.urlOrData = urlOrData;
     this.options.groupPattern = options.pop;
@@ -97,7 +97,7 @@ export class Diagram {
 
     if (typeof this.options.urlOrData === "object") {
       setTimeout(() => {  // Run asynchronously
-        this.render(<InetHengeDataType>this.options.urlOrData);
+        this.render(this.options.urlOrData as InetHengeDataType);
       });
     } else {
       d3.json(this.url(), (error, data) => {
@@ -268,16 +268,16 @@ export class Diagram {
       this.saveInitialTranslate();
     }
 
-    (<d3.ZoomEvent>d3.event).scale *= this.initialScale;
-    (<d3.ZoomEvent>d3.event).translate[0] += this.initialTranslate[0];
-    (<d3.ZoomEvent>d3.event).translate[1] += this.initialTranslate[1];
+    (d3.event as d3.ZoomEvent).scale *= this.initialScale;
+    (d3.event as d3.ZoomEvent).translate[0] += this.initialTranslate[0];
+    (d3.event as d3.ZoomEvent).translate[1] += this.initialTranslate[1];
 
-    Link.zoom((<d3.ZoomEvent>d3.event).scale);
-    container.attr("transform", `translate(${(<d3.ZoomEvent>d3.event).translate}) scale(${(<d3.ZoomEvent>d3.event).scale})`);
+    Link.zoom((d3.event as d3.ZoomEvent).scale);
+    container.attr("transform", `translate(${(d3.event as d3.ZoomEvent).translate}) scale(${(d3.event as d3.ZoomEvent).scale})`);
   }
 
   dragstartCallback(): void {
-    (<d3.ZoomEvent>d3.event).sourceEvent.stopPropagation();
+    (d3.event as d3.ZoomEvent).sourceEvent.stopPropagation();
   }
 
   displayLoadMessage(): void {

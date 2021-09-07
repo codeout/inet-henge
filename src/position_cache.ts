@@ -1,8 +1,8 @@
 const cloneDeep = require("lodash.clonedeep");  // eslint-disable-line @typescript-eslint/no-var-requires
 const md5 = require("md5");  // eslint-disable-line @typescript-eslint/no-var-requires
 
-import { Group } from "./group";
 import { InetHengeDataType } from "./diagram";
+import { Group } from "./group";
 import { Link } from "./link";
 import { Node } from "./node";
 
@@ -28,12 +28,12 @@ export class PositionCache {
     this.cachedMd5 = md5;
   }
 
-  static getAll(): CacheDataType[] {
+  static getAll(): {[key: string]: CacheDataType} {
     return JSON.parse(localStorage.getItem("positionCache")) || {};
   }
 
   static get(): CacheDataType {
-    return this.getAll()[location.pathname] || {};
+    return this.getAll()[location.pathname] || {} as CacheDataType;
   }
 
   save(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>): void {
@@ -49,7 +49,7 @@ export class PositionCache {
   }
 
   md5(data?: ExtendedInetHengeDataType, pop?: RegExp): string {
-    data = <ExtendedInetHengeDataType>cloneDeep(data || this.data);
+    data = cloneDeep(data || this.data) as ExtendedInetHengeDataType;
     data.pop = String(pop || this.pop);
     if (data.pop === "undefined") {
       data.pop = "null"; // NOTE: unify undefined with null
@@ -110,7 +110,7 @@ export class PositionCache {
   }
 
   match(data: InetHengeDataType, pop: RegExp): boolean {
-    return this.cachedMd5 === this.md5(<ExtendedInetHengeDataType>data, pop);
+    return this.cachedMd5 === this.md5(data as ExtendedInetHengeDataType, pop);
   }
 
   static load(data: InetHengeDataType, pop: RegExp): PositionCache | undefined {
