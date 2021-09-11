@@ -67,7 +67,8 @@ export class Tooltip {
     d3.select(`#${this.nodeId(true)}`).on("mouseleave.tooltip", this.toggleVisibilityCallback(element));
   }
 
-  disableZoom(element: SVGAElement): void {
+  // Make tooltip selectable
+  disableZoom(element: SVGGElement): void {
     d3.select(element).on("mousedown.tooltip", () => {
       (d3.event as MouseEvent).stopPropagation();
     });
