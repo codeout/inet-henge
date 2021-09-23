@@ -4,6 +4,9 @@ import { MetaData, MetaDataType } from "./meta_data";
 import { NodePosition } from "./position_cache";
 import { classify } from "./util";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Constructor = (data: NodeDataType, id: number, metaKeys: string[], color: any, tooltip: boolean) => void;
+
 export type NodeDataType = {
   name: string,
   group: string[],
@@ -12,7 +15,7 @@ export type NodeDataType = {
   class: string,
 }
 
-export class Node {
+class NodeBase {
   private static all: Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
   public name: string;
@@ -102,15 +105,15 @@ export class Node {
   }
 
   static appendText(container: SVGGElement): void {
-    const text = d3.select(container).append("text")
+    const text = (d3.select(container) as d3.Selection<Node>).append("text")
       .attr("text-anchor", "middle")
-      .attr("x", (d: Node) => d.xForText())
-      .attr("y", (d: Node) => d.yForText());
+      .attr("x", (d) => d.xForText())
+      .attr("y", (d) => d.yForText());
     text.append("tspan")
-      .text((d: Node) => d.name)
-      .attr("x", (d: Node) => d.xForText());
+      .text((d) => d.name)
+      .attr("x", (d) => d.xForText());
 
-    text.each((d: Node) => {
+    text.each((d) => {
       // Show meta only when "tooltip" option is not configured
       if (!d.tooltip) {
         Node.appendTspans(text, d.meta);
@@ -119,32 +122,34 @@ export class Node {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static appendTspans(container: d3.Selection<any>, meta: MetaDataType[]): void {
+  static appendTspans(container: d3.Selection<Node>, meta: MetaDataType[]): void {
     meta.forEach((m) => {
       container.append("tspan")
-        .attr("x", (d: Node) => d.xForText())
-        .attr("dy", (d: Node) => d.tspanOffset)
+        .attr("x", (d) => d.xForText())
+        .attr("dy", (d) => d.tspanOffset)
         .attr("class", m.class)
         .text(m.value);
     });
   }
 
   static appendImage(container: SVGGElement): void {
-    d3.select(container).attr("class", (d: Node) => `node image ${classify(d.name)} ${d.extraClass}`)
+    (d3.select(container) as d3.Selection<Node>)
+      .attr("class", (d) => `node image ${classify(d.name)} ${d.extraClass}`)
       .append("image")
-      .attr("xlink:href", (d: Node) => d.icon)
-      .attr("width", (d: Node) => d.nodeWidth())
-      .attr("height", (d: Node) => d.nodeHeight());
+      .attr("xlink:href", (d) => d.icon)
+      .attr("width", (d) => d.nodeWidth())
+      .attr("height", (d) => d.nodeHeight());
   }
 
   static appendRect(container: SVGGElement): void {
-    d3.select(container).attr("class", (d: Node) => `node rect ${classify(d.name)} ${d.extraClass}`)
+    (d3.select(container) as d3.Selection<Node>)
+      .attr("class", (d) => `node rect ${classify(d.name)} ${d.extraClass}`)
       .append("rect")
-      .attr("width", (d: Node) => d.nodeWidth())
-      .attr("height", (d: Node) => d.nodeHeight())
+      .attr("width", (d) => d.nodeWidth())
+      .attr("height", (d) => d.nodeHeight())
       .attr("rx", 5)
       .attr("ry", 5)
-      .style("fill", (d: Node) => d.color());
+      .style("fill", (d) => d.color());
   }
 
   static tick(node: d3.Selection<Node>): void {
@@ -163,3 +168,63 @@ export class Node {
     Node.all = null;
   }
 }
+
+const Eventable = (Base: typeof NodeBase) => {
+  class EventableNode extends Base {
+    private dispatch: d3.Dispatch;
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    constructor(data: NodeDataType, id: number, metaKeys: string[], color: any, tooltip: boolean) {
+      super(data, id, metaKeys, color, tooltip);
+
+      this.dispatch = d3.dispatch("rendered");
+    }
+
+    static render(layer, nodes) {
+      const node = super.render(layer, nodes);
+
+      node.each(function(this: SVGGElement, d: Node & EventableNode) {
+        d.dispatch.rendered(this);
+      });
+
+      return node;
+    }
+
+    on(name: string, callback: (element: SVGGElement) => any): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
+      this.dispatch.on(name, callback);
+    }
+  }
+
+  return EventableNode;
+};
+
+const Pluggable = (Base: typeof NodeBase) => {
+  class Node extends Base {
+    private static pluginConstructors: Constructor[] = [];
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    constructor(data: NodeDataType, id: number, metaKeys: string[], color: any, tooltip: boolean) {
+      super(data, id, metaKeys, color, tooltip);
+
+      for (const constructor of Node.pluginConstructors) {
+        // Call Pluggable at last as constructor may call methods defined in other classes
+        constructor.bind(this)(data, id, metaKeys, color, tooltip);
+      }
+    }
+
+    static registerConstructor(func: Constructor): void {
+      Node.pluginConstructors.push(func);
+    }
+  }
+
+  return Node;
+};
+
+class EventableNode extends Eventable(NodeBase) {
+}
+
+// Call Pluggable at last as constructor may call methods defined in other classes
+class Node extends Pluggable(EventableNode) {
+}
+
+export { Node };

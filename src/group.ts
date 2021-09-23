@@ -1,8 +1,13 @@
+import * as d3 from "d3";
+
 import { Node } from "./node";
 import { GroupPosition } from "./position_cache";
 import { classify } from "./util";
 
-export class Group {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Constructor = (name: string, color: any) => void;
+
+export class GroupBase {
   private leaves: number[];
   // Not appropriately defined in @types/d3/index.d.ts
   private bounds: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -102,3 +107,63 @@ export class Group {
       .attr("height", (d, i) => position[i].height);
   }
 }
+
+const Eventable = (Base: typeof GroupBase) => {
+  class EventableGroup extends Base {
+    private dispatch: d3.Dispatch;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    constructor(name: string, color: any) {
+      super(name, color);
+
+      this.dispatch = d3.dispatch("rendered");
+    }
+
+    static render(layer, groups) {
+      const group = super.render(layer, groups);
+
+      group.each(function(this: SVGGElement, d: Group & EventableGroup) {
+        d.dispatch.rendered(this);
+      });
+
+      return group;
+    }
+
+    on(name: string, callback: (element: SVGGElement) => any): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
+      this.dispatch.on(name, callback);
+    }
+  }
+
+  return EventableGroup;
+};
+
+const Pluggable = (Base: typeof GroupBase) => {
+  class Group extends Base {
+    private static pluginConstructors: Constructor[] = [];
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    constructor(name: string, color: any) {
+      super(name, color);
+
+      for (const constructor of Group.pluginConstructors) {
+        // Call Pluggable at last as constructor may call methods defined in other classes
+        constructor.bind(this)(name, color);
+      }
+    }
+
+    static registerConstructor(func: Constructor): void {
+      Group.pluginConstructors.push(func);
+    }
+  }
+
+  return Group;
+};
+
+class EventableGroup extends Eventable(GroupBase) {
+}
+
+// Call Pluggable at last as constructor may call methods defined in other classes
+class Group extends Pluggable(EventableGroup) {
+}
+
+export { Group };

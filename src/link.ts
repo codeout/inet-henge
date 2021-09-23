@@ -5,6 +5,8 @@ import { Node } from "./node";
 import { LinkPosition } from "./position_cache";
 import { classify } from "./util";
 
+export type Constructor = (data: LinkDataType, id: number, metaKeys: string[], linkWidth: (object) => number) => void;
+
 export type LinkDataType = {
   source: string,
   target: string,
@@ -12,7 +14,7 @@ export type LinkDataType = {
   class: string,
 }
 
-export class Link {
+export class LinkBase {
   private static groups: Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
   private source: number | Node;
@@ -283,3 +285,61 @@ export class Link {
     Link.groups = null;
   }
 }
+
+const Eventable = (Base: typeof LinkBase) => {
+  class EventableLink extends Base {
+    private dispatch: d3.Dispatch;
+
+    constructor(data: LinkDataType, id: number, metaKeys: string[], linkWidth: (object) => number) {
+      super(data, id, metaKeys, linkWidth);
+
+      this.dispatch = d3.dispatch("rendered");
+    }
+
+    static render(linkLayer, labelLayer, links): [d3.Selection<Link>, d3.Selection<Link>, d3.Selection<any>] {
+      const [link, path, text] = super.render(linkLayer, labelLayer, links);
+
+      link.each(function(this: SVGGElement, d: Link & EventableLink) {
+        d.dispatch.rendered(this);
+      });
+
+      return [link, path, text];
+    }
+
+    on(name: string, callback: (element: SVGGElement) => any): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
+      this.dispatch.on(name, callback);
+    }
+  }
+
+  return EventableLink;
+};
+
+const Pluggable = (Base: typeof LinkBase) => {
+  class Link extends Base {
+    private static pluginConstructors: Constructor[] = [];
+
+    constructor(data: LinkDataType, id: number, metaKeys: string[], linkWidth: (object) => number) {
+      super(data, id, metaKeys, linkWidth);
+
+      for (const constructor of Link.pluginConstructors) {
+        // Call Pluggable at last as constructor may call methods defined in other classes
+        constructor.bind(this)(data, id, metaKeys, linkWidth);
+      }
+    }
+
+    static registerConstructor(func: Constructor): void {
+      Link.pluginConstructors.push(func);
+    }
+  }
+
+  return Link;
+};
+
+class EventableLink extends Eventable(LinkBase) {
+}
+
+// Call Pluggable at last as constructor may call methods defined in other classes
+class Link extends Pluggable(EventableLink) {
+}
+
+export { Link };

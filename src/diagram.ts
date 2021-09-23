@@ -35,10 +35,9 @@ type DiagramOptionType = {
   meta: string[],
 };
 
-export class Diagram {
+class DiagramBase {
   private options: DiagramOptionType;
   private setDistance: (number) => void;
-  private dispatch: d3.Dispatch;
   private getLinkWidth: LinkWidthFunction;
   private zoom: d3.behavior.Zoom<unknown>;
   private cola: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -67,9 +66,6 @@ export class Diagram {
     this.options.tooltip = options.tooltip;
 
     this.setDistance = this.linkDistance(options.distance || 150);
-
-    // Create events
-    this.dispatch = d3.dispatch("rendered");
   }
 
   linkDistance(distance: number | ((any) => number)): (any) => number {
@@ -225,8 +221,6 @@ export class Diagram {
 
       const tooltip = Tooltip.render(tooltipLayer, tooltips);
 
-      this.dispatch.rendered();
-
       // NOTE: This is an experimental option
       if (this.options.positionCache === "fixed") {
         this.cola.on("end", () => {
@@ -321,10 +315,46 @@ export class Diagram {
     this.zoom.scale(transform.scale[0]); // NOTE: Assuming ky = kx
     this.zoom.translate(transform.translate);
   }
+}
 
-  on(name: string, callback: () => any): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
-    this.dispatch.on(name, callback);
+const Pluggable = (Base: typeof DiagramBase) => {
+  class Diagram extends Base {
+    static plugin(cls, options = {}): void {
+      cls.load(Group, Node, Link, options);
+    }
   }
+
+  return Diagram;
+};
+
+const Eventable = (Base: typeof DiagramBase) => {
+  class Diagram extends Base {
+    private dispatch: d3.Dispatch;
+
+    constructor(container: string, urlOrData: string | InetHengeDataType, options: DiagramOptionType) {
+      super(container, urlOrData, options);
+
+      this.dispatch = d3.dispatch("rendered");
+    }
+
+    render(arg): void {
+      super.render(arg);
+      this.dispatch.rendered();
+    }
+
+    on(name: string, callback: () => any): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
+      this.dispatch.on(name, callback);
+    }
+  }
+
+  return Diagram;
+};
+
+
+class PluggableDiagram extends Pluggable(DiagramBase) {
+}
+
+export class Diagram extends Eventable(PluggableDiagram) {
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
