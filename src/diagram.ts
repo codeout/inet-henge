@@ -37,7 +37,7 @@ type DiagramOptionType = {
 
 class DiagramBase {
   private options: DiagramOptionType;
-  private setDistance: (number) => void;
+  private readonly setDistance: (number) => void;
   private getLinkWidth: LinkWidthFunction;
   private zoom: d3.behavior.Zoom<unknown>;
   private cola;

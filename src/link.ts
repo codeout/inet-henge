@@ -17,16 +17,16 @@ export type LinkDataType = {
 export class LinkBase {
   private static groups: Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  private source: number | Node;
-  private target: number | Node;
-  private meta: MetaDataType[];
-  private sourceMeta: MetaDataType[];
-  private targetMeta: MetaDataType[];
-  private extraClass: string;
+  private readonly source: number | Node;
+  private readonly target: number | Node;
+  private readonly meta: MetaDataType[];
+  private readonly sourceMeta: MetaDataType[];
+  private readonly targetMeta: MetaDataType[];
+  private readonly extraClass: string;
   private width: number;
-  private defaultMargin: number;
-  private labelXOffset: number;
-  private labelYOffset: number;
+  private readonly defaultMargin: number;
+  private readonly labelXOffset: number;
+  private readonly labelYOffset: number;
   private color: string;
   private _margin: number;
 
@@ -294,6 +294,7 @@ const Eventable = (Base: typeof LinkBase) => {
       this.dispatch = d3.dispatch("rendered");
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(linkLayer, labelLayer, links): [d3.Selection<Link>, d3.Selection<Link>, d3.Selection<any>] {
       const [link, path, text] = super.render(linkLayer, labelLayer, links);
 

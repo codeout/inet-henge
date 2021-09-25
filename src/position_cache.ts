@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 const cloneDeep = require("lodash.clonedeep");  // eslint-disable-line @typescript-eslint/no-var-requires
 const md5 = require("md5");  // eslint-disable-line @typescript-eslint/no-var-requires
 
@@ -18,7 +20,7 @@ type CacheDataType = {
 }
 
 export class PositionCache {
-  private cachedMd5: string;
+  private readonly cachedMd5: string;
   public group: GroupPosition[];
   public node: NodePosition[];
   public link: LinkPosition[];
