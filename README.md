@@ -231,8 +231,6 @@ new Diagram('#diagram', 'index.json').init('bandwidth', 'intf-name');
 
 You can use ```linkWidth()``` API to customize link widths. The argument should be a function which calculates metadata and returns value for ```stroke-width``` of SVG.
 
-:warning: Deprecation Warning: Use ```linkWidth()``` instead of ```link_width()``` :warning:
-
 ```js
 const diagram = new Diagram('#diagram', 'index.json');
 diagram.linkWidth(function (link) {
