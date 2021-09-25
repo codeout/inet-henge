@@ -170,8 +170,6 @@ export class Diagram {
             const linkLabelLayer = this.svg.append('g').attr('id', 'link-labels');
             const tooltipLayer = this.svg.append('g').attr('id', 'tooltips');
 
-            d3.select("body").on('keydown', this.hideNodes);
-
             const [link, path, label] = Link.render(linkLayer, linkLabelLayer, links);
 
             const group = Group.render(groupLayer, groups).call(
@@ -237,30 +235,6 @@ export class Diagram {
         } catch (e) {
             this.showMessage(e);
             throw e;
-        }
-    }
-
-    hideNodes(): void {
-        if ((event as KeyboardEvent).keyCode === 68) {
-            // hide nodes and links when "d" key pressed
-            const node = d3.selectAll('.node')
-            node.each(function (d) {
-                d.hideCallback(this);
-            });
-            const link = d3.selectAll('.link')
-            link.each(function (d) {
-                d.hideCallback(this);
-            });
-        } else if ((event as KeyboardEvent).keyCode === 27) {
-            // reset hidden nodes and links when escape key pressed
-            const node = d3.selectAll('.node')
-            node.each(function (d) {
-                d.showCallback(this);
-            });
-            const link = d3.selectAll('.link')
-            link.each(function (d) {
-                d.showCallback(this);
-            });
         }
     }
 
