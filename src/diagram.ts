@@ -29,7 +29,7 @@ type DiagramOptionType = {
   urlOrData: string | InetHengeDataType,
   groupPattern: RegExp | undefined,
   // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-  color: d3.scale.Ordinal<any, string>;  // eslint-disable-line @typescript-eslint/no-explicit-any
+  color: d3.scale.Ordinal<string, string>;
   maxTicks: number,
 
   meta: string[],
@@ -40,7 +40,7 @@ class DiagramBase {
   private setDistance: (number) => void;
   private getLinkWidth: LinkWidthFunction;
   private zoom: d3.behavior.Zoom<unknown>;
-  private cola: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
+  private cola;
   private uniqueUrl: string;
   private positionCache: PositionCache;
   private indicator: d3.Selection<any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -66,17 +66,6 @@ class DiagramBase {
     this.options.tooltip = options.tooltip;
 
     this.setDistance = this.linkDistance(options.distance || 150);
-  }
-
-  linkDistance(distance: number | ((any) => number)): (any) => number {
-    if (typeof distance === "function")
-      return distance;
-    else
-      return (cola) => cola.linkDistance(distance);
-  }
-
-  linkWidth(func: LinkWidthFunction): void {
-    this.getLinkWidth = func;
   }
 
   link_width(func: LinkWidthFunction): void { // Deprecated
@@ -107,7 +96,7 @@ class DiagramBase {
     }
   }
 
-  initCola(): any {  // eslint-disable-line @typescript-eslint/no-explicit-any
+  initCola() {
     return cola.d3adaptor()
       .avoidOverlaps(true)
       .handleDisconnected(false)
@@ -131,15 +120,6 @@ class DiagramBase {
       .style("opacity", 0);
 
     return container;
-  }
-
-  url(): string {
-    if (this.uniqueUrl) {
-      return this.uniqueUrl;
-    }
-
-    this.uniqueUrl = `${this.options.urlOrData}?${new Date().getTime()}`;
-    return this.uniqueUrl;
   }
 
   render(data: InetHengeDataType): void {
@@ -170,7 +150,7 @@ class DiagramBase {
 
       const group = Group.render(groupLayer, groups).call(
         this.cola.drag()
-          .on("dragstart", this.dragstartCallback)
+          .on("dragstart", DiagramBase.dragstartCallback)
           .on("drag", () => {
             if (this.options.bundle) {
               Link.shiftBundle(link, path, label);
@@ -180,7 +160,7 @@ class DiagramBase {
 
       const node = Node.render(nodeLayer, nodes).call(
         this.cola.drag()
-          .on("dragstart", this.dragstartCallback)
+          .on("dragstart", DiagramBase.dragstartCallback)
           .on("drag", () => {
             if (this.options.bundle) {
               Link.shiftBundle(link, path, label);
@@ -217,7 +197,7 @@ class DiagramBase {
       }
 
       path.attr("d", (d) => d.d()); // make sure path calculation is done
-      this.freeze(node);
+      DiagramBase.freeze(node);
 
       const tooltip = Tooltip.render(tooltipLayer, tooltips);
 
@@ -233,75 +213,8 @@ class DiagramBase {
     }
   }
 
-  configureTick(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>, path?: d3.Selection<Link>, label?: d3.Selection<any>): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
-    this.cola.on("tick", () => {
-      Node.tick(node);
-      Link.tick(link, path, label);
-      Group.tick(group);
-    });
-  }
-
-  ticksForward(count?: number): void {
-    count = count || this.options.maxTicks;
-
-    for (let i = 0; i < count; i++)
-      this.cola.tick();
-  }
-
-  freeze(container: d3.Selection<any>): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
-    container.each((d) => d.fixed = true);
-  }
-
-  destroy(): void {
-    d3.select("body svg").remove();
-    Node.reset();
-    Link.reset();
-  }
-
-  zoomCallback(container: d3.Selection<any>): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
-    if (!this.initialTranslate) {
-      this.saveInitialTranslate();
-    }
-
-    (d3.event as d3.ZoomEvent).scale *= this.initialScale;
-    (d3.event as d3.ZoomEvent).translate[0] += this.initialTranslate[0];
-    (d3.event as d3.ZoomEvent).translate[1] += this.initialTranslate[1];
-
-    Link.zoom((d3.event as d3.ZoomEvent).scale);
-    container.attr("transform", `translate(${(d3.event as d3.ZoomEvent).translate}) scale(${(d3.event as d3.ZoomEvent).scale})`);
-  }
-
-  dragstartCallback(): void {
-    (d3.event as d3.ZoomEvent).sourceEvent.stopPropagation();
-  }
-
-  displayLoadMessage(): void {
-    this.indicator = this.svg.append("text")
-      .attr("x", this.options.width / 2)
-      .attr("y", this.options.height / 2)
-      .attr("dy", ".35em")
-      .style("text-anchor", "middle")
-      .text("Simulating. Just a moment ...");
-  }
-
-  hideLoadMessage(): void {
-    if (this.indicator)
-      this.indicator.remove();
-  }
-
-  showMessage(message: string): void {
-    if (this.indicator)
-      this.indicator.text(message);
-  }
-
-  savePosition(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>): void {
-    this.positionCache.save(group, node, link);
-  }
-
-  saveInitialTranslate(): void {
-    const transform = d3.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
-    this.initialScale = transform.scale[0]; // NOTE: Assuming ky = kx
-    this.initialTranslate = transform.translate;
+  linkWidth(func: LinkWidthFunction): void {
+    this.getLinkWidth = func;
   }
 
   attr(name: string, value: string): void {
@@ -314,6 +227,94 @@ class DiagramBase {
     const transform = d3.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
     this.zoom.scale(transform.scale[0]); // NOTE: Assuming ky = kx
     this.zoom.translate(transform.translate);
+  }
+
+  destroy(): void {
+    d3.select("body svg").remove();
+    Node.reset();
+    Link.reset();
+  }
+
+  private static freeze(container: d3.Selection<any>): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
+    container.each((d) => d.fixed = true);
+  }
+
+  private static dragstartCallback(): void {
+    (d3.event as d3.ZoomEvent).sourceEvent.stopPropagation();
+  }
+
+  private linkDistance(distance: number | ((any) => number)): (any) => number {
+    if (typeof distance === "function")
+      return distance;
+    else
+      return (cola) => cola.linkDistance(distance);
+  }
+
+  private url(): string {
+    if (this.uniqueUrl) {
+      return this.uniqueUrl;
+    }
+
+    this.uniqueUrl = `${this.options.urlOrData}?${new Date().getTime()}`;
+    return this.uniqueUrl;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private configureTick(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>, path?: d3.Selection<Link>, label?: d3.Selection<any>): void {
+    this.cola.on("tick", () => {
+      Node.tick(node);
+      Link.tick(link, path, label);
+      Group.tick(group);
+    });
+  }
+
+  private ticksForward(count?: number): void {
+    count = count || this.options.maxTicks;
+
+    for (let i = 0; i < count; i++)
+      this.cola.tick();
+  }
+
+  private zoomCallback(container: d3.Selection<any>): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
+    if (!this.initialTranslate) {
+      this.saveInitialTranslate();
+    }
+
+    (d3.event as d3.ZoomEvent).scale *= this.initialScale;
+    (d3.event as d3.ZoomEvent).translate[0] += this.initialTranslate[0];
+    (d3.event as d3.ZoomEvent).translate[1] += this.initialTranslate[1];
+
+    Link.zoom((d3.event as d3.ZoomEvent).scale);
+    container.attr("transform", `translate(${(d3.event as d3.ZoomEvent).translate}) scale(${(d3.event as d3.ZoomEvent).scale})`);
+  }
+
+  private displayLoadMessage(): void {
+    this.indicator = this.svg.append("text")
+      .attr("x", this.options.width / 2)
+      .attr("y", this.options.height / 2)
+      .attr("dy", ".35em")
+      .style("text-anchor", "middle")
+      .text("Simulating. Just a moment ...");
+  }
+
+  private hideLoadMessage(): void {
+    if (this.indicator)
+      this.indicator.remove();
+  }
+
+  private showMessage(message: string): void {
+    if (this.indicator)
+      this.indicator.text(message);
+  }
+
+  private saveInitialTranslate(): void {
+    const transform = d3.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
+    this.initialScale = transform.scale[0]; // NOTE: Assuming ky = kx
+    this.initialTranslate = transform.translate;
+  }
+
+  private savePosition(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>): void {
+    this.positionCache.save(group, node, link);
   }
 }
 

@@ -8,7 +8,6 @@ import { classify } from "./util";
 export type Constructor = (name: string, color: any) => void;
 
 export class GroupBase {
-  private leaves: number[];
   // Not appropriately defined in @types/d3/index.d.ts
   private bounds: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -16,11 +15,6 @@ export class GroupBase {
   // Also, it should have accepted undefined
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
   constructor(private name: string, private color: any) {
-    this.leaves = [];
-  }
-
-  push(node: Node): void {
-    this.leaves.push(node.id);
   }
 
   transform(): string {
@@ -108,12 +102,29 @@ export class GroupBase {
   }
 }
 
+const WebColable = (Base: typeof GroupBase) => {
+  class Group extends Base {
+    private leaves: number[];  // WebCola requires this
+
+    constructor(name: string, color: d3.scale.Ordinal<number, string>) {
+      super(name, color);
+
+      this.leaves = [];
+    }
+
+    push(node: Node): void {
+      this.leaves.push(node.id);
+    }
+  }
+
+  return Group;
+};
+
 const Eventable = (Base: typeof GroupBase) => {
   class EventableGroup extends Base {
     private dispatch: d3.Dispatch;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(name: string, color: any) {
+    constructor(name: string, color: d3.scale.Ordinal<number, string>) {
       super(name, color);
 
       this.dispatch = d3.dispatch("rendered");
@@ -129,7 +140,8 @@ const Eventable = (Base: typeof GroupBase) => {
       return group;
     }
 
-    on(name: string, callback: (element: SVGGElement) => any): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    on(name: string, callback: (element: SVGGElement) => any): void {
       this.dispatch.on(name, callback);
     }
   }
@@ -141,8 +153,7 @@ const Pluggable = (Base: typeof GroupBase) => {
   class Group extends Base {
     private static pluginConstructors: Constructor[] = [];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(name: string, color: any) {
+    constructor(name: string, color: d3.scale.Ordinal<number, string>) {
       super(name, color);
 
       for (const constructor of Group.pluginConstructors) {
@@ -159,7 +170,10 @@ const Pluggable = (Base: typeof GroupBase) => {
   return Group;
 };
 
-class EventableGroup extends Eventable(GroupBase) {
+class WebColableGroup extends WebColable(GroupBase) {
+}
+
+class EventableGroup extends Eventable(WebColableGroup) {
 }
 
 // Call Pluggable at last as constructor may call methods defined in other classes

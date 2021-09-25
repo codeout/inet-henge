@@ -26,7 +26,7 @@ export class Tooltip {
   }
 
   nodeId(escape = false): string {
-    let id = classify((this.node as Node).name);
+    let id = classify(this.node.name);
 
     if (escape) {
       id = CSS.escape(id);
@@ -99,14 +99,14 @@ export class Tooltip {
     return tooltip;
   }
 
-  static fill(element: SVGPathElement): string {
+  private static fill(element: SVGPathElement): string {
     // If no "fill" style is defined
     if (getComputedStyle(element).fill.match(/\(0,\s*0,\s*0\)/)) {
       return "#f8f1e9";
     }
   }
 
-  static pathD(x: number, y: number, width: number, height: number): string {
+  private static pathD(x: number, y: number, width: number, height: number): string {
     const round = 8;
 
     return `M ${x},${y} L ${x + 20},${y - 10} ${x + 20},${y - 20}` +
@@ -120,7 +120,7 @@ export class Tooltip {
       `L ${x + 20},${y + 10} Z`;
   }
 
-  static appendText(container: SVGGElement): void {
+  private static appendText(container: SVGGElement): void {
     const path = d3.select(container).append("path");
 
     const text = d3.select(container).append("text");
@@ -146,7 +146,7 @@ export class Tooltip {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static appendTspans(container: d3.Selection<any>, meta: MetaDataType[]): void {
+  private static appendTspans(container: d3.Selection<any>, meta: MetaDataType[]): void {
     meta.forEach((m, i) => {
       container.append("tspan")
         .attr("x", (d: Tooltip) => d.offsetX + 40)

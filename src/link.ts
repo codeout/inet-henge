@@ -27,9 +27,7 @@ export class LinkBase {
   private defaultMargin: number;
   private labelXOffset: number;
   private labelYOffset: number;
-  // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-  // Also, it should have accepted undefined
-  private color: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
+  private color: string;
   private _margin: number;
 
   constructor(data: LinkDataType, public id: number, metaKeys: string[], linkWidth: (object) => number) {
@@ -195,21 +193,21 @@ export class LinkBase {
     return [link, path, text];
   }
 
-  static theOtherEnd(container: SVGGElement): void {
+  private static theOtherEnd(container: SVGGElement): void {
     d3.select(container)
       .attr("class", "reverse")
       .attr("text-anchor", "end")
       .attr("startOffset", "100%");
   }
 
-  static center(container: SVGGElement): void {
+  private static center(container: SVGGElement): void {
     d3.select(container)
       .attr("class", "center")
       .attr("text-anchor", "middle")
       .attr("startOffset", "50%");
   }
 
-  static appendTspans(container: SVGGElement, meta: MetaDataType[]): void {
+  private static appendTspans(container: SVGGElement, meta: MetaDataType[]): void {
     meta.forEach((m) => {
       d3.select(container).append("tspan")
         .attr("x", (d: Link) => d.tspanXOffset())
@@ -257,7 +255,7 @@ export class LinkBase {
     Link.groups[key].push(id);
   }
 
-  static shiftMultiplier(link: Link): number {
+  private static shiftMultiplier(link: Link): number {
     const members = Link.groups[[(link.source as Node).id, (link.target as Node).id].sort().toString()] || [];
     return members.indexOf(link.id) - (members.length - 1) / 2;
   }
@@ -306,7 +304,8 @@ const Eventable = (Base: typeof LinkBase) => {
       return [link, path, text];
     }
 
-    on(name: string, callback: (element: SVGGElement) => any): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    on(name: string, callback: (element: SVGGElement) => any): void {
       this.dispatch.on(name, callback);
     }
   }

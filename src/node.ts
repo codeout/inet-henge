@@ -33,7 +33,7 @@ class NodeBase {
 
   // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
   // Also, it should have accepted undefined
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(data: NodeDataType, public id: number, metaKeys: string[], private color: any, private tooltip: boolean) {
     this.name = data.name;
     this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
@@ -104,7 +104,7 @@ class NodeBase {
     return node;
   }
 
-  static appendText(container: SVGGElement): void {
+  private static appendText(container: SVGGElement): void {
     const text = (d3.select(container) as d3.Selection<Node>).append("text")
       .attr("text-anchor", "middle")
       .attr("x", (d) => d.xForText())
@@ -121,8 +121,7 @@ class NodeBase {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static appendTspans(container: d3.Selection<Node>, meta: MetaDataType[]): void {
+  private static appendTspans(container: d3.Selection<Node>, meta: MetaDataType[]): void {
     meta.forEach((m) => {
       container.append("tspan")
         .attr("x", (d) => d.xForText())
@@ -132,7 +131,7 @@ class NodeBase {
     });
   }
 
-  static appendImage(container: SVGGElement): void {
+  private static appendImage(container: SVGGElement): void {
     (d3.select(container) as d3.Selection<Node>)
       .attr("class", (d) => `node image ${classify(d.name)} ${d.extraClass}`)
       .append("image")
@@ -141,7 +140,7 @@ class NodeBase {
       .attr("height", (d) => d.nodeHeight());
   }
 
-  static appendRect(container: SVGGElement): void {
+  private static appendRect(container: SVGGElement): void {
     (d3.select(container) as d3.Selection<Node>)
       .attr("class", (d) => `node rect ${classify(d.name)} ${d.extraClass}`)
       .append("rect")
@@ -173,7 +172,7 @@ const Eventable = (Base: typeof NodeBase) => {
   class EventableNode extends Base {
     private dispatch: d3.Dispatch;
 
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(data: NodeDataType, id: number, metaKeys: string[], color: any, tooltip: boolean) {
       super(data, id, metaKeys, color, tooltip);
 
@@ -190,7 +189,8 @@ const Eventable = (Base: typeof NodeBase) => {
       return node;
     }
 
-    on(name: string, callback: (element: SVGGElement) => any): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    on(name: string, callback: (element: SVGGElement) => any): void {
       this.dispatch.on(name, callback);
     }
   }
@@ -202,7 +202,7 @@ const Pluggable = (Base: typeof NodeBase) => {
   class Node extends Base {
     private static pluginConstructors: Constructor[] = [];
 
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(data: NodeDataType, id: number, metaKeys: string[], color: any, tooltip: boolean) {
       super(data, id, metaKeys, color, tooltip);
 
