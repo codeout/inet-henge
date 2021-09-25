@@ -68,11 +68,6 @@ class DiagramBase {
     this.setDistance = this.linkDistance(options.distance || 150);
   }
 
-  link_width(func: LinkWidthFunction): void { // Deprecated
-    console.warn("link_width() is deprecated. Use linkWidth()");
-    this.linkWidth(func);
-  }
-
   init(...meta: string[]): void {
     this.options.meta = meta;
     this.cola = this.initCola();
