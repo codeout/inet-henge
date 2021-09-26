@@ -42,12 +42,12 @@
     "webpack-merge": "^4.2.2"
   },
   "scripts": {
-    "lint": "./node_modules/.bin/eslint src",
+    "lint": "npx eslint src",
     "build": "npm run clean && npm run dev && npm run prod",
-    "tsc": "./node_modules/.bin/tsc",
-    "dev": "./node_modules/.bin/webpack --config webpack.dev.js",
-    "prod": "./node_modules/.bin/webpack --config webpack.prod.js",
+    "tsc": "npx tsc",
+    "dev": "npx webpack --config webpack.dev.js",
+    "prod": "npx webpack --config webpack.prod.js",
     "clean": "rm -rf inet-henge*.js* dist",
-    "watch": "./node_modules/.bin/webpack --config webpack.dev.js --watch"
+    "watch": "npx webpack --config webpack.dev.js --watch"
   }
 }
