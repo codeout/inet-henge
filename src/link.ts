@@ -298,7 +298,7 @@ const Eventable = (Base: typeof LinkBase) => {
     static render(linkLayer, labelLayer, links): [d3.Selection<Link>, d3.Selection<Link>, d3.Selection<any>] {
       const [link, path, text] = super.render(linkLayer, labelLayer, links);
 
-      link.each(function(this: SVGGElement, d: Link & EventableLink) {
+      link.each(function(this: SVGLineElement, d: Link & EventableLink) {
         d.dispatch.rendered(this);
       });
 
