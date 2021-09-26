@@ -1,7 +1,8 @@
 module.exports = {
   entry: "./src/diagram",
   output: {
-    path: __dirname
+    path: __dirname,
+    libraryTarget: "umd",
   },
   resolve: {
     extensions: [".ts", ".js"]
@@ -17,5 +18,6 @@ module.exports = {
   externals: {
     cola: "cola",
     d3: "d3"
-  }
+  },
+  devtool: "source-map"
 };
