@@ -17,5 +17,6 @@ module.exports = {
   externals: {
     cola: "cola",
     d3: "d3"
-  }
+  },
+  devtool: "source-map"
 };
