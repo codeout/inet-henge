@@ -381,6 +381,12 @@ In the example above, `description` and `type` will be displayed.
 :bulb: `tooltip: 'hover'` is also available.
 
 
+## Plugins
+
+|Name                                                             |Note                             |
+|-----------------------------------------------------------------|---------------------------------|
+|[Removable Node Plugin](../../tree/master/plugins/removable_node)|Hide and show nodes by key inputs|
+
 ## Contributing
 
 Please report issues or enhancement requests to [GitHub issues](https://github.com/codeout/inet-henge/issues).
