@@ -35,15 +35,14 @@ export class Tooltip {
     return id;
   }
 
+  setVisibility(visibility: string | null): void {
+    this.visibility = visibility === "visible" ? "visible" : "hidden";
+  }
+
   // This doesn't actually toggle visibility, but returns string for toggled visibility
   toggleVisibility(): string {
-    if (this.visibility === "hidden") {
-      this.visibility = "visible";
-      return "visible";
-    } else {
-      this.visibility = "hidden";
-      return "hidden";
-    }
+    this.visibility = this.visibility === "hidden" ? "visible" : "hidden";
+    return this.visibility;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,7 +53,11 @@ export class Tooltip {
         return;
       }
 
-      d3.select(element).attr("visibility", this.toggleVisibility());
+      d3.select(element).attr("visibility", function(d) {
+        // Sync visibility before toggling. External script may change the visibility.
+        d.setVisibility(this.getAttribute("visibility"));
+        return d.toggleVisibility();
+      });
     };
   }
 
