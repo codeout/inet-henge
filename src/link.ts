@@ -17,8 +17,8 @@ export type LinkDataType = {
 export class LinkBase {
   private static groups: Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  private readonly source: number | Node;
-  private readonly target: number | Node;
+  protected readonly source: number | Node;
+  protected readonly target: number | Node;
   private readonly meta: MetaDataType[];
   private readonly sourceMeta: MetaDataType[];
   private readonly targetMeta: MetaDataType[];
@@ -298,7 +298,7 @@ const Eventable = (Base: typeof LinkBase) => {
     static render(linkLayer, labelLayer, links): [d3.Selection<Link>, d3.Selection<Link>, d3.Selection<any>] {
       const [link, path, text] = super.render(linkLayer, labelLayer, links);
 
-      link.each(function(this: SVGGElement, d: Link & EventableLink) {
+      link.each(function(this: SVGLineElement, d: Link & EventableLink) {
         d.dispatch.rendered(this);
       });
 

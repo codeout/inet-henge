@@ -1,0 +1,15 @@
+#links :nth-child(odd) line {
+    stroke: #7a4e4e;
+}
+
+#links :nth-child(even) line {
+    stroke: #a68c6f;
+}
+
+marker#marker-odd {
+    fill: #7a4e4e;
+}
+
+marker#marker-even {
+    fill: #a68c6f;
+}
