@@ -1,3 +1,20 @@
+## [1.2.0] - 2021-09-27
+
+### Added
+
+* Introduce plugin system.
+* Removable Node Plugin
+* Arrows Link Plugin
+
+### Fixed
+
+* Use md5 instead of sha1 for positionCache hash. Bundling crypto results in an unexpectedly huge bundle size.
+
+### Removed
+
+* Remove a deprecated method `Diagram.prototype.link_width`.
+
+
 ## [1.1.1] - 2021-02-01
 
 ### Fixed
