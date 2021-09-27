@@ -1,6 +1,8 @@
 node_modules/
 
+/WebCola/
 /heroku/
-.idea/
+/.idea/
+/bak/
 .ignore
 tags
