@@ -17,8 +17,8 @@ export type LinkDataType = {
 export class LinkBase {
   private static groups: Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  private readonly source: number | Node;
-  private readonly target: number | Node;
+  protected readonly source: number | Node;
+  protected readonly target: number | Node;
   private readonly meta: MetaDataType[];
   private readonly sourceMeta: MetaDataType[];
   private readonly targetMeta: MetaDataType[];
