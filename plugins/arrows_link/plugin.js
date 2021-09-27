@@ -7,188 +7,22 @@
 		var a = typeof exports === 'object' ? factory(require("d3")) : factory(root["d3"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(window, function(__WEBPACK_EXTERNAL_MODULE_d3__) {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./plugins/arrows_link/src/plugin.ts");
-/******/ })
-/************************************************************************/
-/******/ ({
-
-/***/ "./plugins/arrows_link/src/plugin.ts":
-/*!*******************************************!*\
-  !*** ./plugins/arrows_link/src/plugin.ts ***!
-  \*******************************************/
-/*! exports provided: ArrowsLinkPlugin, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ArrowsLinkPlugin", function() { return ArrowsLinkPlugin; });
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _src_link__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../src/link */ "./src/link.ts");
-var _a;
-
-
-class ArrowsLink extends _src_link__WEBPACK_IMPORTED_MODULE_1__["Link"] {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    static tick(link, path, label) {
-        super.tick(link, path, label);
-        link.attr("x2", (d) => d.x2());
-        link.attr("y2", (d) => d.y2());
-    }
-    length() {
-        return Math.sqrt((this.source.x - this.target.x) ** 2 + (this.source.y - this.target.y) ** 2);
-    }
-    x2() {
-        return this.source.x + (0.5 - 5 / this.length()) * (this.target.x - this.source.x);
-    }
-    y2() {
-        return this.source.y + (0.5 - 5 / this.length()) * (this.target.y - this.source.y);
-    }
-}
-const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
-        // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-        static load(Group, Node, Link) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-            Link.registerConstructor(function (data, id, metaKeys, linkWidth) {
-                this.selected = false;
-                this.on("rendered", (element) => {
-                    ArrowsLinkPlugin.appendMarker(element);
-                    if (!ArrowsLinkPlugin.isMarkerDefined) {
-                        ArrowsLinkPlugin.defineMarkers();
-                    }
-                });
-            });
-            // Copy methods
-            Link.tick = ArrowsLink.tick;
-            Link.prototype.length = ArrowsLink.prototype.length;
-            Link.prototype.x2 = ArrowsLink.prototype.x2;
-            Link.prototype.y2 = ArrowsLink.prototype.y2;
-        }
-        static defineMarkers() {
-            const defs = d3__WEBPACK_IMPORTED_MODULE_0__["select"]("svg").append("defs");
-            const define = (id) => {
-                defs.append("marker")
-                    .attr("id", id)
-                    .attr("markerWidth", 10)
-                    .attr("markerHeight", 7)
-                    .attr("refX", 7.5)
-                    .attr("orient", "auto")
-                    .attr("viewBox", "0 -5 10 10")
-                    .append("path")
-                    .attr("d", "M0,-5 L10,0 L0,5");
-            };
-            define("marker-odd");
-            define("marker-even");
-            ArrowsLinkPlugin.isMarkerDefined = true;
-        }
-        static appendMarker(element) {
-            d3__WEBPACK_IMPORTED_MODULE_0__["select"](element).attr("marker-end", 
-            // For consistency with #links :nth-child(odd), it's one-based
-            (d) => d.id % 2 === 0 ? "url(#marker-odd)" : "url(#marker-even)");
-        }
-    },
-    _a.isMarkerDefined = false,
-    _a);
-/* harmony default export */ __webpack_exports__["default"] = (ArrowsLinkPlugin);
-
-
-/***/ }),
+})(self, function(__WEBPACK_EXTERNAL_MODULE_d3__) {
+return /******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
 
 /***/ "./src/link.ts":
 /*!*********************!*\
   !*** ./src/link.ts ***!
   \*********************/
-/*! exports provided: LinkBase, Link */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LinkBase", function() { return LinkBase; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Link", function() { return Link; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "LinkBase": () => (/* binding */ LinkBase),
+/* harmony export */   "Link": () => (/* binding */ Link)
+/* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _meta_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./meta_data */ "./src/meta_data.ts");
@@ -201,11 +35,11 @@ __webpack_require__.r(__webpack_exports__);
 class LinkBase {
     constructor(data, id, metaKeys, linkWidth) {
         this.id = id;
-        this.source = _node__WEBPACK_IMPORTED_MODULE_2__["Node"].idByName(data.source);
-        this.target = _node__WEBPACK_IMPORTED_MODULE_2__["Node"].idByName(data.target);
-        this.meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__["MetaData"](data.meta).get(metaKeys);
-        this.sourceMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__["MetaData"](data.meta, "source").get(metaKeys);
-        this.targetMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__["MetaData"](data.meta, "target").get(metaKeys);
+        this.source = _node__WEBPACK_IMPORTED_MODULE_2__.Node.idByName(data.source);
+        this.target = _node__WEBPACK_IMPORTED_MODULE_2__.Node.idByName(data.target);
+        this.meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(metaKeys);
+        this.sourceMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta, "source").get(metaKeys);
+        this.targetMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta, "target").get(metaKeys);
         this.extraClass = data.class || "";
         if (typeof linkWidth === "function")
             this.width = linkWidth(data.meta) || 3;
@@ -285,7 +119,7 @@ class LinkBase {
     }
     class() {
         // eslint-disable-next-line max-len
-        return `link ${Object(_util__WEBPACK_IMPORTED_MODULE_3__["classify"])(this.source.name)} ${Object(_util__WEBPACK_IMPORTED_MODULE_3__["classify"])(this.target.name)} ${Object(_util__WEBPACK_IMPORTED_MODULE_3__["classify"])(this.source.name)}-${Object(_util__WEBPACK_IMPORTED_MODULE_3__["classify"])(this.target.name)} ${this.extraClass}`;
+        return `link ${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.source.name)} ${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.target.name)} ${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.source.name)}-${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.target.name)} ${this.extraClass}`;
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(linkLayer, labelLayer, links) {
@@ -334,20 +168,20 @@ class LinkBase {
         return [link, path, text];
     }
     static theOtherEnd(container) {
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"](container)
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
             .attr("class", "reverse")
             .attr("text-anchor", "end")
             .attr("startOffset", "100%");
     }
     static center(container) {
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"](container)
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
             .attr("class", "center")
             .attr("text-anchor", "middle")
             .attr("startOffset", "50%");
     }
     static appendTspans(container, meta) {
         meta.forEach((m) => {
-            d3__WEBPACK_IMPORTED_MODULE_0__["select"](container).append("tspan")
+            d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("tspan")
                 .attr("x", (d) => d.tspanXOffset())
                 .attr("dy", (d) => d.tspanYOffset())
                 .attr("class", m.class)
@@ -371,7 +205,7 @@ class LinkBase {
         let visibility = "hidden";
         if (scale && scale > 1.5)
             visibility = "visible";
-        d3__WEBPACK_IMPORTED_MODULE_0__["selectAll"](".link text")
+        d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".link text")
             .style("visibility", visibility);
     }
     static setPosition(link, position) {
@@ -412,7 +246,7 @@ const Eventable = (Base) => {
     class EventableLink extends Base {
         constructor(data, id, metaKeys, linkWidth) {
             super(data, id, metaKeys, linkWidth);
-            this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__["dispatch"]("rendered");
+            this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         static render(linkLayer, labelLayer, links) {
@@ -459,12 +293,12 @@ class Link extends Pluggable(EventableLink) {
 /*!**************************!*\
   !*** ./src/meta_data.ts ***!
   \**************************/
-/*! exports provided: MetaData */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MetaData", function() { return MetaData; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MetaData": () => (/* binding */ MetaData)
+/* harmony export */ });
 class MetaData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(data, extraKey) {
@@ -507,12 +341,12 @@ class MetaData {
 /*!*********************!*\
   !*** ./src/node.ts ***!
   \*********************/
-/*! exports provided: Node */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Node", function() { return Node; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Node": () => (/* binding */ Node)
+/* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _meta_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./meta_data */ "./src/meta_data.ts");
@@ -531,7 +365,7 @@ class NodeBase {
         this.name = data.name;
         this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
         this.icon = data.icon;
-        this.meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__["MetaData"](data.meta).get(metaKeys);
+        this.meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(metaKeys);
         this.extraClass = data.class || "";
         this.width = 60;
         this.height = 40;
@@ -571,7 +405,7 @@ class NodeBase {
             .data(nodes)
             .enter()
             .append("g")
-            .attr("id", (d) => Object(_util__WEBPACK_IMPORTED_MODULE_2__["classify"])(d.name))
+            .attr("id", (d) => (0,_util__WEBPACK_IMPORTED_MODULE_2__.classify)(d.name))
             .attr("name", (d) => d.name)
             .attr("transform", (d) => d.transform());
         node.each(function (d) {
@@ -584,7 +418,7 @@ class NodeBase {
         return node;
     }
     static appendText(container) {
-        const text = d3__WEBPACK_IMPORTED_MODULE_0__["select"](container).append("text")
+        const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("text")
             .attr("text-anchor", "middle")
             .attr("x", (d) => d.xForText())
             .attr("y", (d) => d.yForText());
@@ -608,16 +442,16 @@ class NodeBase {
         });
     }
     static appendImage(container) {
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"](container)
-            .attr("class", (d) => `node image ${Object(_util__WEBPACK_IMPORTED_MODULE_2__["classify"])(d.name)} ${d.extraClass}`)
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
+            .attr("class", (d) => `node image ${(0,_util__WEBPACK_IMPORTED_MODULE_2__.classify)(d.name)} ${d.extraClass}`)
             .append("image")
             .attr("xlink:href", (d) => d.icon)
             .attr("width", (d) => d.nodeWidth())
             .attr("height", (d) => d.nodeHeight());
     }
     static appendRect(container) {
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"](container)
-            .attr("class", (d) => `node rect ${Object(_util__WEBPACK_IMPORTED_MODULE_2__["classify"])(d.name)} ${d.extraClass}`)
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
+            .attr("class", (d) => `node rect ${(0,_util__WEBPACK_IMPORTED_MODULE_2__.classify)(d.name)} ${d.extraClass}`)
             .append("rect")
             .attr("width", (d) => d.nodeWidth())
             .attr("height", (d) => d.nodeHeight())
@@ -644,7 +478,7 @@ const Eventable = (Base) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         constructor(data, id, metaKeys, color, tooltip) {
             super(data, id, metaKeys, color, tooltip);
-            this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__["dispatch"]("rendered");
+            this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
         static render(layer, nodes) {
             const node = super.render(layer, nodes);
@@ -691,12 +525,12 @@ class Node extends Pluggable(EventableNode) {
 /*!*********************!*\
   !*** ./src/util.ts ***!
   \*********************/
-/*! exports provided: classify */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "classify", function() { return classify; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "classify": () => (/* binding */ classify)
+/* harmony export */ });
 function classify(string) {
     return string.replace(" ", "-").toLowerCase();
 }
@@ -708,13 +542,164 @@ function classify(string) {
 /*!*********************!*\
   !*** external "d3" ***!
   \*********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE_d3__;
 
 /***/ })
 
-/******/ });
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+/*!*******************************************!*\
+  !*** ./plugins/arrows_link/src/plugin.ts ***!
+  \*******************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ArrowsLinkPlugin": () => (/* binding */ ArrowsLinkPlugin),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _src_link__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../src/link */ "./src/link.ts");
+var _a;
+
+
+class ArrowsLink extends _src_link__WEBPACK_IMPORTED_MODULE_1__.Link {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    static tick(link, path, label) {
+        super.tick(link, path, label);
+        link.attr("x2", (d) => d.x2());
+        link.attr("y2", (d) => d.y2());
+    }
+    length() {
+        return Math.sqrt((this.source.x - this.target.x) ** 2 + (this.source.y - this.target.y) ** 2);
+    }
+    x2() {
+        return this.source.x + (0.5 - 5 / this.length()) * (this.target.x - this.source.x);
+    }
+    y2() {
+        return this.source.y + (0.5 - 5 / this.length()) * (this.target.y - this.source.y);
+    }
+}
+const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
+        // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+        static load(Group, Node, Link) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+            Link.registerConstructor(function (data, id, metaKeys, linkWidth) {
+                this.selected = false;
+                this.on("rendered", (element) => {
+                    ArrowsLinkPlugin.appendMarker(element);
+                    if (!ArrowsLinkPlugin.isMarkerDefined) {
+                        ArrowsLinkPlugin.defineMarkers();
+                    }
+                });
+            });
+            // Copy methods
+            Link.tick = ArrowsLink.tick;
+            Link.prototype.length = ArrowsLink.prototype.length;
+            Link.prototype.x2 = ArrowsLink.prototype.x2;
+            Link.prototype.y2 = ArrowsLink.prototype.y2;
+        }
+        static defineMarkers() {
+            const defs = d3__WEBPACK_IMPORTED_MODULE_0__.select("svg").append("defs");
+            const define = (id) => {
+                defs.append("marker")
+                    .attr("id", id)
+                    .attr("markerWidth", 10)
+                    .attr("markerHeight", 7)
+                    .attr("refX", 7.5)
+                    .attr("orient", "auto")
+                    .attr("viewBox", "0 -5 10 10")
+                    .append("path")
+                    .attr("d", "M0,-5 L10,0 L0,5");
+            };
+            define("marker-odd");
+            define("marker-even");
+            ArrowsLinkPlugin.isMarkerDefined = true;
+        }
+        static appendMarker(element) {
+            d3__WEBPACK_IMPORTED_MODULE_0__.select(element).attr("marker-end", 
+            // For consistency with #links :nth-child(odd), it's one-based
+            (d) => d.id % 2 === 0 ? "url(#marker-odd)" : "url(#marker-even)");
+        }
+    },
+    _a.isMarkerDefined = false,
+    _a);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ArrowsLinkPlugin);
+
+})();
+
+/******/ 	return __webpack_exports__;
+/******/ })()
+;
 });
 //# sourceMappingURL=plugin.js.map
