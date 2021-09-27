@@ -48,6 +48,8 @@
     "dev": "npx webpack --config $INIT_CWD/webpack.dev.js",
     "prod": "npx webpack --config $INIT_CWD/webpack.prod.js",
     "clean": "rm -rf $INIT_CWD/{inet-henge*.js*, plugin*.js*, dist}",
-    "watch": "npx webpack --config $INIT_CWD/webpack.dev.js --watch"
+    "watch": "npx webpack --config $INIT_CWD/webpack.dev.js --watch",
+
+    "build-all": "npm run build && for i in plugins/*; do cd $i; npm run build; cd -; done"
   }
 }
