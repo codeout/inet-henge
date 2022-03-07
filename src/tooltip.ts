@@ -124,19 +124,19 @@ export class Tooltip {
   }
 
   private static appendText(container: SVGGElement): void {
-    const path = d3.select(container).append("path");
+    const path = d3.select(container).append("path") as d3.Selection<Tooltip>;
 
-    const text = d3.select(container).append("text");
+    const text = d3.select(container).append("text") as d3.Selection<Tooltip>;
     text.append("tspan")
-      .attr("x", (d: Tooltip) => d.offsetX + 40)
+      .attr("x", (d) => d.offsetX + 40)
       .attr("class", "name")
       .text("node:");
     text.append("tspan")
       .attr("dx", 10)
       .attr("class", "value")
-      .text((d: Tooltip) => d.node.name);
+      .text((d) => d.node.name);
 
-    text.each(function(d: Tooltip) {
+    text.each(function(d) {
       Tooltip.appendTspans(text, d.node.meta);
 
       // Add "d" after bbox calculation
@@ -149,11 +149,11 @@ export class Tooltip {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private static appendTspans(container: d3.Selection<any>, meta: MetaDataType[]): void {
+  private static appendTspans(container: d3.Selection<Tooltip>, meta: MetaDataType[]): void {
     meta.forEach((m, i) => {
       container.append("tspan")
-        .attr("x", (d: Tooltip) => d.offsetX + 40)
-        .attr("dy", (d: Tooltip) => d.tspanOffsetY(i === 0))
+        .attr("x", (d) => d.offsetX + 40)
+        .attr("dy", (d) => d.tspanOffsetY(i === 0))
         .attr("class", "name")
         .text(`${m.class}:`);
 
