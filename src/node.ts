@@ -21,6 +21,7 @@ class NodeBase {
   public name: string;
   public group: string[];
   public metaList: MetaDataType[];
+  public meta: Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
   public x: number;
   public y: number;
 
@@ -39,6 +40,7 @@ class NodeBase {
     this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
     this.icon = data.icon;
     this.metaList = new MetaData(data.meta).get(metaKeys);
+    this.meta = data.meta;
     this.extraClass = data.class || "";
 
     this.width = 60;

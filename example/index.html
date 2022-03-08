@@ -11,7 +11,15 @@
 <body>
 <div id="diagram"></div>
 <script>
-  const diagram = new Diagram("#diagram", "index.json", { pop: /^([^\s-]+)-/, bundle: true, tooltip: "click" });
+  const diagram = new Diagram("#diagram", "index.json", {
+    pop: /^([^\s-]+)-/,
+    bundle: true,
+    tooltip: "click",
+    href: (t) => {
+      return `https://example.com/${t.node.meta?.type}/${t.node.name}`;
+    }
+  })
+  ;
   diagram.init("loopback", "interface", "description", "type");
 </script>
 </body>

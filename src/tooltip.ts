@@ -1,10 +1,12 @@
 import * as d3 from "d3";
 
+import { HrefFunction } from "./diagram";
 import { MetaDataType } from "./meta_data";
 import { Node } from "./node";
 import { classify } from "./util";
 
 export class Tooltip {
+  static href: HrefFunction;
   private offsetX: number;
   private visibility: string;
 
@@ -77,6 +79,11 @@ export class Tooltip {
     });
   }
 
+  static setHref(callback: HrefFunction): void {
+    if (callback)
+      this.href = callback;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static render(layer: d3.Selection<any>, tooltips: Tooltip[]): d3.Selection<Tooltip> {
     const tooltip = layer.selectAll(".tooltip")
@@ -131,10 +138,17 @@ export class Tooltip {
       .attr("x", (d) => d.offsetX + 40)
       .attr("class", "name")
       .text("node:");
-    text.append("tspan")
+    const nodeName = text.append("tspan")
       .attr("dx", 10)
-      .attr("class", "value")
-      .text((d) => d.node.name);
+      .attr("class", "value");
+
+    if (typeof this.href === "function") {
+      nodeName.append("a")
+        .attr("href", (d) => Tooltip.href(d))
+        .text((d) => d.node.name);
+    } else {
+      nodeName.text((d) => d.node.name);
+    }
 
     text.each(function(d) {
       Tooltip.appendTspans(text, d.node.metaList);
