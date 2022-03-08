@@ -102,7 +102,7 @@ and render your network diagram:
 
 ```html
   <script>
-   new Diagram('#diagram', 'shownet.json').init('interface');
+   new Diagram("#diagram", "shownet.json").init("interface");
   </script>
 </html>
 ```
@@ -115,12 +115,12 @@ Object is also acceptable:
       "nodes": [{ "name": "A" }, { "name": "B" }],
       "links": [{ "source": "A", "target": "B" }]
     };
-   new Diagram('#diagram', data).init('interface');
+   new Diagram("#diagram", data).init("interface");
   </script>
 </html>
 ```
 
-inet-henge.js renders your network diagram as SVG within ```<div id="diagram"></div>```. In the example above the diagram also displays metadata labelled ```'interface'``` which defined in JSON data.
+inet-henge.js renders your network diagram as SVG within ```<div id="diagram"></div>```. In the example above the diagram also displays metadata labelled ```"interface"``` which defined in JSON data.
 
 ![Shownet2016 example](example/images/shownet.png)
 
@@ -132,7 +132,7 @@ Nodes get rendered in groups when you specify which node belongs to which group 
 When the first three characters describe POP name, you can group nodes by doing this:
 
 ``` javascript
-const diagram = new Diagram('#diagram', 'data.json', {pop: /^.{3}/})
+const diagram = new Diagram("#diagram", "data.json", {pop: /^.{3}/})
 ```
 
 
@@ -164,7 +164,7 @@ You can specify node icon by URL:
 Metadata to display on network diagrams:
 
 ```js
-new Diagram('#diagram', 'index.json').init('interface');
+new Diagram("#diagram", "index.json").init("interface");
 ```
 
 ```json
@@ -188,7 +188,7 @@ When ```init()``` API is called with arguments, inet-henge finds corresponding m
 To place a loopback address on nodes:
 
 ```js
-new Diagram('#diagram', 'index.json').init('loopback');
+new Diagram("#diagram", "index.json").init("loopback");
 ```
 
 ```json
@@ -206,7 +206,7 @@ new Diagram('#diagram', 'index.json').init('loopback');
 To place link and interface names:
 
 ```js
-new Diagram('#diagram', 'index.json').init('bandwidth', 'intf-name');
+new Diagram("#diagram", "index.json").init("bandwidth", "intf-name");
 ```
 
 ```js
@@ -232,18 +232,18 @@ new Diagram('#diagram', 'index.json').init('bandwidth', 'intf-name');
 You can use ```linkWidth()``` API to customize link widths. The argument should be a function which calculates metadata and returns value for ```stroke-width``` of SVG.
 
 ```js
-const diagram = new Diagram('#diagram', 'index.json');
+const diagram = new Diagram("#diagram", "index.json");
 diagram.linkWidth(function (link) {
   if (!link)
     return 1;  // px
-  else if (link.bandwidth === '100G')
+  else if (link.bandwidth === "100G")
     return 10; // px
-  else if (link.bandwidth === '10G')
+  else if (link.bandwidth === "10G")
     return 3;  // px
-  else if (link.bandwidth === '1G')
+  else if (link.bandwidth === "1G")
     return 1;  // px
 });
-diagram.init('bandwidth');
+diagram.init("bandwidth");
 ```
 
 ```json
@@ -263,13 +263,13 @@ diagram.init('bandwidth');
 You can specify the number of steps (called as ticks) to calculate with [d3-force](https://github.com/d3/d3-force/blob/master/README.md) layout. Bigger ticks typically converge on a better layout, but it will take much longer until settlement. The default value is 1000.
 
 ``` javascript
-const diagram = new Diagram('#diagram', 'data.json', {ticks: 3000});
+const diagram = new Diagram("#diagram", "data.json", {ticks: 3000});
 ```
 
 For large scale network diagrams, you can also specify the number of initial unconstrained ticks.
 
 ``` javascript
-const diagram = new Diagram('#diagram', 'data.json', {initialTicks: 100, ticks: 100});
+const diagram = new Diagram("#diagram", "data.json", {initialTicks: 100, ticks: 100});
 ```
 
 inet-henge calculates the layout in two iteration phases:
@@ -286,7 +286,7 @@ If you increase `initialTicks`, inet-henge calculates faster in exchange for net
 inet-henge caches a calculated position of nodes, groups, and links for the next rendering. If you load the same JSON data, the cache will be used as a position hint. You can disable this behavior with `positionCache` option.
 
 ``` javascript
-const diagram = new Diagram('#diagram', 'data.json', {positionCache: false});
+const diagram = new Diagram("#diagram", "data.json", {positionCache: false});
 ```
 
 ### SVG viewport size
@@ -294,7 +294,7 @@ const diagram = new Diagram('#diagram', 'data.json', {positionCache: false});
 You can change svg's viewport size:
 
 ```js
-const diagram = new Diagram('#diagram', 'data.json', {width: 1200, height: 600});
+const diagram = new Diagram("#diagram", "data.json", {width: 1200, height: 600});
 ```
 
 This will generate:
@@ -315,8 +315,8 @@ You can display multiple links between nodes by setting `bundle: true` in the co
 
 ```html
 <script>
- const diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, bundle: true});
- diagram.init('loopback', 'interface');
+ const diagram = new Diagram("#diagram", "index.json", {pop: /^([^\s-]+)-/, bundle: true});
+ diagram.init("loopback", "interface");
 </script>
 ```
 
@@ -326,14 +326,58 @@ Nodes are connected to each other with a single link by default.
 
 ### Save positions after dragging nodes
 
-You can save positions of all nodes in browser even after dragging them by setting `positionCache: 'fixed'` in the constructor like:
+You can save positions of all nodes in browser even after dragging them by setting `positionCache: "fixed"` in the constructor like:
 
 ```html
 <script>
- const diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, positionCache: 'fixed'});
- diagram.init('loopback', 'interface');
+ const diagram = new Diagram("#diagram", "index.json", {pop: /^([^\s-]+)-/, positionCache: "fixed"});
+ diagram.init("loopback", "interface");
 </script>
 ```
+
+### Metadata tooltip
+
+You can display node metadata in the tooltip, instead of always showing as node text, by setting `tooltip: "click"` in the constructor like:
+
+```html
+<script>
+ const diagram = new Diagram("#diagram", "index.json", {pop: /^([^\s-]+)-/, tooltip: "click"});
+ diagram.init("description", "type");
+</script>
+```
+
+In the example above, `description` and `type` will be displayed.
+
+```json
+  "nodes": [
+    { "name": "POP01-bb01", "meta": {"description": "This is a router", "type": "Backbone"}, "icon": "./images/router.png" },
+    { "name": "POP01-bb02", "meta": {"description": "This is a router", "type": "Backbone"}, "icon": "./images/router.png" },
+    { "name": "POP01-ag01", "meta": {"description": "This is a router", "type": "Aggregation"}, "icon": "./images/switch.png" },
+    { "name": "POP01-ag02", "meta": {"description": "This is a router", "type": "Aggregation"}, "icon": "./images/switch.png" },
+```
+
+![Metadata tooltip](example/images/tooltip.png)
+
+:bulb: `tooltip: "hover"` is also available.
+
+#### Hyperlink in tooltop
+
+You can show `<a href="...">...</a>` in node metadata tooltips.
+
+```html
+<script>
+ const diagram = new Diagram("#diagram", "index.json", {
+   pop: /^([^\s-]+)-/,
+   tooltip: "click",
+   href: (t) => `https://example.com/${t.node.name}`,
+   });
+ diagram.init("description", "type");
+</script>
+```
+
+This example above will generate `<a href="https://example.com/POP01-bb02">POP01-bb02</a>`. Metadata are also available like ```href: (t) => `https://example.com/${t.node.meta?.type}/${t.node.name}`,```.
+
+:bulb: Use `tooltip: "click"` to make tooltips sticky.
 
 
 ## Experimental Features
@@ -352,33 +396,6 @@ You can display node type based groups in POP-based [Node group](#Node-Group) by
 ```
 
 ![Internal group](example/images/internal_group.png)
-
-### Metadata tooltip
-
-:warning: This feature is available in `master` branch only, not published as the npm package. :warning:
-
-You can display node metadata in the tooltip, instead of always showing as node text, by setting `tooltip: 'click'` in the constructor like:
-
-```html
-<script>
- const diagram = new Diagram('#diagram', 'index.json', {pop: /^([^\s-]+)-/, tooltip: 'click'});
- diagram.init('description', 'type');
-</script>
-```
-
-In the example above, `description` and `type` will be displayed.
-
-```json
-  "nodes": [
-    { "name": "POP01-bb01", "meta": {"description": "This is a router", "type": "Backbone"}, "icon": "./images/router.png" },
-    { "name": "POP01-bb02", "meta": {"description": "This is a router", "type": "Backbone"}, "icon": "./images/router.png" },
-    { "name": "POP01-ag01", "meta": {"description": "This is a router", "type": "Aggregation"}, "icon": "./images/switch.png" },
-    { "name": "POP01-ag02", "meta": {"description": "This is a router", "type": "Aggregation"}, "icon": "./images/switch.png" },
-```
-
-![Metadata tooltip](example/images/tooltip.png)
-
-:bulb: `tooltip: 'hover'` is also available.
 
 
 ## Plugins
