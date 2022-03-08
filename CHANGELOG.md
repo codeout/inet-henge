@@ -1,10 +1,17 @@
+## [1.2.1] - 2022-03-09
+
+### Added
+
+* Introduce "href" option to show `<a/>` in tooltips
+
+
 ## [1.2.0] - 2021-09-27
 
 ### Added
 
 * Introduce plugin system.
-* Removable Node Plugin
-* Arrows Link Plugin
+  * Removable Node Plugin
+  * Arrows Link Plugin
 
 ### Fixed
 
