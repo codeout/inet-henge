@@ -88,7 +88,8 @@ class NodeBase {
         this.name = data.name;
         this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
         this.icon = data.icon;
-        this.meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(metaKeys);
+        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(metaKeys);
+        this.meta = data.meta;
         this.extraClass = data.class || "";
         this.width = 60;
         this.height = 40;
@@ -151,7 +152,7 @@ class NodeBase {
         text.each((d) => {
             // Show meta only when "tooltip" option is not configured
             if (!d.tooltip) {
-                Node.appendTspans(text, d.meta);
+                Node.appendTspans(text, d.metaList);
             }
         });
     }

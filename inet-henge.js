@@ -2301,7 +2301,7 @@ class LinkBase {
         this.id = id;
         this.source = _node__WEBPACK_IMPORTED_MODULE_2__.Node.idByName(data.source);
         this.target = _node__WEBPACK_IMPORTED_MODULE_2__.Node.idByName(data.target);
-        this.meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(metaKeys);
+        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(metaKeys);
         this.sourceMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta, "source").get(metaKeys);
         this.targetMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta, "target").get(metaKeys);
         this.extraClass = data.class || "";
@@ -2316,7 +2316,7 @@ class LinkBase {
         this.register(id, this.source, this.target);
     }
     isNamedPath() {
-        return this.meta.length > 0;
+        return this.metaList.length > 0;
     }
     isReversePath() {
         return this.targetMeta.length > 0;
@@ -2366,10 +2366,10 @@ class LinkBase {
             return "rotate(0)";
     }
     split() {
-        if (!this.meta && !this.sourceMeta && !this.targetMeta)
+        if (!this.metaList && !this.sourceMeta && !this.targetMeta)
             return [this];
         const meta = [];
-        ["meta", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
+        ["metaList", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
             if (this[key]) {
                 const duped = Object.assign(Object.create(this), this);
                 keys.filter((k) => k !== key).forEach((k) => duped[k] = []);
@@ -2379,7 +2379,7 @@ class LinkBase {
         return meta;
     }
     hasMeta() {
-        return this.meta.length > 0 || this.sourceMeta.length > 0 || this.targetMeta.length > 0;
+        return this.metaList.length > 0 || this.sourceMeta.length > 0 || this.targetMeta.length > 0;
     }
     class() {
         // eslint-disable-next-line max-len
@@ -2420,7 +2420,7 @@ class LinkBase {
         const textPath = text.append("textPath")
             .attr("xlink:href", (d) => `#${d.pathId()}`);
         textPath.each(function (d) {
-            Link.appendTspans(this, d.meta);
+            Link.appendTspans(this, d.metaList);
             Link.appendTspans(this, d.sourceMeta);
             Link.appendTspans(this, d.targetMeta);
             if (d.isNamedPath())
@@ -2631,7 +2631,8 @@ class NodeBase {
         this.name = data.name;
         this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
         this.icon = data.icon;
-        this.meta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(metaKeys);
+        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(metaKeys);
+        this.meta = data.meta;
         this.extraClass = data.class || "";
         this.width = 60;
         this.height = 40;
@@ -2694,7 +2695,7 @@ class NodeBase {
         text.each((d) => {
             // Show meta only when "tooltip" option is not configured
             if (!d.tooltip) {
-                Node.appendTspans(text, d.meta);
+                Node.appendTspans(text, d.metaList);
             }
         });
     }
@@ -2966,6 +2967,10 @@ class Tooltip {
             d3__WEBPACK_IMPORTED_MODULE_0__.event.stopPropagation();
         });
     }
+    static setHref(callback) {
+        if (callback)
+            this.href = callback;
+    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer, tooltips) {
         const tooltip = layer.selectAll(".tooltip")
@@ -3012,12 +3017,19 @@ class Tooltip {
             .attr("x", (d) => d.offsetX + 40)
             .attr("class", "name")
             .text("node:");
-        text.append("tspan")
+        const nodeName = text.append("tspan")
             .attr("dx", 10)
-            .attr("class", "value")
-            .text((d) => d.node.name);
+            .attr("class", "value");
+        if (typeof this.href === "function") {
+            nodeName.append("a")
+                .attr("href", (d) => Tooltip.href(d))
+                .text((d) => d.node.name);
+        }
+        else {
+            nodeName.text((d) => d.node.name);
+        }
         text.each(function (d) {
-            Tooltip.appendTspans(text, d.node.meta);
+            Tooltip.appendTspans(text, d.node.metaList);
             // Add "d" after bbox calculation
             const bbox = this.getBBox();
             path.attr("d", Tooltip.pathD(30, 0, bbox.width + 40, bbox.height + 20))
@@ -3289,6 +3301,7 @@ class DiagramBase {
         this.options.bundle = "bundle" in options ? options.bundle : false;
         this.options.tooltip = options.tooltip;
         this.setDistance = this.linkDistance(options.distance || 150);
+        _tooltip__WEBPACK_IMPORTED_MODULE_6__.Tooltip.setHref(options.href);
     }
     init(...meta) {
         this.options.meta = meta;
