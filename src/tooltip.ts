@@ -1,10 +1,12 @@
 import * as d3 from "d3";
 
+import { HrefFunction } from "./diagram";
 import { MetaDataType } from "./meta_data";
 import { Node } from "./node";
 import { classify } from "./util";
 
 export class Tooltip {
+  static href: HrefFunction;
   private offsetX: number;
   private visibility: string;
 
@@ -77,6 +79,11 @@ export class Tooltip {
     });
   }
 
+  static setHref(callback: HrefFunction): void {
+    if (callback)
+      this.href = callback;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static render(layer: d3.Selection<any>, tooltips: Tooltip[]): d3.Selection<Tooltip> {
     const tooltip = layer.selectAll(".tooltip")
@@ -124,20 +131,27 @@ export class Tooltip {
   }
 
   private static appendText(container: SVGGElement): void {
-    const path = d3.select(container).append("path");
+    const path = d3.select(container).append("path") as d3.Selection<Tooltip>;
 
-    const text = d3.select(container).append("text");
+    const text = d3.select(container).append("text") as d3.Selection<Tooltip>;
     text.append("tspan")
-      .attr("x", (d: Tooltip) => d.offsetX + 40)
+      .attr("x", (d) => d.offsetX + 40)
       .attr("class", "name")
       .text("node:");
-    text.append("tspan")
+    const nodeName = text.append("tspan")
       .attr("dx", 10)
-      .attr("class", "value")
-      .text((d: Tooltip) => d.node.name);
+      .attr("class", "value");
 
-    text.each(function(d: Tooltip) {
-      Tooltip.appendTspans(text, d.node.meta);
+    if (typeof this.href === "function") {
+      nodeName.append("a")
+        .attr("href", (d) => Tooltip.href(d))
+        .text((d) => d.node.name);
+    } else {
+      nodeName.text((d) => d.node.name);
+    }
+
+    text.each(function(d) {
+      Tooltip.appendTspans(text, d.node.metaList);
 
       // Add "d" after bbox calculation
       const bbox = this.getBBox();
@@ -149,11 +163,11 @@ export class Tooltip {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private static appendTspans(container: d3.Selection<any>, meta: MetaDataType[]): void {
+  private static appendTspans(container: d3.Selection<Tooltip>, meta: MetaDataType[]): void {
     meta.forEach((m, i) => {
       container.append("tspan")
-        .attr("x", (d: Tooltip) => d.offsetX + 40)
-        .attr("dy", (d: Tooltip) => d.tspanOffsetY(i === 0))
+        .attr("x", (d) => d.offsetX + 40)
+        .attr("dy", (d) => d.tspanOffsetY(i === 0))
         .attr("class", "name")
         .text(`${m.class}:`);
 

@@ -20,7 +20,8 @@ class NodeBase {
 
   public name: string;
   public group: string[];
-  public meta: MetaDataType[];
+  public metaList: MetaDataType[];
+  public meta: Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
   public x: number;
   public y: number;
 
@@ -38,7 +39,8 @@ class NodeBase {
     this.name = data.name;
     this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
     this.icon = data.icon;
-    this.meta = new MetaData(data.meta).get(metaKeys);
+    this.metaList = new MetaData(data.meta).get(metaKeys);
+    this.meta = data.meta;
     this.extraClass = data.class || "";
 
     this.width = 60;
@@ -116,7 +118,7 @@ class NodeBase {
     text.each((d) => {
       // Show meta only when "tooltip" option is not configured
       if (!d.tooltip) {
-        Node.appendTspans(text, d.meta);
+        Node.appendTspans(text, d.metaList);
       }
     });
   }

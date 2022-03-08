@@ -60,6 +60,10 @@
     fill: #8d7966;
 }
 
+.tooltip a:hover {
+    fill: #58a6ff;
+}
+
 
 .loopback,
 .interface {

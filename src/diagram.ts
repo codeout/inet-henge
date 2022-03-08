@@ -11,6 +11,7 @@ import { Tooltip } from "./tooltip";
 const cola = require("cola");  // eslint-disable-line @typescript-eslint/no-var-requires
 
 type LinkWidthFunction = (object) => number;
+export type HrefFunction = (object) => string;
 export type InetHengeDataType = { nodes: NodeDataType[], links: LinkDataType[] }
 type DiagramOptionType = {
   // Options publicly available
@@ -22,7 +23,8 @@ type DiagramOptionType = {
   bundle: boolean,
   pop: RegExp,
   distance: LinkWidthFunction,
-  tooltip: string;
+  tooltip: string,
+  href: HrefFunction,
 
   // Internal options
   selector: string,
@@ -37,7 +39,8 @@ type DiagramOptionType = {
 
 class DiagramBase {
   private options: DiagramOptionType;
-  private readonly setDistance: (number) => void;
+  private readonly setDistance: (object) => number;
+  private readonly tooltipHref: (object) => string;
   private getLinkWidth: LinkWidthFunction;
   private zoom: d3.behavior.Zoom<unknown>;
   private cola;
@@ -66,6 +69,7 @@ class DiagramBase {
     this.options.tooltip = options.tooltip;
 
     this.setDistance = this.linkDistance(options.distance || 150);
+    Tooltip.setHref(options.href);
   }
 
   init(...meta: string[]): void {
