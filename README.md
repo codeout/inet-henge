@@ -360,6 +360,25 @@ In the example above, `description` and `type` will be displayed.
 
 :bulb: `tooltip: "hover"` is also available.
 
+#### Hyperlink in tooltop
+
+You can show `<a href="...">...</a>` in node metadata tooltips.
+
+```html
+<script>
+ const diagram = new Diagram("#diagram", "index.json", {
+   pop: /^([^\s-]+)-/,
+   tooltip: "click",
+   href: (t) => `https://example.com/${t.node.name}`,
+   });
+ diagram.init("description", "type");
+</script>
+```
+
+This example above will generate `<a href="https://example.com/POP01-bb02">POP01-bb02</a>`. Metadata are also available like ```href: (t) => `https://example.com/${t.node.meta?.type}/${t.node.name}`,```.
+
+:bulb: Use `tooltip: "click"` to make tooltips sticky.
+
 
 ## Experimental Features
 
