@@ -335,27 +335,7 @@ You can save positions of all nodes in browser even after dragging them by setti
 </script>
 ```
 
-
-## Experimental Features
-
-:warning: Those features may work, but still under development. The behavior might be changed :warning:
-
-### Internal groups
-
-You can display node type based groups in POP-based [Node group](#Node-Group) by `group` definition in each node.
-
-```json
-  "nodes": [
-    { "name": "POP01-bb01", "group": "core", "icon": "./images/router.png" },
-    { "name": "POP01-bb02", "group": "core", "icon": "./images/router.png" },
-    ...
-```
-
-![Internal group](example/images/internal_group.png)
-
 ### Metadata tooltip
-
-:warning: This feature is available in `master` branch only, not published as the npm package. :warning:
 
 You can display node metadata in the tooltip, instead of always showing as node text, by setting `tooltip: "click"` in the constructor like:
 
@@ -379,6 +359,24 @@ In the example above, `description` and `type` will be displayed.
 ![Metadata tooltip](example/images/tooltip.png)
 
 :bulb: `tooltip: "hover"` is also available.
+
+
+## Experimental Features
+
+:warning: Those features may work, but still under development. The behavior might be changed :warning:
+
+### Internal groups
+
+You can display node type based groups in POP-based [Node group](#Node-Group) by `group` definition in each node.
+
+```json
+  "nodes": [
+    { "name": "POP01-bb01", "group": "core", "icon": "./images/router.png" },
+    { "name": "POP01-bb02", "group": "core", "icon": "./images/router.png" },
+    ...
+```
+
+![Internal group](example/images/internal_group.png)
 
 
 ## Plugins
