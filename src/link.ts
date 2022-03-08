@@ -19,7 +19,7 @@ export class LinkBase {
 
   protected readonly source: number | Node;
   protected readonly target: number | Node;
-  private readonly meta: MetaDataType[];
+  private readonly metaList: MetaDataType[];
   private readonly sourceMeta: MetaDataType[];
   private readonly targetMeta: MetaDataType[];
   private readonly extraClass: string;
@@ -33,7 +33,7 @@ export class LinkBase {
   constructor(data: LinkDataType, public id: number, metaKeys: string[], linkWidth: (object) => number) {
     this.source = Node.idByName(data.source);
     this.target = Node.idByName(data.target);
-    this.meta = new MetaData(data.meta).get(metaKeys);
+    this.metaList = new MetaData(data.meta).get(metaKeys);
     this.sourceMeta = new MetaData(data.meta, "source").get(metaKeys);
     this.targetMeta = new MetaData(data.meta, "target").get(metaKeys);
     this.extraClass = data.class || "";
@@ -52,7 +52,7 @@ export class LinkBase {
   }
 
   isNamedPath(): boolean {
-    return this.meta.length > 0;
+    return this.metaList.length > 0;
   }
 
   isReversePath(): boolean {
@@ -112,11 +112,11 @@ export class LinkBase {
   }
 
   split(): Record<string, any>[] {  // eslint-disable-line @typescript-eslint/no-explicit-any
-    if (!this.meta && !this.sourceMeta && !this.targetMeta)
+    if (!this.metaList && !this.sourceMeta && !this.targetMeta)
       return [this];
 
     const meta = [];
-    ["meta", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
+    ["metaList", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
       if (this[key]) {
         const duped = Object.assign(Object.create(this), this);
 
@@ -129,7 +129,7 @@ export class LinkBase {
   }
 
   hasMeta(): boolean {
-    return this.meta.length > 0 || this.sourceMeta.length > 0 || this.targetMeta.length > 0;
+    return this.metaList.length > 0 || this.sourceMeta.length > 0 || this.targetMeta.length > 0;
   }
 
   class(): string {
@@ -178,7 +178,7 @@ export class LinkBase {
       .attr("xlink:href", (d: Link) => `#${d.pathId()}`);
 
     textPath.each(function(d: Link) {
-      Link.appendTspans(this, d.meta);
+      Link.appendTspans(this, d.metaList);
       Link.appendTspans(this, d.sourceMeta);
       Link.appendTspans(this, d.targetMeta);
 

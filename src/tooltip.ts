@@ -137,7 +137,7 @@ export class Tooltip {
       .text((d) => d.node.name);
 
     text.each(function(d) {
-      Tooltip.appendTspans(text, d.node.meta);
+      Tooltip.appendTspans(text, d.node.metaList);
 
       // Add "d" after bbox calculation
       const bbox = this.getBBox();
