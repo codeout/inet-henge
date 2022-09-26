@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-import { Constructor as NodeConstructor, Node, NodeDataType } from "../../../src/node";
+import { Constructor as NodeConstructor, Node, NodeDataType, NodeOptions } from "../../../src/node";
 import { PluginClass } from "../../../src/plugin";
 import { classify } from "../../../src/util";
 
@@ -41,7 +41,7 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
     // Also, it should have accepted undefined
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-    Node.registerConstructor(function(data: NodeDataType, id: number, metaKeys: string[], color: any, tooltip: boolean) {
+    Node.registerConstructor(function(data: NodeDataType, id: number, options: NodeOptions) {
       this.selected = false;
 
       this.on("rendered", (element: SVGGElement) => {

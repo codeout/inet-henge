@@ -5,7 +5,7 @@ import { NodePosition } from "./position_cache";
 import { classify } from "./util";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Constructor = (data: NodeDataType, id: number, metaKeys: string[], color: any, tooltip: boolean) => void;
+export type Constructor = (data: NodeDataType, id: number, options: NodeOptions) => void;
 
 export type NodeDataType = {
   name: string,
@@ -13,6 +13,15 @@ export type NodeDataType = {
   icon: string,
   meta: Record<string, any>,  // eslint-disable-line @typescript-eslint/no-explicit-any
   class: string,
+}
+
+export type NodeOptions = {
+  metaKeys: string[],
+  // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+  // Also, it should have accepted undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  color: any,
+  tooltip: boolean,
 }
 
 class NodeBase {
@@ -32,14 +41,11 @@ class NodeBase {
   private padding: number;
   private tspanOffset: string;
 
-  // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-  // Also, it should have accepted undefined
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(data: NodeDataType, public id: number, metaKeys: string[], private color: any, private tooltip: boolean) {
+  constructor(data: NodeDataType, public id: number, private options: NodeOptions) {
     this.name = data.name;
     this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
     this.icon = data.icon;
-    this.metaList = new MetaData(data.meta).get(metaKeys);
+    this.metaList = new MetaData(data.meta).get(options.metaKeys);
     this.meta = data.meta;
     this.extraClass = data.class || "";
 
@@ -117,7 +123,7 @@ class NodeBase {
 
     text.each((d) => {
       // Show meta only when "tooltip" option is not configured
-      if (!d.tooltip) {
+      if (!d.options.tooltip) {
         Node.appendTspans(text, d.metaList);
       }
     });
@@ -150,7 +156,7 @@ class NodeBase {
       .attr("height", (d) => d.nodeHeight())
       .attr("rx", 5)
       .attr("ry", 5)
-      .style("fill", (d) => d.color());
+      .style("fill", (d) => d.options.color());
   }
 
   static tick(node: d3.Selection<Node>): void {
@@ -174,11 +180,8 @@ const Eventable = (Base: typeof NodeBase) => {
   class EventableNode extends Base {
     private dispatch: d3.Dispatch;
 
-    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-    // Also, it should have accepted undefined
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(data: NodeDataType, id: number, metaKeys: string[], color: any, tooltip: boolean) {
-      super(data, id, metaKeys, color, tooltip);
+    constructor(data: NodeDataType, id: number, options: NodeOptions) {
+      super(data, id, options);
 
       this.dispatch = d3.dispatch("rendered");
     }
@@ -206,15 +209,12 @@ const Pluggable = (Base: typeof NodeBase) => {
   class Node extends Base {
     private static pluginConstructors: Constructor[] = [];
 
-    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-    // Also, it should have accepted undefined
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(data: NodeDataType, id: number, metaKeys: string[], color: any, tooltip: boolean) {
-      super(data, id, metaKeys, color, tooltip);
+    constructor(data: NodeDataType, id: number, options: NodeOptions) {
+      super(data, id, options);
 
       for (const constructor of Node.pluginConstructors) {
         // Call Pluggable at last as constructor may call methods defined in other classes
-        constructor.bind(this)(data, id, metaKeys, color, tooltip);
+        constructor.bind(this)(data, id, options);
       }
     }
 
