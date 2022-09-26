@@ -4,6 +4,8 @@ import { Node } from "./node";
 import { GroupPosition } from "./position_cache";
 import { classify } from "./util";
 
+// Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+// Also, it should have accepted undefined
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Constructor = (name: string, color: any) => void;
 

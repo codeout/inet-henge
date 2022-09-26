@@ -38,6 +38,8 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
       RemovableNodePlugin.hideKey = options.hideKey;
     }
 
+    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+    // Also, it should have accepted undefined
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
     Node.registerConstructor(function(data: NodeDataType, id: number, metaKeys: string[], color: any, tooltip: boolean) {
       this.selected = false;

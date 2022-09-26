@@ -174,6 +174,8 @@ const Eventable = (Base: typeof NodeBase) => {
   class EventableNode extends Base {
     private dispatch: d3.Dispatch;
 
+    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+    // Also, it should have accepted undefined
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(data: NodeDataType, id: number, metaKeys: string[], color: any, tooltip: boolean) {
       super(data, id, metaKeys, color, tooltip);
@@ -204,6 +206,8 @@ const Pluggable = (Base: typeof NodeBase) => {
   class Node extends Base {
     private static pluginConstructors: Constructor[] = [];
 
+    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+    // Also, it should have accepted undefined
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(data: NodeDataType, id: number, metaKeys: string[], color: any, tooltip: boolean) {
       super(data, id, metaKeys, color, tooltip);
