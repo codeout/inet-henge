@@ -7,7 +7,7 @@
 		var a = typeof exports === 'object' ? factory(require("d3")) : factory(root["d3"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(self, function(__WEBPACK_EXTERNAL_MODULE_d3__) {
+})(self, (__WEBPACK_EXTERNAL_MODULE_d3__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -78,21 +78,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class NodeBase {
-    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-    // Also, it should have accepted undefined
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(data, id, metaKeys, color, tooltip) {
+    constructor(data, id, options) {
         this.id = id;
-        this.color = color;
-        this.tooltip = tooltip;
+        this.options = options;
         this.name = data.name;
         this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
         this.icon = data.icon;
-        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(metaKeys);
+        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(options.metaKeys);
         this.meta = data.meta;
         this.extraClass = data.class || "";
-        this.width = 60;
-        this.height = 40;
+        this.width = options.width || 60;
+        this.height = options.height || 40;
         this.padding = 3;
         this.tspanOffset = "1.1em";
         this.register(id, data.name);
@@ -151,7 +147,7 @@ class NodeBase {
             .attr("x", (d) => d.xForText());
         text.each((d) => {
             // Show meta only when "tooltip" option is not configured
-            if (!d.tooltip) {
+            if (!d.options.tooltip) {
                 Node.appendTspans(text, d.metaList);
             }
         });
@@ -181,7 +177,7 @@ class NodeBase {
             .attr("height", (d) => d.nodeHeight())
             .attr("rx", 5)
             .attr("ry", 5)
-            .style("fill", (d) => d.color());
+            .style("fill", (d) => d.options.color());
     }
     static tick(node) {
         node.attr("transform", (d) => d.transform());
@@ -199,9 +195,8 @@ class NodeBase {
 }
 const Eventable = (Base) => {
     class EventableNode extends Base {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        constructor(data, id, metaKeys, color, tooltip) {
-            super(data, id, metaKeys, color, tooltip);
+        constructor(data, id, options) {
+            super(data, id, options);
             this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
         static render(layer, nodes) {
@@ -220,12 +215,11 @@ const Eventable = (Base) => {
 };
 const Pluggable = (Base) => {
     class Node extends Base {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        constructor(data, id, metaKeys, color, tooltip) {
-            super(data, id, metaKeys, color, tooltip);
+        constructor(data, id, options) {
+            super(data, id, options);
             for (const constructor of Node.pluginConstructors) {
                 // Call Pluggable at last as constructor may call methods defined in other classes
-                constructor.bind(this)(data, id, metaKeys, color, tooltip);
+                constructor.bind(this)(data, id, options);
             }
         }
         static registerConstructor(func) {
@@ -379,8 +373,10 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
             if (options.hideKey) {
                 RemovableNodePlugin.hideKey = options.hideKey;
             }
+            // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+            // Also, it should have accepted undefined
             // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-            Node.registerConstructor(function (data, id, metaKeys, color, tooltip) {
+            Node.registerConstructor(function (data, id, options) {
                 this.selected = false;
                 this.on("rendered", (element) => {
                     RemovableNodePlugin.configureRemovableNode(element);
