@@ -4,7 +4,7 @@ import * as d3 from "d3";
 
 import { Group } from "./group";
 import { Link, LinkDataType } from "./link";
-import { Node, NodeDataType } from "./node";
+import { Node, NodeDataType, NodeOptions } from "./node";
 import { PositionCache } from "./position_cache";
 import { Tooltip } from "./tooltip";
 
@@ -124,7 +124,11 @@ class DiagramBase {
   render(data: InetHengeDataType): void {
     try {
       const nodes = data.nodes ?
-        data.nodes.map((n, i) => new Node(n, i, this.options.meta, this.options.color, this.options.tooltip !== undefined)) : [];
+        data.nodes.map((n, i) => new Node(n, i, {
+          metaKeys: this.options.meta,
+          color: this.options.color,
+          tooltip: this.options.tooltip !== undefined
+        } as NodeOptions)) : [];
       const links = data.links ?
         data.links.map((l, i) => new Link(l, i, this.options.meta, this.getLinkWidth)) : [];
       const groups = Group.divide(nodes, this.options.groupPattern, this.options.color);
