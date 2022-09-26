@@ -7,7 +7,7 @@
 		var a = typeof exports === 'object' ? factory(require("d3"), require("cola")) : factory(root["d3"], root["cola"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(self, function(__WEBPACK_EXTERNAL_MODULE_d3__, __WEBPACK_EXTERNAL_MODULE_cola__) {
+})(self, (__WEBPACK_EXTERNAL_MODULE_d3__, __WEBPACK_EXTERNAL_MODULE_cola__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -1958,9 +1958,9 @@ module.exports = cloneDeep;
 
 (function(){
   var crypt = __webpack_require__(/*! crypt */ "./node_modules/crypt/crypt.js"),
-      utf8 = __webpack_require__(/*! charenc */ "./node_modules/charenc/charenc.js").utf8,
+      utf8 = (__webpack_require__(/*! charenc */ "./node_modules/charenc/charenc.js").utf8),
       isBuffer = __webpack_require__(/*! is-buffer */ "./node_modules/is-buffer/index.js"),
-      bin = __webpack_require__(/*! charenc */ "./node_modules/charenc/charenc.js").bin,
+      bin = (__webpack_require__(/*! charenc */ "./node_modules/charenc/charenc.js").bin),
 
   // The core
   md5 = function (message, options) {
@@ -2129,8 +2129,8 @@ module.exports = cloneDeep;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "GroupBase": () => (/* binding */ GroupBase),
-/* harmony export */   "Group": () => (/* binding */ Group)
+/* harmony export */   "Group": () => (/* binding */ Group),
+/* harmony export */   "GroupBase": () => (/* binding */ GroupBase)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
@@ -2284,8 +2284,8 @@ class Group extends Pluggable(EventableGroup) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "LinkBase": () => (/* binding */ LinkBase),
-/* harmony export */   "Link": () => (/* binding */ Link)
+/* harmony export */   "Link": () => (/* binding */ Link),
+/* harmony export */   "LinkBase": () => (/* binding */ LinkBase)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
@@ -2621,21 +2621,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class NodeBase {
-    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-    // Also, it should have accepted undefined
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(data, id, metaKeys, color, tooltip) {
+    constructor(data, id, options) {
         this.id = id;
-        this.color = color;
-        this.tooltip = tooltip;
+        this.options = options;
         this.name = data.name;
         this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
         this.icon = data.icon;
-        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(metaKeys);
+        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(options.metaKeys);
         this.meta = data.meta;
         this.extraClass = data.class || "";
-        this.width = 60;
-        this.height = 40;
+        this.width = options.width || 60;
+        this.height = options.height || 40;
         this.padding = 3;
         this.tspanOffset = "1.1em";
         this.register(id, data.name);
@@ -2694,7 +2690,7 @@ class NodeBase {
             .attr("x", (d) => d.xForText());
         text.each((d) => {
             // Show meta only when "tooltip" option is not configured
-            if (!d.tooltip) {
+            if (!d.options.tooltip) {
                 Node.appendTspans(text, d.metaList);
             }
         });
@@ -2724,7 +2720,7 @@ class NodeBase {
             .attr("height", (d) => d.nodeHeight())
             .attr("rx", 5)
             .attr("ry", 5)
-            .style("fill", (d) => d.color());
+            .style("fill", (d) => d.options.color());
     }
     static tick(node) {
         node.attr("transform", (d) => d.transform());
@@ -2742,9 +2738,8 @@ class NodeBase {
 }
 const Eventable = (Base) => {
     class EventableNode extends Base {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        constructor(data, id, metaKeys, color, tooltip) {
-            super(data, id, metaKeys, color, tooltip);
+        constructor(data, id, options) {
+            super(data, id, options);
             this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
         static render(layer, nodes) {
@@ -2763,12 +2758,11 @@ const Eventable = (Base) => {
 };
 const Pluggable = (Base) => {
     class Node extends Base {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        constructor(data, id, metaKeys, color, tooltip) {
-            super(data, id, metaKeys, color, tooltip);
+        constructor(data, id, options) {
+            super(data, id, options);
             for (const constructor of Node.pluginConstructors) {
                 // Call Pluggable at last as constructor may call methods defined in other classes
-                constructor.bind(this)(data, id, metaKeys, color, tooltip);
+                constructor.bind(this)(data, id, options);
             }
         }
         static registerConstructor(func) {
@@ -3346,7 +3340,13 @@ class DiagramBase {
     render(data) {
         try {
             const nodes = data.nodes ?
-                data.nodes.map((n, i) => new _node__WEBPACK_IMPORTED_MODULE_4__.Node(n, i, this.options.meta, this.options.color, this.options.tooltip !== undefined)) : [];
+                data.nodes.map((n, i) => new _node__WEBPACK_IMPORTED_MODULE_4__.Node(n, i, {
+                    width: this.options.nodeWidth,
+                    height: this.options.nodeHeight,
+                    metaKeys: this.options.meta,
+                    color: this.options.color,
+                    tooltip: this.options.tooltip !== undefined
+                })) : [];
             const links = data.links ?
                 data.links.map((l, i) => new _link__WEBPACK_IMPORTED_MODULE_3__.Link(l, i, this.options.meta, this.getLinkWidth)) : [];
             const groups = _group__WEBPACK_IMPORTED_MODULE_2__.Group.divide(nodes, this.options.groupPattern, this.options.color);

@@ -125,17 +125,6 @@ inet-henge.js renders your network diagram as SVG within ```<div id="diagram"></
 ![Shownet2016 example](example/images/shownet.png)
 
 
-### Node Group
-
-Nodes get rendered in groups when you specify which node belongs to which group by regular expression.
-
-When the first three characters describe POP name, you can group nodes by doing this:
-
-``` javascript
-const diagram = new Diagram("#diagram", "data.json", {pop: /^.{3}/})
-```
-
-
 ### JSON Data
 
 Minimal json looks like:
@@ -179,6 +168,17 @@ new Diagram("#diagram", "index.json").init("interface");
 ```
 
 :point_up: This will render metadata on both ends of links.
+
+
+### Node Group
+
+Nodes get rendered in groups when you specify which node belongs to which group by regular expression.
+
+When the first three characters describe POP name, you can group nodes by doing this:
+
+``` javascript
+const diagram = new Diagram("#diagram", "data.json", {pop: /^.{3}/})
+```
 
 
 ### Labels
@@ -225,6 +225,19 @@ new Diagram("#diagram", "index.json").init("bandwidth", "intf-name");
 ```
 
 ![Label on link](example/images/link_label.png)
+
+
+### Node Size
+
+You can change node width and height:
+
+```js
+const diagram = new Diagram("#diagram", "data.json", {nodeWidth: 120, nodeHeight: 30});
+```
+
+![Node Size](example/images/node_size.png)
+
+Width `60` and heigh `40` (px) by default.
 
 
 ### Link Width

@@ -16,6 +16,8 @@ export type NodeDataType = {
 }
 
 export type NodeOptions = {
+  width: number,
+  height: number,
   metaKeys: string[],
   // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
   // Also, it should have accepted undefined
@@ -49,8 +51,8 @@ class NodeBase {
     this.meta = data.meta;
     this.extraClass = data.class || "";
 
-    this.width = 60;
-    this.height = 40;
+    this.width = options.width || 60;
+    this.height = options.height || 40;
     this.padding = 3;
     this.tspanOffset = "1.1em";
 
