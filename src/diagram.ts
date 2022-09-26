@@ -17,6 +17,8 @@ type DiagramOptionType = {
   // Options publicly available
   width: number,
   height: number,
+  nodeWidth: number,
+  nodeHeight: number,
   initialTicks: number,
   ticks: number,
   positionCache: boolean | string,
@@ -125,6 +127,8 @@ class DiagramBase {
     try {
       const nodes = data.nodes ?
         data.nodes.map((n, i) => new Node(n, i, {
+          width: this.options.nodeWidth,
+          height: this.options.nodeHeight,
           metaKeys: this.options.meta,
           color: this.options.color,
           tooltip: this.options.tooltip !== undefined

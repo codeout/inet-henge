@@ -227,6 +227,19 @@ new Diagram("#diagram", "index.json").init("bandwidth", "intf-name");
 ![Label on link](example/images/link_label.png)
 
 
+### Node Size
+
+You can change node width and height:
+
+```js
+const diagram = new Diagram("#diagram", "data.json", {nodeWidth: 120, nodeHeight: 30});
+```
+
+![Node Size](example/images/node_size.png)
+
+Width `60` and heigh `40` (px) by default.
+
+
 ### Link Width
 
 You can use ```linkWidth()``` API to customize link widths. The argument should be a function which calculates metadata and returns value for ```stroke-width``` of SVG.
