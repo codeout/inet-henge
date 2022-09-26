@@ -44,7 +44,6 @@
   "scripts": {
     "lint": "npx eslint $INIT_CWD/src",
     "build": "cd $INIT_CWD && npm run clean && npm run dev && npm run prod",
-    "tsc": "npx tsc --build $INIT_CWD/tsconfig.json",
     "dev": "npx webpack --config $INIT_CWD/webpack.dev.js",
     "prod": "npx webpack --config $INIT_CWD/webpack.prod.js",
     "clean": "rm -rf $INIT_CWD/{inet-henge*.js*, plugin*.js*, dist}",
