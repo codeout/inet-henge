@@ -11,13 +11,54 @@
 <body>
 <div id="diagram"></div>
 <script>
-  const diagram = new Diagram("#diagram", "index.json", {
-    pop: /^([^\s-]+)-/,
-    bundle: true,
-    tooltip: "click",
-    href: (t) => `https://example.com/${t.node.meta?.type}/${t.node.name}`,
+  const data = {
+    nodes: [{
+      "name": "brlb-t4core-1a",
+      "group": "CORE",
+      "meta": {
+        "loopback": "172.19.10.27",
+        "type": "Core",
+        "description": "Core - Aggregation Network"
+      }
+    }]
+  };
+  const distance = function(force) {
+    force.jaccardLinkLengths(70, 1.0);
+  };
+  const diagram = new Diagram(
+    "#diagram",
+    data,
+    {
+      nodeWidth: 120,
+      nodeHeight: 30,
+      positionCache: false,
+      initialTicks: 10,
+      ticks: 1500,
+      tooltip: "click",
+      width: 1200,
+      height: 600,
+      distance: distance
+    }
+  );
+  diagram.linkWidth(function(link) {
+    if (!link)
+      return 1;
+    else if (link.bandwidth === "100G")
+      return 10;
+    else if (link.bandwidth === "10G")
+      return 3;
+    else if (link.bandwidth === "1G")
+      return 2;
   });
-  diagram.init("loopback", "interface", "description", "type");
+  diagram.init(
+    "description",
+    "type",
+    "loopback",
+    "bandwidth",
+    "interface",
+    "intf-name"
+  );
+  // diagram.svg.attr("transform", "translate(100, 100) scale(1.5)");
 </script>
 </body>
 
