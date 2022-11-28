@@ -1,0 +1,138 @@
+{
+  "nodes": [
+    { "name": "EQUINIX", "icon": "./images/ix.png" },
+    { "name": "dc-connect", "icon": "./images/ix.png" },
+    { "name": "BBIX", "icon": "./images/ix.png" },
+    { "name": "NTTCom", "icon": "./images/ix.png" },
+    { "name": "PIX-IE", "icon": "./images/ix.png" },
+    { "name": "JPIX", "icon": "./images/ix.png" },
+
+    { "name": "z9100on.svc", "icon": "./images/router.png" },
+    { "name": "nx3232c.svc", "icon": "./images/router.png" },
+
+    { "name": "nx9236c.dc", "icon": "./images/router.png" },
+    { "name": "qfx10k.dc", "icon": "./images/router.png" },
+    { "name": "sn2100-1.dc", "icon": "./images/router.png" },
+    { "name": "sn2100-2.dc", "icon": "./images/router.png" },
+    { "name": "ag9032-1.dc", "icon": "./images/router.png" },
+    { "name": "ag9032-2.dc", "icon": "./images/router.png" },
+    { "name": "ce8850.dc", "icon": "./images/router.png" },
+    { "name": "qfx5110-1.dc", "icon": "./images/router.png" },
+    { "name": "qfx5110-2.dc", "icon": "./images/router.png" },
+
+    { "name": "ax8616r.noc", "icon": "./images/router.png" },
+    { "name": "ncs5k.noc", "icon": "./images/router.png" },
+    { "name": "ne9k.noc", "icon": "./images/router.png" },
+    { "name": "ip88s36.tmp-life.noc", "icon": "./images/switch.png" },
+    { "name": "mx10k.noc", "icon": "./images/router.png" },
+    { "name": "ptx1k.noc", "icon": "./images/router.png" },
+    { "name": "ce12k.noc", "icon": "./images/router.png" },
+    { "name": "nx7702.noc", "icon": "./images/router.png" },
+    { "name": "mx240.noc", "icon": "./images/router.png" },
+    { "name": "ne40e.noc", "icon": "./images/router.png" },
+
+    { "name": "asr9904-1.fpgr", "icon": "./images/router.png" },
+    { "name": "asr9904-2.fpgr", "icon": "./images/router.png" },
+    { "name": "ce6860.fpgr", "icon": "./images/switch.png" },
+    { "name": "ce6870.fpgr", "icon": "./images/switch.png" },
+
+    { "name": "mx240-1.fpbl", "icon": "./images/router.png" },
+    { "name": "mx240-2.fpbl", "icon": "./images/router.png" },
+    { "name": "nx93180-1.fpbl", "icon": "./images/switch.png" },
+    { "name": "nx93180-2.fpbl", "icon": "./images/switch.png" },
+
+    { "name": "ix3315.pod7-1", "icon": "./images/router.png" },
+    { "name": "ix3315.pod7-2", "icon": "./images/router.png" },
+
+    { "name": "s4048on-1.pod6-1", "icon": "./images/router.png" },
+    { "name": "s4048on-2.pod6-2", "icon": "./images/router.png" },
+
+    { "name": "fx1-1.pod5-1", "icon": "./images/router.png" },
+    { "name": "fx1-2.pod5-2", "icon": "./images/router.png" }
+  ],
+
+  "links": [
+    { "source": "ax8616r.noc", "target": "EQUINIX", "meta": { "interface": { "source": "2-1 / 2-1" } } },
+    { "source": "ax8616r.noc", "target": "dc-connect", "meta": { "interface": { "source": "2-3" } } },
+    { "source": "ax8616r.noc", "target": "BBIX", "meta": { "interface": { "source": "1-1" } } },
+    { "source": "ax8616r.noc", "target": "mx10k.noc", "meta": { "interface": { "source": "9-1", "target": "0-1-0" } } },
+    { "source": "ax8616r.noc", "target": "ptx1k.noc", "meta": { "interface": { "source": "5-1", "target": "0-0-1" } } },
+
+    { "source": "ncs5k.noc", "target": "NTTCom", "meta": { "interface": { "source": "0-0-1-0" } } },
+    { "source": "ncs5k.noc", "target": "mx10k.noc", "meta": { "interface": { "source": "0-0-1-2", "target": "0-1-1" } } },
+    { "source": "ncs5k.noc", "target": "ptx1k.noc", "meta": { "interface": { "source": "0-0-1-1", "target": "0-0-5" } } },
+
+    { "source": "ip88s36.tmp-life.noc", "target": "PIX-IE", "meta": { "interface": { "source": "0-25" } } },
+    { "source": "ip88s36.tmp-life.noc", "target": "ne9k.noc", "meta": { "interface": { "source": "0-26", "target": "6-0-0" } } },
+
+    { "source": "ne9k.noc", "target": "JPIX", "meta": { "interface": { "source": "2-0-0" } } },
+    { "source": "ne9k.noc", "target": "mx10k.noc", "meta": { "interface": { "source": "2-0-1", "target": "0-1-2" } } },
+    { "source": "ne9k.noc", "target": "ptx1k.noc", "meta": { "interface": { "source": "2-0-2", "target": "0-0-7" } } },
+
+    { "source": "mx10k.noc", "target": "mx240-1.fpbl", "meta": { "interface": { "source": "0-1-4", "target": "0-0-2" } } },
+    { "source": "mx10k.noc", "target": "ptx1k.noc", "meta": { "interface": { "source": "0-1-3", "target": "0-0-13" } } },
+    { "source": "mx10k.noc", "target": "ce12k.noc", "meta": { "interface": { "source": "0-1-6", "target": "4-0-0" } } },
+
+    { "source": "ptx1k.noc", "target": "asr9904-1.fpgr", "meta": { "interface": { "source": "0-0-11", "target": "0-0-0-0" } } },
+    { "source": "ptx1k.noc", "target": "nx7702.noc", "meta": { "interface": { "source": "0-0-17", "target": "1-6" } } },
+
+    { "source": "ce12k.noc", "target": "nx7702.noc", "meta": { "interface": { "source": "4-0-1", "target": "1-5" } } },
+    { "source": "ce12k.noc", "target": "mx240-2.fpbl", "meta": { "interface": { "source": "4-0-5", "target": "0-0-2" } } },
+    { "source": "ce12k.noc", "target": "nx9236c.dc", "meta": { "interface": { "source": "4-0-4", "target": "1-1" } } },
+    { "source": "ce12k.noc", "target": "mx240.noc", "meta": { "interface": { "source": "4-0-3", "target": "0-0-2" } } },
+    { "source": "ce12k.noc", "target": "nx3232c.svc", "meta": { "interface": { "source": "4-0-2", "target": "1-1" } } },
+
+    { "source": "mx240-1.fpbl", "target": "nx93180-1.fpbl", "meta": { "interface": { "source": "0-1-2", "target": "1-49" } } },
+    { "source": "mx240-2.fpbl", "target": "nx93180-2.fpbl", "meta": { "interface": { "source": "0-1-2", "target": "1-49" } } },
+    { "source": "mx240-1.fpbl", "target": "mx240-2.fpbl", "meta": { "interface": { "source": "0-0-5", "target": "0-0-5" } } },
+    { "source": "nx93180-1.fpbl", "target": "nx93180-2.fpbl", "meta": { "interface": { "source": "1-50", "target": "1-50" } } },
+
+    { "source": "nx7702.noc", "target": "asr9904-2.fpgr", "meta": { "interface": { "source": "1-1", "target": "0-0-0-0" } } },
+    { "source": "nx7702.noc", "target": "ne40e.noc", "meta": { "interface": { "source": "1-3", "target": "0-1-0" } } },
+    { "source": "nx7702.noc", "target": "qfx10k.dc", "meta": { "interface": { "source": "1-4", "target": "0-0-1" } } },
+    { "source": "nx7702.noc", "target": "z9100on.svc", "meta": { "interface": { "source": "1-2", "target": "0-0-0" } } },
+
+    { "source": "asr9904-1.fpgr", "target": "asr9904-2.fpgr", "meta": { "interface": { "source": "0-0-0-1", "target": "0-0-0-1" } } },
+    { "source": "asr9904-1.fpgr", "target": "ce6860.fpgr", "meta": { "interface": { "source": "0-0-0-2", "target": "1-0-1" } } },
+    { "source": "asr9904-2.fpgr", "target": "ce6870.fpgr", "meta": { "interface": { "source": "0-0-0-2", "target": "1-0-1" } } },
+    { "source": "ce6860.fpgr", "target": "ce6870.fpgr", "meta": { "interface": { "source": "1-0-2", "target": "1-0-2" } } },
+
+    { "source": "z9100on.svc", "target": "nx3232c.svc", "meta": { "interface": { "source": "0-0-1", "target": "1-2" } } },
+
+    { "source": "mx240.noc", "target": "ne40e.noc", "meta": { "interface": { "source": "0-0-5", "target": "0-2-0" } } },
+
+    { "source": "mx240.noc", "target": "ix3315.pod7-1", "meta": { "interface": { "source": "1-0-0", "target": "2-0" } } },
+    { "source": "mx240.noc", "target": "s4048on-1.pod6-1", "meta": { "interface": { "source": "1-0-1", "target": "1-1" } } },
+    { "source": "mx240.noc", "target": "fx1-1.pod5-1", "meta": { "interface": { "source": "1-0-2", "target": "1-1" } } },
+
+    { "source": "ne40e.noc", "target": "ix3315.pod7-2", "meta": { "interface": { "source": "0-3-0", "target": "2-0" } } },
+    { "source": "ne40e.noc", "target": "s4048on-2.pod6-2", "meta": { "interface": { "source": "0-3-1", "target": "1-1" } } },
+    { "source": "ne40e.noc", "target": "fx1-2.pod5-2", "meta": { "interface": { "source": "0-3-2", "target": "1-1" } } },
+
+    { "source": "nx9236c.dc", "target": "qfx10k.dc", "meta": { "interface": { "source": "1-3", "target": "0-0-7" } } },
+    { "source": "sn2100-1.dc", "target": "sn2100-2.dc", "meta": { "interface": { "source": "1-3 / 1-4", "target": "1-3 / 1-4" } } },
+    { "source": "ag9032-1.dc", "target": "ag9032-2.dc", "meta": { "interface": { "source": "1-3 / 1-4", "target": "1-3 / 1-4" } } },
+    { "source": "qfx5110-1.dc", "target": "qfx5110-2.dc", "meta": { "interface": { "source": "0-0-52 / 0-0-53", "target": "0-0-52 / 0-0-53" } } },
+
+    { "source": "nx9236c.dc", "target": "sn2100-1.dc", "meta": { "interface": { "source": "1-36", "target": "1-1" } } },
+    { "source": "nx9236c.dc", "target": "sn2100-2.dc", "meta": { "interface": { "source": "1-35", "target": "1-1" } } },
+    { "source": "nx9236c.dc", "target": "ag9032-1.dc", "meta": { "interface": { "source": "1-33", "target": "1-1" } } },
+    { "source": "nx9236c.dc", "target": "ag9032-2.dc", "meta": { "interface": { "source": "1-32", "target": "1-1" } } },
+    { "source": "nx9236c.dc", "target": "ce8850.dc", "meta": { "interface": { "source": "1-30", "target": "1-0-1" } } },
+    { "source": "nx9236c.dc", "target": "qfx5110-1.dc", "meta": { "interface": { "source": "1-31", "target": "0-0-48" } } },
+    { "source": "nx9236c.dc", "target": "qfx5110-2.dc", "meta": { "interface": { "source": "1-29", "target": "0-0-48" } } },
+
+    { "source": "qfx10k.dc", "target": "sn2100-1.dc", "meta": { "interface": { "source": "0-0-71", "target": "1-2" } } },
+    { "source": "qfx10k.dc", "target": "sn2100-2.dc", "meta": { "interface": { "source": "0-0-67", "target": "1-2" } } },
+    { "source": "qfx10k.dc", "target": "ag9032-1.dc", "meta": { "interface": { "source": "0-0-65", "target": "1-2" } } },
+    { "source": "qfx10k.dc", "target": "ag9032-2.dc", "meta": { "interface": { "source": "0-0-61", "target": "1-2" } } },
+    { "source": "qfx10k.dc", "target": "ce8850.dc", "meta": { "interface": { "source": "0-0-53", "target": "1-0-2" } } },
+    { "source": "qfx10k.dc", "target": "qfx5110-1.dc", "meta": { "interface": { "source": "0-0-59", "target": "0-0-49" } } },
+    { "source": "qfx10k.dc", "target": "qfx5110-2.dc", "meta": { "interface": { "source": "0-0-51", "target": "0-0-49" } } },
+
+    { "source": "ix3315.pod7-1", "target": "ix3315.pod7-2", "meta": { "interface": { "source": "0-0", "target": "0-0" } } },
+    { "source": "s4048on-1.pod6-1", "target": "s4048on-2.pod6-2", "meta": { "interface": { "source": "1-2", "target": "1-2" } } },
+    { "source": "fx1-1.pod5-1", "target": "fx1-2.pod5-2", "meta": { "interface": { "source": "1-1", "target": "1-1" } } }
+  ]
+}
+

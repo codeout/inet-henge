@@ -1,0 +1,486 @@
+{
+  "nodes": [
+    {
+      "name": "node01"
+    },
+    {
+      "name": "node02"
+    },
+    {
+      "name": "node03"
+    },
+    {
+      "name": "node04"
+    },
+    {
+      "name": "node05"
+    },
+    {
+      "name": "node06"
+    },
+    {
+      "name": "node07"
+    },
+    {
+      "name": "node08"
+    },
+    {
+      "name": "node09"
+    },
+    {
+      "name": "node10"
+    }
+  ],
+  "links": [
+    {
+      "source": "node01",
+      "target": "node02",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node01",
+      "target": "node03",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node01",
+      "target": "node04",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node01",
+      "target": "node05",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node01",
+      "target": "node06",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node01",
+      "target": "node07",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node01",
+      "target": "node08",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node01",
+      "target": "node09",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node01",
+      "target": "node10",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node02",
+      "target": "node03",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node02",
+      "target": "node04",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node02",
+      "target": "node05",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node02",
+      "target": "node06",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node02",
+      "target": "node07",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node02",
+      "target": "node08",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node02",
+      "target": "node09",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node02",
+      "target": "node10",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node03",
+      "target": "node04",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node03",
+      "target": "node05",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node03",
+      "target": "node06",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node03",
+      "target": "node07",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node03",
+      "target": "node08",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node03",
+      "target": "node09",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node03",
+      "target": "node10",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node04",
+      "target": "node05",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node04",
+      "target": "node06",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node04",
+      "target": "node07",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node04",
+      "target": "node08",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node04",
+      "target": "node09",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node04",
+      "target": "node10",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node05",
+      "target": "node06",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node05",
+      "target": "node07",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node05",
+      "target": "node08",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node05",
+      "target": "node09",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node05",
+      "target": "node10",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node06",
+      "target": "node07",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node06",
+      "target": "node08",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node06",
+      "target": "node09",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node06",
+      "target": "node10",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node07",
+      "target": "node08",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node07",
+      "target": "node09",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node07",
+      "target": "node10",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node08",
+      "target": "node09",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node08",
+      "target": "node10",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    },
+    {
+      "source": "node09",
+      "target": "node10",
+      "meta": {
+        "interface": {
+          "source": "ge-0/0/0",
+          "target": "Te0/0/0/0"
+        }
+      }
+    }
+  ]
+}

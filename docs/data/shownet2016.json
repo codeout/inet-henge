@@ -1,0 +1,131 @@
+{
+  "nodes": [
+    { "name": "dceast-ne40e", "icon": "./images/router.png" },
+    { "name": "dceast-fx1-1", "icon": "./images/router.png" },
+    { "name": "dceast-fx1-2", "icon": "./images/router.png" },
+    { "name": "dceast-pf5240", "icon": "./images/openflow.png" },
+    { "name": "dceast-ce6851", "icon": "./images/router.png" },
+    { "name": "dceast-nx92k", "icon": "./images/router.png" },
+
+    { "name": "noc-asr9904", "icon": "./images/router.png" },
+    { "name": "noc-mx2010", "icon": "./images/router.png" },
+    { "name": "noc-ax8616r", "icon": "./images/router.png" },
+    { "name": "noc-ne5000e", "icon": "./images/router.png" },
+    { "name": "noc-asr9006", "icon": "./images/router.png" },
+    { "name": "noc-ce12k", "icon": "./images/router.png" },
+    { "name": "noc-mx240", "icon": "./images/router.png" },
+    { "name": "noc-ptx3k", "icon": "./images/router.png" },
+    { "name": "noc-qfx10k", "icon": "./images/router.png" },
+    { "name": "noc-nx7706", "icon": "./images/router.png" },
+    { "name": "noc-cat6807-1", "icon": "./images/router.png" },
+    { "name": "noc-cat6807-2", "icon": "./images/router.png" },
+
+    { "name": "noc-ex3300-0", "icon": "./images/switch.png" },
+    { "name": "pod4-ex3300", "icon": "./images/switch.png" },
+    { "name": "pod5-1-s3048", "icon": "./images/switch.png" },
+    { "name": "pod5-2-s3048", "icon": "./images/switch.png" },
+
+    { "name": "service-ax8308s", "icon": "./images/router.png" },
+    { "name": "service-ip88s86", "icon": "./images/router.png" },
+
+    { "name": "conf-s4048-1", "icon": "./images/router.png" },
+    { "name": "conf-s4048-2", "icon": "./images/router.png" },
+
+    { "name": "life-ip88s46-1", "icon": "./images/router.png" },
+    { "name": "life-ip88s46-2", "icon": "./images/router.png" },
+
+    { "name": "BBIX", "icon": "./images/ix.png" },
+    { "name": "JPIX", "icon": "./images/ix.png" },
+    { "name": "EQUINIX", "icon": "./images/ix.png" },
+    { "name": "NTTCom", "icon": "./images/ix.png" },
+
+    { "name": "dcwest-z9100", "icon": "./images/router.png" },
+    { "name": "dcwest-nx3232c", "icon": "./images/router.png" },
+    { "name": "dcwest-ce8860", "icon": "./images/router.png" },
+    { "name": "dcwest-qfx5100", "icon": "./images/router.png" },
+    { "name": "dcwest-nx9504", "icon": "./images/router.png" },
+    { "name": "dcwest-nx9272", "icon": "./images/router.png" },
+    { "name": "dcwest-fx1-3", "icon": "./images/router.png" }
+  ],
+
+  "links": [
+    { "source": "noc-asr9904", "target": "noc-ax8616r", "meta": { "interface": { "source": "0-0-0-2", "target": "1-1" } } },
+    { "source": "noc-asr9904", "target": "noc-ne5000e", "meta": { "interface": { "source": "0-0-0-3", "target": "3-0-0" } } },
+    { "source": "noc-mx2010", "target": "noc-ax8616r", "meta": { "interface": { "source": "0-0-1", "target": "5-1" } } },
+    { "source": "noc-mx2010", "target": "noc-ne5000e", "meta": { "interface": { "source": "0-0-2", "target": "3-0-1" } } },
+    { "source": "noc-ax8616r", "target": "noc-ne5000e", "meta": { "interface": { "source": "13-1", "target": "3-0-2" } } },
+
+    { "source": "noc-ax8616r", "target": "noc-asr9006", "meta": { "interface": { "source": "9-1", "target": "0-2-0-5" } } },
+    { "source": "noc-ne5000e", "target": "noc-ce12k", "meta": { "interface": { "source": "3-0-4", "target": "1-0-0" } } },
+    { "source": "noc-asr9006", "target": "noc-ce12k", "meta": { "interface": { "source": "0-2-0-1", "target": "1-0-1" } } },
+
+    { "source": "noc-asr9006", "target": "noc-mx240", "meta": { "interface": { "source": "2-0-2", "target": "1-1-0-0" } } },
+    { "source": "noc-ce12k", "target": "noc-ptx3k", "meta": { "interface": { "source": "1-0-2", "target": "0-0-0" } } },
+    { "source": "noc-mx240", "target": "noc-ptx3k", "meta": { "interface": { "source": "1-3-0", "target": "0-0-1" } } },
+
+    { "source": "noc-mx240", "target": "noc-qfx10k", "meta": { "interface": { "source": "2-1-0", "target": "0-0-1" } } },
+    { "source": "noc-ptx3k", "target": "noc-nx7706", "meta": { "interface": { "source": "2-0-0", "target": "1-1" } } },
+    { "source": "noc-qfx10k", "target": "noc-nx7706", "meta": { "interface": { "source": "0-0-5", "target": "1-2" } } },
+
+    { "source": "noc-qfx10k", "target": "noc-cat6807-1", "meta": { "interface": { "source": "0-0-19-1", "target": "1-2-1" } } },
+    { "source": "noc-nx7706", "target": "noc-cat6807-2", "meta": { "interface": { "source": "2-2", "target": "2-2-1" } } },
+
+    { "source": "noc-cat6807-1", "target": "noc-ex3300-0", "meta": { "interface": { "source": "1-2-2", "target": "0-1-0" } } },
+    { "source": "noc-cat6807-1", "target": "pod5-1-s3048", "meta": { "interface": { "source": "1-2-3", "target": "1-49" } } },
+    { "source": "noc-cat6807-2", "target": "pod4-ex3300", "meta": { "interface": { "source": "2-2-2", "target": "1-1-0" } } },
+    { "source": "noc-cat6807-2", "target": "pod5-2-s3048", "meta": { "interface": { "source": "2-2-3", "target": "2-49" } } },
+
+    { "source": "noc-ex3300-0", "target": "pod4-ex3300", "meta": { "interface": { "source": "0-1-1", "target": "1-1-1" } } },
+    { "source": "pod5-1-s3048", "target": "pod5-2-s3048", "meta": { "interface": { "source": "1-51", "target": "2-51" } } },
+
+    { "source": "noc-nx7706", "target": "service-ip88s86", "meta": { "interface": { "source": "2-4", "target": "2-1" } } },
+    { "source": "noc-qfx10k", "target": "service-ax8308s", "meta": { "interface": { "source": "0-0-19-3", "target": "1-1" } } },
+    { "source": "service-ip88s86", "target": "service-ax8308s", "meta": { "interface": { "source": "1-2", "target": "2-2" } } },
+
+    { "source": "noc-nx7706", "target": "conf-s4048-2", "meta": { "interface": { "source": "2-3", "target": "2-1" } } },
+    { "source": "noc-qfx10k", "target": "conf-s4048-1", "meta": { "interface": { "source": "0-0-19-2", "target": "1-1" } } },
+    { "source": "conf-s4048-1", "target": "conf-s4048-2", "meta": { "interface": { "source": "1-53", "target": "2-53" } } },
+    { "source": "conf-s4048-1", "target": "conf-s4048-2", "meta": { "interface": { "source": "1-54", "target": "2-54" } } },
+
+    { "source": "noc-nx7706", "target": "life-ip88s46-1", "meta": { "interface": { "source": "2-1", "target": "2-1-1" } } },
+    { "source": "noc-qfx10k", "target": "life-ip88s46-2", "meta": { "interface": { "source": "0-0-19-0", "target": "1-1-1" } } },
+    { "source": "life-ip88s46-1", "target": "life-ip88s46-2", "meta": { "interface": { "source": "2-1-2", "target": "1-1-2" } } },
+
+    { "source": "noc-ce12k", "target": "dceast-ne40e", "meta": { "interface": { "source": "2-0-0", "target": "0-3-0" } } },
+    { "source": "noc-ce12k", "target": "dceast-fx1-1", "meta": { "interface": { "source": "2-0-1", "target": "1-1" } } },
+    { "source": "noc-ptx3k", "target": "dceast-ne40e", "meta": { "interface": { "source": "4-0-0", "target": "0-3-1" } } },
+    { "source": "noc-ptx3k", "target": "dceast-fx1-2", "meta": { "interface": { "source": "4-0-1", "target": "1-1" } } },
+
+    { "source": "dceast-ne40e", "target": "dceast-pf5240", "meta": { "interface": { "source": "0-3-3", "target": "0-49" } } },
+    { "source": "dceast-fx1-1", "target": "dceast-pf5240", "meta": { "interface": { "source": "1-3", "target": "0-1" } } },
+    { "source": "dceast-fx1-1", "target": "dceast-ce6851", "meta": { "interface": { "source": "1-2", "target": "1-0-1" } } },
+    { "source": "dceast-fx1-1", "target": "dceast-nx92k", "meta": { "interface": { "source": "1-2", "target": "1-46" } } },
+    { "source": "dceast-fx1-2", "target": "dceast-pf5240", "meta": { "interface": { "source": "1-3", "target": "0-2" } } },
+    { "source": "dceast-fx1-2", "target": "dceast-ce6851", "meta": { "interface": { "source": "1-2", "target": "1-0-2" } } },
+    { "source": "dceast-fx1-2", "target": "dceast-nx92k", "meta": { "interface": { "source": "1-2", "target": "1-47" } } },
+
+    { "source": "dceast-pf5240", "target": "dceast-ce6851", "meta": { "interface": { "source": "0-51", "target": "1-48" } } },
+    { "source": "dceast-pf5240", "target": "dceast-nx92k", "meta": { "interface": { "source": "0-50", "target": "1-0-3" } } },
+
+    { "source": "noc-asr9904", "target": "BBIX", "meta": { "interface": { "source": "0-0-0-1" } } },
+    { "source": "noc-asr9904", "target": "JPIX", "meta": { "interface": { "source": "0-0-0-0" } } },
+    { "source": "noc-mx2010", "target": "EQUINIX", "meta": { "interface": { "source": "1-0-0" } } },
+    { "source": "noc-mx2010", "target": "NTTCom", "meta": { "interface": { "source": "0-0-0" } } },
+
+    { "source": "noc-asr9006", "target": "dcwest-z9100", "meta": { "interface": { "source": "0-2-0-3", "target": "1-1" } } },
+    { "source": "noc-mx240", "target": "dcwest-nx3232c", "meta": { "interface": { "source": "2-3-0", "target": "1-1" } } },
+
+    { "source": "dcwest-z9100", "target": "dcwest-ce8860", "meta": { "interface": { "source": "1-2", "target": "1-1-1" } } },
+    { "source": "dcwest-z9100", "target": "dcwest-qfx5100", "meta": { "interface": { "source": "1-3-1", "target": "0-0-48" } } },
+    { "source": "dcwest-z9100", "target": "dcwest-nx9504", "meta": { "interface": { "source": "1-4-1", "target": "1-49" } } },
+    { "source": "dcwest-z9100", "target": "dcwest-nx9272", "meta": { "interface": { "source": "1-5-1", "target": "1-1" } } },
+    { "source": "dcwest-z9100", "target": "dcwest-fx1-3", "meta": { "interface": { "source": "1-33", "target": "1-1" } } },
+
+    { "source": "dcwest-nx3232c", "target": "dcwest-ce8860", "meta": { "interface": { "source": "1-2", "target": "1-1-2" } } },
+    { "source": "dcwest-nx3232c", "target": "dcwest-qfx5100", "meta": { "interface": { "source": "1-3", "target": "0-0-49" } } },
+    { "source": "dcwest-nx3232c", "target": "dcwest-nx9504", "meta": { "interface": { "source": "1-4", "target": "1-50" } } },
+    { "source": "dcwest-nx3232c", "target": "dcwest-nx9272", "meta": { "interface": { "source": "1-5", "target": "1-2" } } },
+    { "source": "dcwest-nx3232c", "target": "dcwest-fx1-3", "meta": { "interface": { "source": "1-33", "target": "1-2" } } }
+  ]
+}
+

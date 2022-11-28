@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link href="css/event_handler.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
+    <script src="js/cola.min.js"></script>
+    <script src="js/inet-henge.js"></script>
+</head>
+
+<body>
+<div id="diagram"></div>
+
+<script>
+  const diagram = new Diagram('#diagram', 'data/event_handler.json');
+  diagram.init();
+
+  const saveOriginalImage = (image) => {
+    image.dataset.originalHref = image.getAttribute('href');
+  };
+
+  const swapImage = (image) => {
+    image.setAttribute('href', '../images/openflow.png');
+  };
+
+  const resetImage = (image) => {
+    image.setAttribute('href', image.dataset.originalHref);
+  };
+
+  diagram.on('rendered', () => {
+    document.querySelectorAll('.node').forEach((element) => {
+      saveOriginalImage(element.getElementsByTagName('image')[0]);
+
+      element.addEventListener('click', (event) => {
+        // Reset all images
+        document.querySelectorAll('.node').forEach((element) => {
+          resetImage(element.getElementsByTagName('image')[0]);
+        });
+
+        // Swap images of node group
+        ['bb', 'ag'].forEach((klass) => {
+          if (event.currentTarget.classList.contains(klass)) {
+            document.querySelectorAll(`.node.${klass}`).forEach((element) => {
+              swapImage(element.getElementsByTagName('image')[0]);
+            });
+          }
+        });
+
+        // Reset all links
+        document.querySelectorAll('.link').forEach((element) => {
+          element.classList.remove('highlight');
+        });
+
+        // Add class of connected links
+        document.querySelectorAll(`.link.${event.currentTarget.id}`).forEach((element) => {
+          element.classList.add('highlight');
+        });
+      });
+    });
+  });
+</script>
+</body>
+</html>
