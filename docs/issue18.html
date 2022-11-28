@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link href="css/style.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
+    <script src="js/cola.min.js"></script>
+    <script src="js/inet-henge.js"></script>
+</head>
+
+<body>
+<div id="diagram"></div>
+
+<script>
+  const diagram = new Diagram('#diagram', 'data/index.json', {pop: /^([^\s-]+)-/});
+  diagram.init('loopback', 'interface');
+
+  diagram.on('rendered', () => {
+    document.querySelectorAll('.node').forEach((node) => {
+      node.addEventListener('click', (event) => {
+        // Do nothing for dragging
+        if(event.defaultPrevented){
+          return;
+        }
+
+        // Update icon of the first child
+        const node = event.currentTarget.getElementsByTagName('image')[0];
+        if (node) {
+          node.setAttribute('href', './images/openflow.png');
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>

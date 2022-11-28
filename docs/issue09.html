@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link href="css/issue09.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
+    <script src="js/cola.min.js"></script>
+    <script src="js/inet-henge.js"></script>
+</head>
+
+<body>
+<div id="diagram"></div>
+
+<script>
+  const diagram = new Diagram('#diagram', 'data/issue09.json', {
+    pop: /(\.[^\s.]+)$/,
+    distance: function (force) {
+      force.jaccardLinkLengths(100, 15);
+    },
+    width: 1000, height: 600,
+    positionCache: false,
+  });
+
+  diagram.on('rendered', () => {
+    d3.selectAll('line').on('mouseover', function (d) {
+      // Hide all labels
+      d3.selectAll('.link text').style('visibility', 'hidden');
+
+      // Show pointed labels
+      d3.selectAll(`.link text.${d.path_id()}`).style('visibility', 'visible');
+    }).on('mouseout', function (d) {
+      if (currentScale() > 1.5) {
+        // Show all labels
+        d3.selectAll('.link text').style('visibility', 'visible');
+      } else {
+        // Hide pointed labels
+        d3.selectAll(`.link text.${d.path_id()}`).style('visibility', 'hidden');
+      }
+    });
+
+    // You can also change label position, which is, how far it is from the node along the link line
+    d3.selectAll('.link textPath tspan').attr('x', '40');
+    d3.selectAll('.link textPath.reverse tspan').attr('x', '-40');
+  });
+
+  function currentScale() {
+    return d3.transform(diagram.svg.attr('transform')).scale[0];
+  }
+
+  diagram.init('interface');
+</script>
+</body>
+</html>
