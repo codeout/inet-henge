@@ -61,8 +61,8 @@ are also available to start a web server.
 
 ## Demo
 
-* [Shownet 2017 Network](https://inet-henge.herokuapp.com/)
-* [Shownet 2016 Network](https://inet-henge.herokuapp.com/shownet2016.html)
+* [Shownet 2017 Network](https://codeout.github.io/inet-henge/shownet2017.html)
+* [Shownet 2016 Network](https://codeout.github.io/inet-henge/shownet2016.html)
 
 
 ## Usage
