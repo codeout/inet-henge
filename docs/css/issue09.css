@@ -1,0 +1,53 @@
+#diagram svg {
+    width: 100%;
+    height: 100%;
+}
+
+.group rect {
+    opacity: 0.5;
+}
+
+.node,
+.group rect {
+    cursor: move;
+}
+
+.node rect,
+.group rect {
+    stroke: #fff;
+    stroke-width: 1.5px;
+}
+
+.node text {
+    font-size: 10px;
+}
+
+.link line {
+    stroke: #F5CA7E;
+    stroke-width: 3px;
+    stroke-opacity: 1;
+}
+
+.node text {
+    fill: #fff;
+}
+
+.link text {
+    cursor: default;
+    font-size: 5px;
+}
+
+.link text:hover tspan,
+.link text.hover tspan {
+    fill: #F0271D;
+    visibility: visible !important;
+}
+
+.link text.hover tspan {
+    font-weight: bold;
+    font-size: 7px;
+}
+
+.link:hover line {
+    stroke: #55A06C;
+}

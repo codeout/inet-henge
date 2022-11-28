@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link href="css/style.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
+    <script src="js/cola.min.js"></script>
+    <script src="js/inet-henge.js"></script>
+  </head>
+
+  <body>
+    <div id="diagram"></div>
+
+    <script>
+      const distance = function(force) { force.jaccardLinkLengths(70, 1.0); }
+      const diagram = new Diagram('#diagram', 'data/shownet2017.json', {
+        pop: /(\.[^\s.]+)$/,
+        distance: distance,
+        width: 1200, height: 900
+      });
+      diagram.init('interface');
+    </script>
+  </body>
+</html>

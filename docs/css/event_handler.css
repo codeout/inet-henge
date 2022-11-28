@@ -1,0 +1,35 @@
+#diagram svg {
+  width: 100%;
+  height: 100%;
+}
+
+.group rect { opacity: 0.5; }
+
+.node,
+.group rect { cursor: move; }
+
+.node rect,
+.group rect {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.node text { font-size: 10px; }
+
+.link {
+  stroke: #7a4e4e;
+  stroke-width: 3px;
+  stroke-opacity: 1;
+}
+
+.path-label { font-size: 5px; }
+
+
+.loopback,
+.interface { fill: #333; }
+
+
+.link.highlight {
+  stroke: #ff6e6e;
+  stroke-width: 5px;
+}

@@ -1,0 +1,16 @@
+{
+  "nodes": [
+    { "name": "POP01-bb01", "icon": "./images/router.png", "class":  "bb", "id":  "foo"},
+    { "name": "POP01-bb02", "icon": "./images/router.png", "class":  "bb"},
+    { "name": "POP01-ag01", "icon": "./images/switch.png", "class":  "ag"},
+    { "name": "POP01-ag02", "icon": "./images/switch.png", "class":  "ag"}
+  ],
+
+  "links": [
+    { "source": "POP01-bb01", "target": "POP01-bb02" },
+    { "source": "POP01-ag01", "target": "POP01-ag02" },
+    { "source": "POP01-bb01", "target": "POP01-ag01" },
+    { "source": "POP01-bb02", "target": "POP01-ag02" }
+
+  ]
+}

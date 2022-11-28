@@ -1,0 +1,47 @@
+{
+  "nodes": [
+    { "name": "POP01-bb01", "icon": "./images/router.png" },
+    { "name": "POP01-bb02", "icon": "./images/router.png" },
+    { "name": "POP01-ag01", "icon": "./images/switch.png" },
+    { "name": "POP01-ag02", "icon": "./images/switch.png" },
+    { "name": "POP02-bb01", "meta": { "loopback": "10.0.0.1" } },
+    { "name": "POP02-bb02" },
+    { "name": "POP02-ag01" },
+    { "name": "POP02-ag02" },
+    { "name": "POP03-bb01" },
+    { "name": "POP03-bb02" },
+    { "name": "POP03-ag01" },
+    { "name": "POP03-ag02" }
+  ],
+
+  "links": [
+    { "source": "POP01-bb01", "target": "POP01-bb02" },
+    { "source": "POP02-bb01", "target": "POP02-bb02" },
+    { "source": "POP03-bb01", "target": "POP03-bb02",
+      "meta": { "interface": { "source": "ge-0/0/0", "target": "Te0/0/0/0" } } },
+    { "source": "POP01-bb01", "target": "POP02-bb01" },
+    { "source": "POP01-bb01", "target": "POP03-bb01" },
+    { "source": "POP01-bb02", "target": "POP02-bb02" },
+    { "source": "POP01-bb02", "target": "POP03-bb02",
+      "meta": { "interface": { "source": "ge-0/0/0", "target": "Te0/0/0/0" } } },
+    { "source": "POP01-bb02", "target": "POP03-bb02",
+      "meta": { "interface": { "source": "ge-0/0/1", "target": "Te0/0/0/1" } } },
+    { "source": "POP02-bb01", "target": "POP03-bb02" },
+    { "source": "POP02-bb02", "target": "POP03-bb01" },
+    { "source": "POP01-ag01", "target": "POP01-ag02" },
+    { "source": "POP02-ag01", "target": "POP02-ag02" },
+    { "source": "POP03-ag01", "target": "POP03-ag02" },
+    { "source": "POP01-bb01", "target": "POP01-ag01" },
+    { "source": "POP01-bb01", "target": "POP01-ag02" },
+    { "source": "POP01-bb02", "target": "POP01-ag01" },
+    { "source": "POP01-bb02", "target": "POP01-ag02" },
+    { "source": "POP02-bb01", "target": "POP02-ag01" },
+    { "source": "POP02-bb01", "target": "POP02-ag02" },
+    { "source": "POP02-bb02", "target": "POP02-ag01" },
+    { "source": "POP02-bb02", "target": "POP02-ag02" },
+    { "source": "POP03-bb01", "target": "POP03-ag01" },
+    { "source": "POP03-bb01", "target": "POP03-ag02" },
+    { "source": "POP03-bb02", "target": "POP03-ag01" },
+    { "source": "POP03-bb02", "target": "POP03-ag02" }
+  ]
+}
