@@ -6,7 +6,7 @@
   <!-- Page Injected Styles -->
 
   <!-- Inet-Henge CSS -->
-  <link rel="stylesheet" type="text/css" href="/static/css/inet-style.css">
+  <link href="style.css" rel="stylesheet" />
   <!-- End of Inet-Henge  CSS -->
 
   <!-- End of Page Injected Styles -->
@@ -25,8 +25,6 @@
     href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
     rel="stylesheet">
   <!-- End of Google Fonts -->
-  <!-- Custom CSS -->
-  <link rel="stylesheet" type="text/css" href="/static/css/custom.css">
   <!-- End of Custom CSS -->
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon/favicon-16x16.png">
@@ -36,6 +34,8 @@
   <script src="https://unpkg.com/htmx.org@1.8.2/dist/ext/debug.js"></script>
   <script src="https://unpkg.com/htmx.org@1.8.2/dist/ext/client-side-templates.js"></script>
   <script src="https://unpkg.com/nunjucks@3.2.3/browser/nunjucks.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.min.js"></script>
   <!-- End of HTMX -->
 
   <title>Dashboard</title>
@@ -75,8 +75,8 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
 <script src="/static/js/dashboard.js"></script>
-<script src="/static/js/cola.min.js"></script>
-<script src="/static/js/inet-henge.js"></script>
+<script src="../vendor/cola.min.js"></script>
+<script src="../inet-henge.js"></script>
 <script>
   google.charts.load('current', { 'packages': ['corechart'] });
   //
