@@ -7,7 +7,7 @@ import { classify } from "../../../src/util";
 type Options = {
   showKey?: string;
   hideKey?: string;
-}
+};
 
 class RemovableNode extends Node {
   public selected;
@@ -41,13 +41,12 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
     // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
     // Also, it should have accepted undefined
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-    Node.registerConstructor(function(data: NodeDataType, id: number, options: NodeOptions) {
+    Node.registerConstructor(function (data: NodeDataType, id: number, options: NodeOptions) {
       this.selected = false;
 
       this.on("rendered", (element: SVGGElement) => {
         RemovableNodePlugin.configureRemovableNode(element);
       });
-
     } as NodeConstructor);
 
     RemovableNodePlugin.configureRemovableNodes();
@@ -78,7 +77,7 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
    */
   private static configureRemovableNode(element: SVGGElement): void {
     const d3Element = d3.select(element);
-    d3Element.on("click.removableNode", function(this: SVGGElement, d: RemovableNode) {
+    d3Element.on("click.removableNode", function (this: SVGGElement, d: RemovableNode) {
       // Do nothing for dragging
       if ((d3.event as MouseEvent).defaultPrevented) {
         return;
@@ -90,13 +89,15 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
   }
 
   private static applyColor(element: SVGGElement): void {
-    d3.select(element).select("text tspan").style("fill", (d: RemovableNode) => d.textColor());
+    d3.select(element)
+      .select("text tspan")
+      .style("fill", (d: RemovableNode) => d.textColor());
   }
 
   private static show(): void {
     d3.selectAll(".node")
       .style("display", "inline")
-      .each(function(this: SVGGElement, d: RemovableNode) {
+      .each(function (this: SVGGElement, d: RemovableNode) {
         d.reset();
         RemovableNodePlugin.applyColor(this);
       });
@@ -105,32 +106,28 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
   }
 
   private static hide(): void {
-    d3.selectAll(".node")
-      .style("display", (d: RemovableNode) => {
-        if (d.selected) {
-          // Hide connected elements
-          RemovableNodePlugin.hideLinks(d.name);
-          RemovableNodePlugin.hideToolTips(d.name);
-          return "none";
-        }
+    d3.selectAll(".node").style("display", (d: RemovableNode) => {
+      if (d.selected) {
+        // Hide connected elements
+        RemovableNodePlugin.hideLinks(d.name);
+        RemovableNodePlugin.hideToolTips(d.name);
+        return "none";
+      }
 
-        return "inline";
-      });
+      return "inline";
+    });
   }
 
   private static showLinks(): void {
-    d3.selectAll(`.link`)
-      .style("display", "inline");
+    d3.selectAll(`.link`).style("display", "inline");
   }
 
   private static hideLinks(nodeName: string): void {
-    d3.selectAll(`.link.${classify(nodeName)}`)
-      .style("display", "none");
+    d3.selectAll(`.link.${classify(nodeName)}`).style("display", "none");
   }
 
   private static hideToolTips(nodeName: string): void {
-    d3.selectAll(`.tooltip.${classify(nodeName)}`)
-      .attr("visibility", "hidden");
+    d3.selectAll(`.tooltip.${classify(nodeName)}`).attr("visibility", "hidden");
   }
 };
 
