@@ -2178,29 +2178,32 @@ class GroupBase {
         return this.array(groups);
     }
     static array(groups) {
+        // eslint-disable-line @typescript-eslint/no-explicit-any
         return Object.keys(groups).map((g) => groups[g]);
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer, groups) {
-        const group = layer.selectAll(".group")
+        const group = layer
+            .selectAll(".group")
             .data(groups)
             .enter()
             .append("g")
             .attr("class", (d) => `group ${(0,_util__WEBPACK_IMPORTED_MODULE_1__.classify)(d.name)}`)
             .attr("transform", (d) => d.transform());
-        group.append("rect")
+        group
+            .append("rect")
             .attr("rx", 8)
             .attr("ry", 8)
             .attr("width", (d) => d.groupWidth())
             .attr("height", (d) => d.groupHeight())
             .style("fill", (d, i) => d.color(i));
-        group.append("text")
-            .text((d) => d.name);
+        group.append("text").text((d) => d.name);
         return group;
     }
     static tick(group) {
         group.attr("transform", (d) => d.transform());
-        group.selectAll("rect")
+        group
+            .selectAll("rect")
             .attr("width", (d) => d.groupWidth())
             .attr("height", (d) => d.groupHeight());
     }
@@ -2210,7 +2213,8 @@ class GroupBase {
             d.bounds.y = position[i].y;
             return d.transform();
         });
-        group.selectAll("rect")
+        group
+            .selectAll("rect")
             .attr("width", (d, i) => position[i].width)
             .attr("height", (d, i) => position[i].height);
     }
@@ -2366,13 +2370,14 @@ class LinkBase {
             return "rotate(0)";
     }
     split() {
+        // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!this.metaList && !this.sourceMeta && !this.targetMeta)
             return [this];
         const meta = [];
         ["metaList", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
             if (this[key]) {
                 const duped = Object.assign(Object.create(this), this);
-                keys.filter((k) => k !== key).forEach((k) => duped[k] = []);
+                keys.filter((k) => k !== key).forEach((k) => (duped[k] = []));
                 meta.push(duped);
             }
         });
@@ -2388,12 +2393,14 @@ class LinkBase {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(linkLayer, labelLayer, links) {
         // Render lines
-        const pathGroup = linkLayer.selectAll(".link")
+        const pathGroup = linkLayer
+            .selectAll(".link")
             .data(links)
             .enter()
             .append("g")
             .attr("class", (d) => d.class());
-        const link = pathGroup.append("line")
+        const link = pathGroup
+            .append("line")
             .attr("x1", (d) => d.source.x)
             .attr("y1", (d) => d.source.y)
             .attr("x2", (d) => d.target.x)
@@ -2403,22 +2410,24 @@ class LinkBase {
             .attr("id", (d) => d.linkId())
             .on("mouseover.line", (d) => textGroup.selectAll(`text.${d.pathId()}`).classed("hover", true))
             .on("mouseout.line", (d) => textGroup.selectAll(`text.${d.pathId()}`).classed("hover", false));
-        const path = pathGroup.append("path")
+        const path = pathGroup
+            .append("path")
             .attr("d", (d) => d.d())
             .attr("id", (d) => d.pathId());
         // Render texts
-        const textGroup = labelLayer.selectAll(".link")
+        const textGroup = labelLayer
+            .selectAll(".link")
             .data(links)
             .enter()
             .append("g")
             .attr("class", (d) => d.class());
-        const text = textGroup.selectAll("text")
+        const text = textGroup
+            .selectAll("text")
             .data((d) => d.split().filter((l) => l.hasMeta()))
             .enter()
             .append("text")
             .attr("class", (d) => d.pathId()); // Bind text with pathId as class
-        const textPath = text.append("textPath")
-            .attr("xlink:href", (d) => `#${d.pathId()}`);
+        const textPath = text.append("textPath").attr("xlink:href", (d) => `#${d.pathId()}`);
         textPath.each(function (d) {
             Link.appendTspans(this, d.metaList);
             Link.appendTspans(this, d.sourceMeta);
@@ -2432,20 +2441,15 @@ class LinkBase {
         return [link, path, text];
     }
     static theOtherEnd(container) {
-        d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
-            .attr("class", "reverse")
-            .attr("text-anchor", "end")
-            .attr("startOffset", "100%");
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(container).attr("class", "reverse").attr("text-anchor", "end").attr("startOffset", "100%");
     }
     static center(container) {
-        d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
-            .attr("class", "center")
-            .attr("text-anchor", "middle")
-            .attr("startOffset", "50%");
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(container).attr("class", "center").attr("text-anchor", "middle").attr("startOffset", "50%");
     }
     static appendTspans(container, meta) {
         meta.forEach((m) => {
-            d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("tspan")
+            d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
+                .append("tspan")
                 .attr("x", (d) => d.tspanXOffset())
                 .attr("dy", (d) => d.tspanYOffset())
                 .attr("class", m.class)
@@ -2454,7 +2458,8 @@ class LinkBase {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static tick(link, path, label) {
-        link.attr("x1", (d) => d.source.x)
+        link
+            .attr("x1", (d) => d.source.x)
             .attr("y1", (d) => d.source.y)
             .attr("x2", (d) => d.target.x)
             .attr("y2", (d) => d.target.y);
@@ -2469,11 +2474,11 @@ class LinkBase {
         let visibility = "hidden";
         if (scale && scale > 1.5)
             visibility = "visible";
-        d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".link text")
-            .style("visibility", visibility);
+        d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".link text").style("visibility", visibility);
     }
     static setPosition(link, position) {
-        link.attr("x1", (d, i) => position[i].x1)
+        link
+            .attr("x1", (d, i) => position[i].x1)
             .attr("y1", (d, i) => position[i].y1)
             .attr("x2", (d, i) => position[i].x2)
             .attr("y2", (d, i) => position[i].y2);
@@ -2500,7 +2505,7 @@ class LinkBase {
         const width = Math.abs(this.target.x - this.source.x);
         const height = Math.abs(this.source.y - this.target.y);
         const length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
-        return `translate(${gap * height / length}, ${gap * width / length})`;
+        return `translate(${(gap * height) / length}, ${(gap * width) / length})`;
     }
     static reset() {
         Link.groups = null;
@@ -2625,7 +2630,7 @@ class NodeBase {
         this.id = id;
         this.options = options;
         this.name = data.name;
-        this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
+        this.group = typeof data.group === "string" ? [data.group] : data.group || [];
         this.icon = data.icon;
         this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(options.metaKeys);
         this.meta = data.meta;
@@ -2664,7 +2669,8 @@ class NodeBase {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer, nodes) {
-        const node = layer.selectAll(".node")
+        const node = layer
+            .selectAll(".node")
             .data(nodes)
             .enter()
             .append("g")
@@ -2681,11 +2687,13 @@ class NodeBase {
         return node;
     }
     static appendText(container) {
-        const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("text")
+        const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
+            .append("text")
             .attr("text-anchor", "middle")
             .attr("x", (d) => d.xForText())
             .attr("y", (d) => d.yForText());
-        text.append("tspan")
+        text
+            .append("tspan")
             .text((d) => d.name)
             .attr("x", (d) => d.xForText());
         text.each((d) => {
@@ -2697,7 +2705,8 @@ class NodeBase {
     }
     static appendTspans(container, meta) {
         meta.forEach((m) => {
-            container.append("tspan")
+            container
+                .append("tspan")
                 .attr("x", (d) => d.xForText())
                 .attr("dy", (d) => d.tspanOffset)
                 .attr("class", m.class)
@@ -2814,7 +2823,7 @@ class PositionCache {
             md5: this.md5(),
             group: this.groupPosition(group),
             node: this.nodePosition(node),
-            link: this.linkPosition(link)
+            link: this.linkPosition(link),
         };
         localStorage.setItem("positionCache", JSON.stringify(cache));
     }
@@ -2824,45 +2833,50 @@ class PositionCache {
         if (data.pop === "undefined") {
             data.pop = "null"; // NOTE: unify undefined with null
         }
-        data.nodes && data.nodes.forEach((i) => {
-            delete i.icon;
-            delete i.meta;
-        });
-        data.links && data.links.forEach((i) => {
-            delete i.meta;
-        });
+        data.nodes &&
+            data.nodes.forEach((i) => {
+                delete i.icon;
+                delete i.meta;
+            });
+        data.links &&
+            data.links.forEach((i) => {
+                delete i.meta;
+            });
         return md5(JSON.stringify(data));
     }
     groupPosition(group) {
+        // eslint-disable-line @typescript-eslint/no-explicit-any
         const position = [];
         group.each((d) => {
             position.push({
                 x: d.bounds.x,
                 y: d.bounds.y,
                 width: d.bounds.width(),
-                height: d.bounds.height()
+                height: d.bounds.height(),
             });
         });
         return position;
     }
     nodePosition(node) {
+        // eslint-disable-line @typescript-eslint/no-explicit-any
         const position = [];
         node.each((d) => {
             position.push({
                 x: d.x,
-                y: d.y
+                y: d.y,
             });
         });
         return position;
     }
     linkPosition(link) {
+        // eslint-disable-line @typescript-eslint/no-explicit-any
         const position = [];
         link.each((d) => {
             position.push({
                 x1: d.source.x,
                 y1: d.source.y,
                 x2: d.target.x,
-                y2: d.target.y
+                y2: d.target.y,
             });
         });
         return position;
@@ -2874,7 +2888,8 @@ class PositionCache {
         const cache = this.get();
         if (cache) {
             const position = new PositionCache(data, pop, cache.md5);
-            if (position.match(data, pop)) { // if data and pop match saved md5
+            if (position.match(data, pop)) {
+                // if data and pop match saved md5
                 position.group = cache.group;
                 position.node = cache.node;
                 position.link = cache.link;
@@ -2941,10 +2956,15 @@ class Tooltip {
             if (d3__WEBPACK_IMPORTED_MODULE_0__.event.defaultPrevented) {
                 return;
             }
-            d3__WEBPACK_IMPORTED_MODULE_0__.select(element).attr("visibility", function (d) {
+            d3__WEBPACK_IMPORTED_MODULE_0__.select(element)
+                .attr("visibility", function (d) {
                 // Sync visibility before toggling. External script may change the visibility.
                 d.setVisibility(this.getAttribute("visibility"));
                 return d.toggleVisibility();
+            })
+                // bootstrap.css unexpectedly sets "opacity: 0". Reset if it's visible.
+                .style("opacity", function (d) {
+                return d.visibility === "visible" ? 1 : null;
             });
         };
     }
@@ -2967,7 +2987,8 @@ class Tooltip {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer, tooltips) {
-        const tooltip = layer.selectAll(".tooltip")
+        const tooltip = layer
+            .selectAll(".tooltip")
             .data(tooltips)
             .enter()
             .append("g")
@@ -2994,7 +3015,7 @@ class Tooltip {
     }
     static pathD(x, y, width, height) {
         const round = 8;
-        return `M ${x},${y} L ${x + 20},${y - 10} ${x + 20},${y - 20}` +
+        return (`M ${x},${y} L ${x + 20},${y - 10} ${x + 20},${y - 20}` +
             `Q ${x + 20},${y - 20 - round} ${x + 20 + round},${y - 20 - round}` +
             `L ${x + 20 + width - round},${y - 20 - round}` +
             `Q ${x + 20 + width},${y - 20 - round} ${x + 20 + width},${y - 20}` +
@@ -3002,20 +3023,20 @@ class Tooltip {
             `Q ${x + 20 + width},${y - 20 + height + round} ${x + 20 + width - round},${y - 20 + height + round}` +
             `L ${x + 20 + round},${y - 20 + height + round}` +
             `Q ${x + 20},${y - 20 + height + round} ${x + 20},${y - 20 + height}` +
-            `L ${x + 20},${y + 10} Z`;
+            `L ${x + 20},${y + 10} Z`);
     }
     static appendText(container) {
         const path = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("path");
         const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("text");
-        text.append("tspan")
+        text
+            .append("tspan")
             .attr("x", (d) => d.offsetX + 40)
             .attr("class", "name")
             .text("node:");
-        const nodeName = text.append("tspan")
-            .attr("dx", 10)
-            .attr("class", "value");
+        const nodeName = text.append("tspan").attr("dx", 10).attr("class", "value");
         if (typeof this.href === "function") {
-            nodeName.append("a")
+            nodeName
+                .append("a")
                 .attr("href", (d) => Tooltip.href(d))
                 .text((d) => d.node.name);
         }
@@ -3026,8 +3047,7 @@ class Tooltip {
             Tooltip.appendTspans(text, d.node.metaList);
             // Add "d" after bbox calculation
             const bbox = this.getBBox();
-            path.attr("d", Tooltip.pathD(30, 0, bbox.width + 40, bbox.height + 20))
-                .style("fill", function () {
+            path.attr("d", Tooltip.pathD(30, 0, bbox.width + 40, bbox.height + 20)).style("fill", function () {
                 return Tooltip.fill(this);
             });
         });
@@ -3035,15 +3055,13 @@ class Tooltip {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static appendTspans(container, meta) {
         meta.forEach((m, i) => {
-            container.append("tspan")
+            container
+                .append("tspan")
                 .attr("x", (d) => d.offsetX + 40)
                 .attr("dy", (d) => d.tspanOffsetY(i === 0))
                 .attr("class", "name")
                 .text(`${m.class}:`);
-            container.append("tspan")
-                .attr("dx", 10)
-                .attr("class", "value")
-                .text(m.value);
+            container.append("tspan").attr("dx", 10).attr("class", "value").text(m.value);
         });
     }
     static followNode(tooltip) {
@@ -3079,57 +3097,73 @@ function classify(string) {
 /***/ (() => {
 
 /* eslint-disable */
+
 // Ported from WebCola/cola.js and overrode jaccardLinkLengths()
 
 function unionCount(a, b) {
-    var u = {};
-    for (var i in a)
-        u[i] = {};
-    for (var i in b)
-        u[i] = {};
-    return Object.keys(u).length;
+  var u = {};
+  for (var i in a) u[i] = {};
+  for (var i in b) u[i] = {};
+  return Object.keys(u).length;
 }
+
 function intersectionCount(a, b) {
-    var n = 0;
-    for (var i in a)
-        if (typeof b[i] !== 'undefined')
-            ++n;
-    return n;
+  var n = 0;
+  for (var i in a) if (typeof b[i] !== "undefined") ++n;
+  return n;
 }
+
 function getNeighbours(links, la) {
-    var neighbours = {};
-    var addNeighbours = function (u, v) {
-        if (typeof neighbours[u] === 'undefined')
-            neighbours[u] = {};
-        neighbours[u][v] = {};
-    };
-    links.forEach(function (e) {
-        var u = la.getSourceIndex(e), v = la.getTargetIndex(e);
-        addNeighbours(u, v);
-        addNeighbours(v, u);
-    });
-    return neighbours;
+  var neighbours = {};
+  var addNeighbours = function (u, v) {
+    if (typeof neighbours[u] === "undefined") neighbours[u] = {};
+    neighbours[u][v] = {};
+  };
+  links.forEach(function (e) {
+    var u = la.getSourceIndex(e),
+      v = la.getTargetIndex(e);
+    addNeighbours(u, v);
+    addNeighbours(v, u);
+  });
+  return neighbours;
 }
+
 function computeLinkLengths(links, w, f, la) {
-    var neighbours = getNeighbours(links, la);
-    links.forEach(function (l) {
-        var a = neighbours[la.getSourceIndex(l)];
-        var b = neighbours[la.getTargetIndex(l)];
-        la.setLength(l, 1 + w * f(a, b));
-    });
+  var neighbours = getNeighbours(links, la);
+  links.forEach(function (l) {
+    var a = neighbours[la.getSourceIndex(l)];
+    var b = neighbours[la.getTargetIndex(l)];
+    la.setLength(l, 1 + w * f(a, b));
+  });
 }
+
 function jaccardLinkLengths(links, la, w) {
-    if (w === void 0) { w = 1; }
-    computeLinkLengths(links, w, function (a, b) {
-        return Math.min(Object.keys(a).length, Object.keys(b).length) < 1.1 ? 0 : 1 - intersectionCount(a, b) / unionCount(a, b);
-    }, la);
+  if (w === void 0) {
+    w = 1;
+  }
+  computeLinkLengths(
+    links,
+    w,
+    function (a, b) {
+      return Math.min(Object.keys(a).length, Object.keys(b).length) < 1.1
+        ? 0
+        : 1 - intersectionCount(a, b) / unionCount(a, b);
+    },
+    la,
+  );
 }
 
 cola.Layout.prototype.jaccardLinkLengths = function (idealLength, w) {
   var _this = this;
-  if (w === void 0) { w = 1; }
-  this.linkDistance(function (l) { return idealLength * l.length; });
-  this._linkLengthCalculator = function () { return jaccardLinkLengths(_this._links, _this.linkAccessor, w); };
+  if (w === void 0) {
+    w = 1;
+  }
+  this.linkDistance(function (l) {
+    return idealLength * l.length;
+  });
+  this._linkLengthCalculator = function () {
+    return jaccardLinkLengths(_this._links, _this.linkAccessor, w);
+  };
   return this;
 };
 
@@ -3304,6 +3338,7 @@ class DiagramBase {
         this.displayLoadMessage();
         if (typeof this.options.urlOrData === "object") {
             setTimeout(() => {
+                // Run asynchronously
                 this.render(this.options.urlOrData);
             });
         }
@@ -3318,19 +3353,24 @@ class DiagramBase {
         }
     }
     initCola() {
-        return cola.d3adaptor()
+        return cola
+            .d3adaptor()
             .avoidOverlaps(true)
             .handleDisconnected(false)
             .size([this.options.width, this.options.height]);
     }
     initSvg() {
+        // eslint-disable-line @typescript-eslint/no-explicit-any
         this.zoom = d3__WEBPACK_IMPORTED_MODULE_1__.behavior.zoom();
-        const container = d3__WEBPACK_IMPORTED_MODULE_1__.select(this.options.selector).append("svg")
+        const container = d3__WEBPACK_IMPORTED_MODULE_1__.select(this.options.selector)
+            .append("svg")
             .attr("width", this.options.width)
             .attr("height", this.options.height)
             .append("g")
-            .call(this.zoom.on("zoom", () => this.zoomCallback(container))).append("g");
-        container.append("rect")
+            .call(this.zoom.on("zoom", () => this.zoomCallback(container)))
+            .append("g");
+        container
+            .append("rect")
             .attr("width", this.options.width * 10) // 10 is huge enough
             .attr("height", this.options.height * 10)
             .attr("transform", `translate(-${this.options.width * 5}, -${this.options.height * 5})`)
@@ -3339,21 +3379,19 @@ class DiagramBase {
     }
     render(data) {
         try {
-            const nodes = data.nodes ?
-                data.nodes.map((n, i) => new _node__WEBPACK_IMPORTED_MODULE_4__.Node(n, i, {
+            const nodes = data.nodes
+                ? data.nodes.map((n, i) => new _node__WEBPACK_IMPORTED_MODULE_4__.Node(n, i, {
                     width: this.options.nodeWidth,
                     height: this.options.nodeHeight,
                     metaKeys: this.options.meta,
                     color: this.options.color,
-                    tooltip: this.options.tooltip !== undefined
-                })) : [];
-            const links = data.links ?
-                data.links.map((l, i) => new _link__WEBPACK_IMPORTED_MODULE_3__.Link(l, i, this.options.meta, this.getLinkWidth)) : [];
+                    tooltip: this.options.tooltip !== undefined,
+                }))
+                : [];
+            const links = data.links ? data.links.map((l, i) => new _link__WEBPACK_IMPORTED_MODULE_3__.Link(l, i, this.options.meta, this.getLinkWidth)) : [];
             const groups = _group__WEBPACK_IMPORTED_MODULE_2__.Group.divide(nodes, this.options.groupPattern, this.options.color);
             const tooltips = nodes.map((n) => new _tooltip__WEBPACK_IMPORTED_MODULE_6__.Tooltip(n, this.options.tooltip));
-            this.cola.nodes(nodes)
-                .links(links)
-                .groups(groups);
+            this.cola.nodes(nodes).links(links).groups(groups);
             this.setDistance(this.cola);
             // Start to update Link.source and Link.target with Node object after
             // initial layout iterations without any constraints.
@@ -3364,14 +3402,16 @@ class DiagramBase {
             const linkLabelLayer = this.svg.append("g").attr("id", "link-labels");
             const tooltipLayer = this.svg.append("g").attr("id", "tooltips");
             const [link, path, label] = _link__WEBPACK_IMPORTED_MODULE_3__.Link.render(linkLayer, linkLabelLayer, links);
-            const group = _group__WEBPACK_IMPORTED_MODULE_2__.Group.render(groupLayer, groups).call(this.cola.drag()
+            const group = _group__WEBPACK_IMPORTED_MODULE_2__.Group.render(groupLayer, groups).call(this.cola
+                .drag()
                 .on("dragstart", DiagramBase.dragstartCallback)
                 .on("drag", () => {
                 if (this.options.bundle) {
                     _link__WEBPACK_IMPORTED_MODULE_3__.Link.shiftBundle(link, path, label);
                 }
             }));
-            const node = _node__WEBPACK_IMPORTED_MODULE_4__.Node.render(nodeLayer, nodes).call(this.cola.drag()
+            const node = _node__WEBPACK_IMPORTED_MODULE_4__.Node.render(nodeLayer, nodes).call(this.cola
+                .drag()
                 .on("dragstart", DiagramBase.dragstartCallback)
                 .on("drag", () => {
                 if (this.options.bundle) {
@@ -3434,7 +3474,8 @@ class DiagramBase {
         _link__WEBPACK_IMPORTED_MODULE_3__.Link.reset();
     }
     static freeze(container) {
-        container.each((d) => d.fixed = true);
+        // eslint-disable-line @typescript-eslint/no-explicit-any
+        container.each((d) => (d.fixed = true));
     }
     static dragstartCallback() {
         d3__WEBPACK_IMPORTED_MODULE_1__.event.sourceEvent.stopPropagation();
@@ -3466,6 +3507,7 @@ class DiagramBase {
             this.cola.tick();
     }
     zoomCallback(container) {
+        // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!this.initialTranslate) {
             this.saveInitialTranslate();
         }
@@ -3476,7 +3518,8 @@ class DiagramBase {
         container.attr("transform", `translate(${d3__WEBPACK_IMPORTED_MODULE_1__.event.translate}) scale(${d3__WEBPACK_IMPORTED_MODULE_1__.event.scale})`);
     }
     displayLoadMessage() {
-        this.indicator = this.svg.append("text")
+        this.indicator = this.svg
+            .append("text")
             .attr("x", this.options.width / 2)
             .attr("y", this.options.height / 2)
             .attr("dy", ".35em")
@@ -3519,6 +3562,7 @@ const Eventable = (Base) => {
             this.dispatch.rendered();
         }
         on(name, callback) {
+            // eslint-disable-line @typescript-eslint/no-explicit-any
             this.dispatch.on(name, callback);
         }
     }

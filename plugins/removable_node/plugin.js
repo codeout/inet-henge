@@ -82,7 +82,7 @@ class NodeBase {
         this.id = id;
         this.options = options;
         this.name = data.name;
-        this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
+        this.group = typeof data.group === "string" ? [data.group] : data.group || [];
         this.icon = data.icon;
         this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(options.metaKeys);
         this.meta = data.meta;
@@ -121,7 +121,8 @@ class NodeBase {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer, nodes) {
-        const node = layer.selectAll(".node")
+        const node = layer
+            .selectAll(".node")
             .data(nodes)
             .enter()
             .append("g")
@@ -138,11 +139,13 @@ class NodeBase {
         return node;
     }
     static appendText(container) {
-        const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("text")
+        const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
+            .append("text")
             .attr("text-anchor", "middle")
             .attr("x", (d) => d.xForText())
             .attr("y", (d) => d.yForText());
-        text.append("tspan")
+        text
+            .append("tspan")
             .text((d) => d.name)
             .attr("x", (d) => d.xForText());
         text.each((d) => {
@@ -154,7 +157,8 @@ class NodeBase {
     }
     static appendTspans(container, meta) {
         meta.forEach((m) => {
-            container.append("tspan")
+            container
+                .append("tspan")
                 .attr("x", (d) => d.xForText())
                 .attr("dy", (d) => d.tspanOffset)
                 .attr("class", m.class)
@@ -417,7 +421,9 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
             });
         }
         static applyColor(element) {
-            d3__WEBPACK_IMPORTED_MODULE_0__.select(element).select("text tspan").style("fill", (d) => d.textColor());
+            d3__WEBPACK_IMPORTED_MODULE_0__.select(element)
+                .select("text tspan")
+                .style("fill", (d) => d.textColor());
         }
         static show() {
             d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".node")
@@ -429,8 +435,7 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
             RemovableNodePlugin.showLinks();
         }
         static hide() {
-            d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".node")
-                .style("display", (d) => {
+            d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".node").style("display", (d) => {
                 if (d.selected) {
                     // Hide connected elements
                     RemovableNodePlugin.hideLinks(d.name);
@@ -441,16 +446,13 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
             });
         }
         static showLinks() {
-            d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(`.link`)
-                .style("display", "inline");
+            d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(`.link`).style("display", "inline");
         }
         static hideLinks(nodeName) {
-            d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(`.link.${(0,_src_util__WEBPACK_IMPORTED_MODULE_2__.classify)(nodeName)}`)
-                .style("display", "none");
+            d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(`.link.${(0,_src_util__WEBPACK_IMPORTED_MODULE_2__.classify)(nodeName)}`).style("display", "none");
         }
         static hideToolTips(nodeName) {
-            d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(`.tooltip.${(0,_src_util__WEBPACK_IMPORTED_MODULE_2__.classify)(nodeName)}`)
-                .attr("visibility", "hidden");
+            d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(`.tooltip.${(0,_src_util__WEBPACK_IMPORTED_MODULE_2__.classify)(nodeName)}`).attr("visibility", "hidden");
         }
     },
     _a.showKey = "Escape",

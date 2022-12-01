@@ -102,13 +102,14 @@ class LinkBase {
             return "rotate(0)";
     }
     split() {
+        // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!this.metaList && !this.sourceMeta && !this.targetMeta)
             return [this];
         const meta = [];
         ["metaList", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
             if (this[key]) {
                 const duped = Object.assign(Object.create(this), this);
-                keys.filter((k) => k !== key).forEach((k) => duped[k] = []);
+                keys.filter((k) => k !== key).forEach((k) => (duped[k] = []));
                 meta.push(duped);
             }
         });
@@ -124,12 +125,14 @@ class LinkBase {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(linkLayer, labelLayer, links) {
         // Render lines
-        const pathGroup = linkLayer.selectAll(".link")
+        const pathGroup = linkLayer
+            .selectAll(".link")
             .data(links)
             .enter()
             .append("g")
             .attr("class", (d) => d.class());
-        const link = pathGroup.append("line")
+        const link = pathGroup
+            .append("line")
             .attr("x1", (d) => d.source.x)
             .attr("y1", (d) => d.source.y)
             .attr("x2", (d) => d.target.x)
@@ -139,22 +142,24 @@ class LinkBase {
             .attr("id", (d) => d.linkId())
             .on("mouseover.line", (d) => textGroup.selectAll(`text.${d.pathId()}`).classed("hover", true))
             .on("mouseout.line", (d) => textGroup.selectAll(`text.${d.pathId()}`).classed("hover", false));
-        const path = pathGroup.append("path")
+        const path = pathGroup
+            .append("path")
             .attr("d", (d) => d.d())
             .attr("id", (d) => d.pathId());
         // Render texts
-        const textGroup = labelLayer.selectAll(".link")
+        const textGroup = labelLayer
+            .selectAll(".link")
             .data(links)
             .enter()
             .append("g")
             .attr("class", (d) => d.class());
-        const text = textGroup.selectAll("text")
+        const text = textGroup
+            .selectAll("text")
             .data((d) => d.split().filter((l) => l.hasMeta()))
             .enter()
             .append("text")
             .attr("class", (d) => d.pathId()); // Bind text with pathId as class
-        const textPath = text.append("textPath")
-            .attr("xlink:href", (d) => `#${d.pathId()}`);
+        const textPath = text.append("textPath").attr("xlink:href", (d) => `#${d.pathId()}`);
         textPath.each(function (d) {
             Link.appendTspans(this, d.metaList);
             Link.appendTspans(this, d.sourceMeta);
@@ -168,20 +173,15 @@ class LinkBase {
         return [link, path, text];
     }
     static theOtherEnd(container) {
-        d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
-            .attr("class", "reverse")
-            .attr("text-anchor", "end")
-            .attr("startOffset", "100%");
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(container).attr("class", "reverse").attr("text-anchor", "end").attr("startOffset", "100%");
     }
     static center(container) {
-        d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
-            .attr("class", "center")
-            .attr("text-anchor", "middle")
-            .attr("startOffset", "50%");
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(container).attr("class", "center").attr("text-anchor", "middle").attr("startOffset", "50%");
     }
     static appendTspans(container, meta) {
         meta.forEach((m) => {
-            d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("tspan")
+            d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
+                .append("tspan")
                 .attr("x", (d) => d.tspanXOffset())
                 .attr("dy", (d) => d.tspanYOffset())
                 .attr("class", m.class)
@@ -190,7 +190,8 @@ class LinkBase {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static tick(link, path, label) {
-        link.attr("x1", (d) => d.source.x)
+        link
+            .attr("x1", (d) => d.source.x)
             .attr("y1", (d) => d.source.y)
             .attr("x2", (d) => d.target.x)
             .attr("y2", (d) => d.target.y);
@@ -205,11 +206,11 @@ class LinkBase {
         let visibility = "hidden";
         if (scale && scale > 1.5)
             visibility = "visible";
-        d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".link text")
-            .style("visibility", visibility);
+        d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".link text").style("visibility", visibility);
     }
     static setPosition(link, position) {
-        link.attr("x1", (d, i) => position[i].x1)
+        link
+            .attr("x1", (d, i) => position[i].x1)
             .attr("y1", (d, i) => position[i].y1)
             .attr("x2", (d, i) => position[i].x2)
             .attr("y2", (d, i) => position[i].y2);
@@ -236,7 +237,7 @@ class LinkBase {
         const width = Math.abs(this.target.x - this.source.x);
         const height = Math.abs(this.source.y - this.target.y);
         const length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
-        return `translate(${gap * height / length}, ${gap * width / length})`;
+        return `translate(${(gap * height) / length}, ${(gap * width) / length})`;
     }
     static reset() {
         Link.groups = null;
@@ -359,7 +360,7 @@ class NodeBase {
         this.id = id;
         this.options = options;
         this.name = data.name;
-        this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
+        this.group = typeof data.group === "string" ? [data.group] : data.group || [];
         this.icon = data.icon;
         this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(options.metaKeys);
         this.meta = data.meta;
@@ -398,7 +399,8 @@ class NodeBase {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer, nodes) {
-        const node = layer.selectAll(".node")
+        const node = layer
+            .selectAll(".node")
             .data(nodes)
             .enter()
             .append("g")
@@ -415,11 +417,13 @@ class NodeBase {
         return node;
     }
     static appendText(container) {
-        const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("text")
+        const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
+            .append("text")
             .attr("text-anchor", "middle")
             .attr("x", (d) => d.xForText())
             .attr("y", (d) => d.yForText());
-        text.append("tspan")
+        text
+            .append("tspan")
             .text((d) => d.name)
             .attr("x", (d) => d.xForText());
         text.each((d) => {
@@ -431,7 +435,8 @@ class NodeBase {
     }
     static appendTspans(container, meta) {
         meta.forEach((m) => {
-            container.append("tspan")
+            container
+                .append("tspan")
                 .attr("x", (d) => d.xForText())
                 .attr("dy", (d) => d.tspanOffset)
                 .attr("class", m.class)
@@ -636,7 +641,8 @@ class ArrowsLink extends _src_link__WEBPACK_IMPORTED_MODULE_1__.Link {
         link.attr("y2", (d) => d.y2());
     }
     length() {
-        return Math.sqrt((this.source.x - this.target.x) ** 2 + (this.source.y - this.target.y) ** 2);
+        return Math.sqrt((this.source.x - this.target.x) ** 2 +
+            (this.source.y - this.target.y) ** 2);
     }
     x2() {
         return this.source.x + (0.5 - 5 / this.length()) * (this.target.x - this.source.x);
@@ -667,7 +673,8 @@ const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
         static defineMarkers() {
             const defs = d3__WEBPACK_IMPORTED_MODULE_0__.select("svg").append("defs");
             const define = (id) => {
-                defs.append("marker")
+                defs
+                    .append("marker")
                     .attr("id", id)
                     .attr("markerWidth", 10)
                     .attr("markerHeight", 7)
@@ -684,7 +691,7 @@ const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
         static appendMarker(element) {
             d3__WEBPACK_IMPORTED_MODULE_0__.select(element).attr("marker-end", 
             // For consistency with #links :nth-child(odd), it's one-based
-            (d) => d.id % 2 === 0 ? "url(#marker-odd)" : "url(#marker-even)");
+            (d) => (d.id % 2 === 0 ? "url(#marker-odd)" : "url(#marker-even)"));
         }
     },
     _a.isMarkerDefined = false,
