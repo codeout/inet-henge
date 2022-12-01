@@ -55,11 +55,16 @@ export class Tooltip {
         return;
       }
 
-      d3.select(element).attr("visibility", function(d) {
-        // Sync visibility before toggling. External script may change the visibility.
-        d.setVisibility(this.getAttribute("visibility"));
-        return d.toggleVisibility();
-      });
+      d3.select(element)
+        .attr("visibility", function (d) {
+          // Sync visibility before toggling. External script may change the visibility.
+          d.setVisibility(this.getAttribute("visibility"));
+          return d.toggleVisibility();
+        })
+        // bootstrap.css unexpectedly sets "opacity: 0". Reset if it's visible.
+        .style("opacity", function (d) {
+          return d.visibility === "visible" ? 1 : null;
+        });
     };
   }
 
