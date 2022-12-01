@@ -1,3 +1,10 @@
+## [1.2.3] - 2022-12-01
+
+### Fixed
+
+* Tooltip visibility control along with Bootstrap CSS
+
+
 ## [1.2.2] - 2022-09-26
 
 ### Added
