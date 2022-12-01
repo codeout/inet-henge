@@ -17,7 +17,10 @@ class ArrowsLink extends Link {
   }
 
   length(): number {
-    return Math.sqrt(((this.source as Node).x - (this.target as Node).x) ** 2 + ((this.source as Node).y - (this.target as Node).y) ** 2);
+    return Math.sqrt(
+      ((this.source as Node).x - (this.target as Node).x) ** 2 +
+        ((this.source as Node).y - (this.target as Node).y) ** 2,
+    );
   }
 
   x2(): number {
@@ -35,7 +38,12 @@ export const ArrowsLinkPlugin: PluginClass = class ArrowsLinkPlugin {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   static load(Group, Node, Link): void {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-    Link.registerConstructor(function(data: LinkDataType, id: number, metaKeys: string[], linkWidth: (object) => number) {
+    Link.registerConstructor(function (
+      data: LinkDataType,
+      id: number,
+      metaKeys: string[],
+      linkWidth: (object) => number,
+    ) {
       this.selected = false;
 
       this.on("rendered", (element: SVGLineElement) => {
@@ -44,7 +52,6 @@ export const ArrowsLinkPlugin: PluginClass = class ArrowsLinkPlugin {
           ArrowsLinkPlugin.defineMarkers();
         }
       });
-
     } as LinkConstructor);
 
     // Copy methods
@@ -57,7 +64,8 @@ export const ArrowsLinkPlugin: PluginClass = class ArrowsLinkPlugin {
   private static defineMarkers() {
     const defs = d3.select("svg").append("defs");
     const define = (id: string) => {
-      defs.append("marker")
+      defs
+        .append("marker")
         .attr("id", id)
         .attr("markerWidth", 10)
         .attr("markerHeight", 7)
@@ -77,7 +85,7 @@ export const ArrowsLinkPlugin: PluginClass = class ArrowsLinkPlugin {
     d3.select(element).attr(
       "marker-end",
       // For consistency with #links :nth-child(odd), it's one-based
-      (d: ArrowsLink) => d.id % 2 === 0 ? "url(#marker-odd)" : "url(#marker-even)"
+      (d: ArrowsLink) => (d.id % 2 === 0 ? "url(#marker-odd)" : "url(#marker-even)"),
     );
   }
 };

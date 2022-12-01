@@ -8,31 +8,31 @@ import { classify } from "./util";
 export type Constructor = (data: NodeDataType, id: number, options: NodeOptions) => void;
 
 export type NodeDataType = {
-  name: string,
-  group: string[],
-  icon: string,
-  meta: Record<string, any>,  // eslint-disable-line @typescript-eslint/no-explicit-any
-  class: string,
-}
+  name: string;
+  group: string[];
+  icon: string;
+  meta: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  class: string;
+};
 
 export type NodeOptions = {
-  width: number,
-  height: number,
-  metaKeys: string[],
+  width: number;
+  height: number;
+  metaKeys: string[];
   // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
   // Also, it should have accepted undefined
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  color: any,
-  tooltip: boolean,
-}
+  color: any;
+  tooltip: boolean;
+};
 
 class NodeBase {
-  private static all: Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
+  private static all: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   public name: string;
   public group: string[];
   public metaList: MetaDataType[];
-  public meta: Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
+  public meta: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   public x: number;
   public y: number;
 
@@ -45,7 +45,7 @@ class NodeBase {
 
   constructor(data: NodeDataType, public id: number, private options: NodeOptions) {
     this.name = data.name;
-    this.group = typeof data.group === "string" ? [data.group] : (data.group || []);
+    this.group = typeof data.group === "string" ? [data.group] : data.group || [];
     this.icon = data.icon;
     this.metaList = new MetaData(data.meta).get(options.metaKeys);
     this.meta = data.meta;
@@ -87,14 +87,14 @@ class NodeBase {
   }
 
   static idByName(name: string): number {
-    if (Node.all[name] === undefined)
-      throw `Unknown node "${name}"`;
+    if (Node.all[name] === undefined) throw `Unknown node "${name}"`;
     return Node.all[name];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static render(layer: d3.Selection<any>, nodes: Node[]): d3.Selection<Node> {
-    const node = layer.selectAll(".node")
+    const node = layer
+      .selectAll(".node")
       .data(nodes)
       .enter()
       .append("g")
@@ -102,11 +102,9 @@ class NodeBase {
       .attr("name", (d) => d.name)
       .attr("transform", (d) => d.transform());
 
-    node.each(function(this: SVGGElement, d) {
-      if (d.icon)
-        Node.appendImage(this);
-      else
-        Node.appendRect(this);
+    node.each(function (this: SVGGElement, d) {
+      if (d.icon) Node.appendImage(this);
+      else Node.appendRect(this);
 
       Node.appendText(this);
     });
@@ -115,11 +113,13 @@ class NodeBase {
   }
 
   private static appendText(container: SVGGElement): void {
-    const text = (d3.select(container) as d3.Selection<Node>).append("text")
+    const text = (d3.select(container) as d3.Selection<Node>)
+      .append("text")
       .attr("text-anchor", "middle")
       .attr("x", (d) => d.xForText())
       .attr("y", (d) => d.yForText());
-    text.append("tspan")
+    text
+      .append("tspan")
       .text((d) => d.name)
       .attr("x", (d) => d.xForText());
 
@@ -133,7 +133,8 @@ class NodeBase {
 
   private static appendTspans(container: d3.Selection<Node>, meta: MetaDataType[]): void {
     meta.forEach((m) => {
-      container.append("tspan")
+      container
+        .append("tspan")
         .attr("x", (d) => d.xForText())
         .attr("dy", (d) => d.tspanOffset)
         .attr("class", m.class)
@@ -191,7 +192,7 @@ const Eventable = (Base: typeof NodeBase) => {
     static render(layer, nodes) {
       const node = super.render(layer, nodes);
 
-      node.each(function(this: SVGGElement, d: Node & EventableNode) {
+      node.each(function (this: SVGGElement, d: Node & EventableNode) {
         d.dispatch.rendered(this);
       });
 
@@ -228,11 +229,9 @@ const Pluggable = (Base: typeof NodeBase) => {
   return Node;
 };
 
-class EventableNode extends Eventable(NodeBase) {
-}
+class EventableNode extends Eventable(NodeBase) {}
 
 // Call Pluggable at last as constructor may call methods defined in other classes
-class Node extends Pluggable(EventableNode) {
-}
+class Node extends Pluggable(EventableNode) {}
 
 export { Node };

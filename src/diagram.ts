@@ -8,35 +8,35 @@ import { Node, NodeDataType, NodeOptions } from "./node";
 import { PositionCache } from "./position_cache";
 import { Tooltip } from "./tooltip";
 
-const cola = require("cola");  // eslint-disable-line @typescript-eslint/no-var-requires
+const cola = require("cola"); // eslint-disable-line @typescript-eslint/no-var-requires
 
 type LinkWidthFunction = (object) => number;
 export type HrefFunction = (object) => string;
-export type InetHengeDataType = { nodes: NodeDataType[], links: LinkDataType[] }
+export type InetHengeDataType = { nodes: NodeDataType[]; links: LinkDataType[] };
 type DiagramOptionType = {
   // Options publicly available
-  width: number,
-  height: number,
-  nodeWidth: number,
-  nodeHeight: number,
-  initialTicks: number,
-  ticks: number,
-  positionCache: boolean | string,
-  bundle: boolean,
-  pop: RegExp,
-  distance: LinkWidthFunction,
-  tooltip: string,
-  href: HrefFunction,
+  width: number;
+  height: number;
+  nodeWidth: number;
+  nodeHeight: number;
+  initialTicks: number;
+  ticks: number;
+  positionCache: boolean | string;
+  bundle: boolean;
+  pop: RegExp;
+  distance: LinkWidthFunction;
+  tooltip: string;
+  href: HrefFunction;
 
   // Internal options
-  selector: string,
-  urlOrData: string | InetHengeDataType,
-  groupPattern: RegExp | undefined,
+  selector: string;
+  urlOrData: string | InetHengeDataType;
+  groupPattern: RegExp | undefined;
   // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
   color: d3.scale.Ordinal<string, string>;
-  maxTicks: number,
+  maxTicks: number;
 
-  meta: string[],
+  meta: string[];
 };
 
 class DiagramBase {
@@ -48,13 +48,13 @@ class DiagramBase {
   private cola;
   private uniqueUrl: string;
   private positionCache: PositionCache;
-  private indicator: d3.Selection<any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
+  private indicator: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   private initialTranslate: [number, number];
   private initialScale: number;
-  private svg: d3.Selection<any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
+  private svg: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   constructor(container: string, urlOrData: string | InetHengeDataType, options: DiagramOptionType) {
-    this.options = options || {} as DiagramOptionType;
+    this.options = options || ({} as DiagramOptionType);
     this.options.selector = container;
     this.options.urlOrData = urlOrData;
     this.options.groupPattern = options.pop;
@@ -82,7 +82,8 @@ class DiagramBase {
     this.displayLoadMessage();
 
     if (typeof this.options.urlOrData === "object") {
-      setTimeout(() => {  // Run asynchronously
+      setTimeout(() => {
+        // Run asynchronously
         this.render(this.options.urlOrData as InetHengeDataType);
       });
     } else {
@@ -98,23 +99,27 @@ class DiagramBase {
   }
 
   initCola() {
-    return cola.d3adaptor()
+    return cola
+      .d3adaptor()
       .avoidOverlaps(true)
       .handleDisconnected(false)
       .size([this.options.width, this.options.height]);
   }
 
-  initSvg(): d3.Selection<any> {  // eslint-disable-line @typescript-eslint/no-explicit-any
+  initSvg(): d3.Selection<any> {
+    // eslint-disable-line @typescript-eslint/no-explicit-any
     this.zoom = d3.behavior.zoom();
-    const container = d3.select(this.options.selector).append("svg")
+    const container = d3
+      .select(this.options.selector)
+      .append("svg")
       .attr("width", this.options.width)
       .attr("height", this.options.height)
       .append("g")
-      .call(
-        this.zoom.on("zoom", () => this.zoomCallback(container))
-      ).append("g");
+      .call(this.zoom.on("zoom", () => this.zoomCallback(container)))
+      .append("g");
 
-    container.append("rect")
+    container
+      .append("rect")
       .attr("width", this.options.width * 10) // 10 is huge enough
       .attr("height", this.options.height * 10)
       .attr("transform", `translate(-${this.options.width * 5}, -${this.options.height * 5})`)
@@ -125,22 +130,23 @@ class DiagramBase {
 
   render(data: InetHengeDataType): void {
     try {
-      const nodes = data.nodes ?
-        data.nodes.map((n, i) => new Node(n, i, {
-          width: this.options.nodeWidth,
-          height: this.options.nodeHeight,
-          metaKeys: this.options.meta,
-          color: this.options.color,
-          tooltip: this.options.tooltip !== undefined
-        } as NodeOptions)) : [];
-      const links = data.links ?
-        data.links.map((l, i) => new Link(l, i, this.options.meta, this.getLinkWidth)) : [];
+      const nodes = data.nodes
+        ? data.nodes.map(
+            (n, i) =>
+              new Node(n, i, {
+                width: this.options.nodeWidth,
+                height: this.options.nodeHeight,
+                metaKeys: this.options.meta,
+                color: this.options.color,
+                tooltip: this.options.tooltip !== undefined,
+              } as NodeOptions),
+          )
+        : [];
+      const links = data.links ? data.links.map((l, i) => new Link(l, i, this.options.meta, this.getLinkWidth)) : [];
       const groups = Group.divide(nodes, this.options.groupPattern, this.options.color);
       const tooltips = nodes.map((n) => new Tooltip(n, this.options.tooltip));
 
-      this.cola.nodes(nodes)
-        .links(links)
-        .groups(groups);
+      this.cola.nodes(nodes).links(links).groups(groups);
       this.setDistance(this.cola);
 
       // Start to update Link.source and Link.target with Node object after
@@ -156,17 +162,19 @@ class DiagramBase {
       const [link, path, label] = Link.render(linkLayer, linkLabelLayer, links);
 
       const group = Group.render(groupLayer, groups).call(
-        this.cola.drag()
+        this.cola
+          .drag()
           .on("dragstart", DiagramBase.dragstartCallback)
           .on("drag", () => {
             if (this.options.bundle) {
               Link.shiftBundle(link, path, label);
             }
-          })
+          }),
       );
 
       const node = Node.render(nodeLayer, nodes).call(
-        this.cola.drag()
+        this.cola
+          .drag()
           .on("dragstart", DiagramBase.dragstartCallback)
           .on("drag", () => {
             if (this.options.bundle) {
@@ -174,7 +182,7 @@ class DiagramBase {
             }
 
             Tooltip.followNode(tooltip);
-          })
+          }),
       );
 
       // without path calculation
@@ -242,8 +250,9 @@ class DiagramBase {
     Link.reset();
   }
 
-  private static freeze(container: d3.Selection<any>): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
-    container.each((d) => d.fixed = true);
+  private static freeze(container: d3.Selection<any>): void {
+    // eslint-disable-line @typescript-eslint/no-explicit-any
+    container.each((d) => (d.fixed = true));
   }
 
   private static dragstartCallback(): void {
@@ -251,10 +260,8 @@ class DiagramBase {
   }
 
   private linkDistance(distance: number | ((any) => number)): (any) => number {
-    if (typeof distance === "function")
-      return distance;
-    else
-      return (cola) => cola.linkDistance(distance);
+    if (typeof distance === "function") return distance;
+    else return (cola) => cola.linkDistance(distance);
   }
 
   private url(): string {
@@ -267,7 +274,13 @@ class DiagramBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private configureTick(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>, path?: d3.Selection<Link>, label?: d3.Selection<any>): void {
+  private configureTick(
+    group: d3.Selection<Group>,
+    node: d3.Selection<Node>,
+    link: d3.Selection<Link>,
+    path?: d3.Selection<Link>,
+    label?: d3.Selection<any>,
+  ): void {
     this.cola.on("tick", () => {
       Node.tick(node);
       Link.tick(link, path, label);
@@ -278,11 +291,11 @@ class DiagramBase {
   private ticksForward(count?: number): void {
     count = count || this.options.maxTicks;
 
-    for (let i = 0; i < count; i++)
-      this.cola.tick();
+    for (let i = 0; i < count; i++) this.cola.tick();
   }
 
-  private zoomCallback(container: d3.Selection<any>): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
+  private zoomCallback(container: d3.Selection<any>): void {
+    // eslint-disable-line @typescript-eslint/no-explicit-any
     if (!this.initialTranslate) {
       this.saveInitialTranslate();
     }
@@ -292,11 +305,15 @@ class DiagramBase {
     (d3.event as d3.ZoomEvent).translate[1] += this.initialTranslate[1];
 
     Link.zoom((d3.event as d3.ZoomEvent).scale);
-    container.attr("transform", `translate(${(d3.event as d3.ZoomEvent).translate}) scale(${(d3.event as d3.ZoomEvent).scale})`);
+    container.attr(
+      "transform",
+      `translate(${(d3.event as d3.ZoomEvent).translate}) scale(${(d3.event as d3.ZoomEvent).scale})`,
+    );
   }
 
   private displayLoadMessage(): void {
-    this.indicator = this.svg.append("text")
+    this.indicator = this.svg
+      .append("text")
       .attr("x", this.options.width / 2)
       .attr("y", this.options.height / 2)
       .attr("dy", ".35em")
@@ -305,13 +322,11 @@ class DiagramBase {
   }
 
   private hideLoadMessage(): void {
-    if (this.indicator)
-      this.indicator.remove();
+    if (this.indicator) this.indicator.remove();
   }
 
   private showMessage(message: string): void {
-    if (this.indicator)
-      this.indicator.text(message);
+    if (this.indicator) this.indicator.text(message);
   }
 
   private saveInitialTranslate(): void {
@@ -350,7 +365,8 @@ const Eventable = (Base: typeof DiagramBase) => {
       this.dispatch.rendered();
     }
 
-    on(name: string, callback: () => any): void {  // eslint-disable-line @typescript-eslint/no-explicit-any
+    on(name: string, callback: () => any): void {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       this.dispatch.on(name, callback);
     }
   }
@@ -358,9 +374,6 @@ const Eventable = (Base: typeof DiagramBase) => {
   return Diagram;
 };
 
+class PluggableDiagram extends Pluggable(DiagramBase) {}
 
-class PluggableDiagram extends Pluggable(DiagramBase) {
-}
-
-export class Diagram extends Eventable(PluggableDiagram) {
-}
+export class Diagram extends Eventable(PluggableDiagram) {}

@@ -80,13 +80,13 @@ export class Tooltip {
   }
 
   static setHref(callback: HrefFunction): void {
-    if (callback)
-      this.href = callback;
+    if (callback) this.href = callback;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static render(layer: d3.Selection<any>, tooltips: Tooltip[]): d3.Selection<Tooltip> {
-    const tooltip = layer.selectAll(".tooltip")
+    const tooltip = layer
+      .selectAll(".tooltip")
       .data(tooltips)
       .enter()
       .append("g")
@@ -94,7 +94,7 @@ export class Tooltip {
       .attr("class", (d) => d.class())
       .attr("transform", (d) => d.transform());
 
-    tooltip.each(function(d) {
+    tooltip.each(function (d) {
       Tooltip.appendText(this);
 
       if (d.eventType === "hover") {
@@ -119,7 +119,8 @@ export class Tooltip {
   private static pathD(x: number, y: number, width: number, height: number): string {
     const round = 8;
 
-    return `M ${x},${y} L ${x + 20},${y - 10} ${x + 20},${y - 20}` +
+    return (
+      `M ${x},${y} L ${x + 20},${y - 10} ${x + 20},${y - 20}` +
       `Q ${x + 20},${y - 20 - round} ${x + 20 + round},${y - 20 - round}` +
       `L ${x + 20 + width - round},${y - 20 - round}` +
       `Q ${x + 20 + width},${y - 20 - round} ${x + 20 + width},${y - 20}` +
@@ -127,54 +128,52 @@ export class Tooltip {
       `Q ${x + 20 + width},${y - 20 + height + round} ${x + 20 + width - round},${y - 20 + height + round}` +
       `L ${x + 20 + round},${y - 20 + height + round}` +
       `Q ${x + 20},${y - 20 + height + round} ${x + 20},${y - 20 + height}` +
-      `L ${x + 20},${y + 10} Z`;
+      `L ${x + 20},${y + 10} Z`
+    );
   }
 
   private static appendText(container: SVGGElement): void {
     const path = d3.select(container).append("path") as d3.Selection<Tooltip>;
 
     const text = d3.select(container).append("text") as d3.Selection<Tooltip>;
-    text.append("tspan")
+    text
+      .append("tspan")
       .attr("x", (d) => d.offsetX + 40)
       .attr("class", "name")
       .text("node:");
-    const nodeName = text.append("tspan")
-      .attr("dx", 10)
-      .attr("class", "value");
+    const nodeName = text.append("tspan").attr("dx", 10).attr("class", "value");
 
     if (typeof this.href === "function") {
-      nodeName.append("a")
+      nodeName
+        .append("a")
         .attr("href", (d) => Tooltip.href(d))
         .text((d) => d.node.name);
     } else {
       nodeName.text((d) => d.node.name);
     }
 
-    text.each(function(d) {
+    text.each(function (d) {
       Tooltip.appendTspans(text, d.node.metaList);
 
       // Add "d" after bbox calculation
       const bbox = this.getBBox();
-      path.attr("d", Tooltip.pathD(30, 0, bbox.width + 40, bbox.height + 20))
-        .style("fill", function() {
-          return Tooltip.fill(this);
-        });
+      path.attr("d", Tooltip.pathD(30, 0, bbox.width + 40, bbox.height + 20)).style("fill", function () {
+        return Tooltip.fill(this);
+      });
     });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static appendTspans(container: d3.Selection<Tooltip>, meta: MetaDataType[]): void {
     meta.forEach((m, i) => {
-      container.append("tspan")
+      container
+        .append("tspan")
         .attr("x", (d) => d.offsetX + 40)
         .attr("dy", (d) => d.tspanOffsetY(i === 0))
         .attr("class", "name")
         .text(`${m.class}:`);
 
-      container.append("tspan")
-        .attr("dx", 10)
-        .attr("class", "value")
-        .text(m.value);
+      container.append("tspan").attr("dx", 10).attr("class", "value").text(m.value);
     });
   }
 
