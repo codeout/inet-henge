@@ -51,6 +51,7 @@
     "watch": "npx webpack --config $INIT_CWD/webpack.dev.js --watch",
 
     "build-all": "npm run build && for i in plugins/*; do cd $i; echo \uD83D\uDD35 $i; npm run build; cd -; done",
-    "type-check-all": "npm run type-check && for i in plugins/*; do cd $i; echo \uD83D\uDD35 $i; npm run type-check; cd -; done"
+    "type-check-all": "npm run type-check && for i in plugins/*; do cd $i; echo \uD83D\uDD35 $i; npm run type-check; cd -; done",
+    "lint-all": "npm run lint && for i in plugins/*; do cd $i; echo \uD83D\uDD35 $i; npm run lint; cd -; done"
   }
 }
