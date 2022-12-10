@@ -35,14 +35,14 @@ class ArrowsLink extends Link {
 export const ArrowsLinkPlugin: PluginClass = class ArrowsLinkPlugin {
   private static isMarkerDefined = false;
 
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   static load(Group, Node, Link): void {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
     Link.registerConstructor(function (
+      /* eslint-disable @typescript-eslint/no-unused-vars */
       data: LinkDataType,
       id: number,
       metaKeys: string[],
       linkWidth: (object) => number,
+      /* eslint-enable @typescript-eslint/no-unused-vars */
     ) {
       this.selected = false;
 

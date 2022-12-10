@@ -105,8 +105,8 @@ export class LinkBase {
     else return "rotate(0)";
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   split(): Record<string, any>[] {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     if (!this.metaList && !this.sourceMeta && !this.targetMeta) return [this];
 
     const meta = [];
@@ -133,11 +133,11 @@ export class LinkBase {
     )}-${classify((this.target as Node).name)} ${this.extraClass}`;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static render(
-    linkLayer: d3.Selection<any>,
-    labelLayer: d3.Selection<any>,
+    linkLayer: d3.Selection<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+    labelLayer: d3.Selection<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
     links: Link[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): [d3.Selection<Link>, d3.Selection<Link>, d3.Selection<any>] {
     // Render lines
     const pathGroup = linkLayer

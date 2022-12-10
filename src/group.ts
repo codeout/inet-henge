@@ -15,7 +15,7 @@ export class GroupBase {
 
   // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
   // Also, it should have accepted undefined
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(private name: string, private color: any) {}
 
   transform(): string {
@@ -32,7 +32,7 @@ export class GroupBase {
 
   // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
   // Also, it should have accepted undefined
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static divide(nodes: Node[], pattern: RegExp, color: any): Group[] {
     const groups = {};
     const register = (name: string, node: Node, parent?: string) => {
@@ -58,8 +58,8 @@ export class GroupBase {
     return this.array(groups);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static array(groups: Record<string, any>): Group[] {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     return Object.keys(groups).map((g) => groups[g]);
   }
 
