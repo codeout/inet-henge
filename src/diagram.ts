@@ -2,7 +2,7 @@ import "./hack_cola";
 
 import * as d3 from "d3";
 
-import { Group } from "./group";
+import { Group, GroupOptions } from "./group";
 import { Link, LinkDataType } from "./link";
 import { Node, NodeDataType, NodeOptions } from "./node";
 import { PositionCache } from "./position_cache";
@@ -14,7 +14,7 @@ type LinkWidthFunction = (object) => number;
 export type HrefFunction = (object) => string;
 export type InetHengeDataType = { nodes: NodeDataType[]; links: LinkDataType[] };
 // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-export type Color = d3.scale.Ordinal<string, string>
+export type Color = d3.scale.Ordinal<string, string>;
 type DiagramOptionType = {
   // Options publicly available
   width: number;
@@ -143,7 +143,9 @@ class DiagramBase {
           )
         : [];
       const links = data.links ? data.links.map((l, i) => new Link(l, i, this.options.meta, this.getLinkWidth)) : [];
-      const groups = Group.divide(nodes, this.options.groupPattern, this.options.color);
+      const groups = Group.divide(nodes, this.options.groupPattern, {
+        color: this.options.color,
+      } as GroupOptions);
       const tooltips = nodes.map((n) => new Tooltip(n, this.options.tooltip));
 
       this.cola.nodes(nodes).links(links).groups(groups);
