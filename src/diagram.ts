@@ -13,6 +13,8 @@ const cola = require("cola"); // eslint-disable-line @typescript-eslint/no-var-r
 type LinkWidthFunction = (object) => number;
 export type HrefFunction = (object) => string;
 export type InetHengeDataType = { nodes: NodeDataType[]; links: LinkDataType[] };
+// Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+export type Color = d3.scale.Ordinal<string, string>
 type DiagramOptionType = {
   // Options publicly available
   width: number;
@@ -32,8 +34,7 @@ type DiagramOptionType = {
   selector: string;
   urlOrData: string | InetHengeDataType;
   groupPattern: RegExp | undefined;
-  // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-  color: d3.scale.Ordinal<string, string>;
+  color: Color;
   maxTicks: number;
 
   meta: string[];

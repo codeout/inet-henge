@@ -1,22 +1,17 @@
 import * as d3 from "d3";
 
+import { Color } from "./diagram";
 import { Node } from "./node";
 import { GroupPosition } from "./position_cache";
 import { classify } from "./util";
 
-// Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-// Also, it should have accepted undefined
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Constructor = (name: string, color: any) => void;
+export type Constructor = (name: string, color: Color) => void;
 
 export class GroupBase {
   // Not appropriately defined in @types/d3/index.d.ts
   private bounds: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-  // Also, it should have accepted undefined
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(private name: string, private color: any) {}
+  constructor(private name: string, private color: Color) {}
 
   transform(): string {
     return `translate(${this.bounds.x}, ${this.bounds.y})`;
@@ -30,10 +25,7 @@ export class GroupBase {
     return this.bounds.height();
   }
 
-  // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-  // Also, it should have accepted undefined
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static divide(nodes: Node[], pattern: RegExp, color: any): Group[] {
+  static divide(nodes: Node[], pattern: RegExp, color: Color): Group[] {
     const groups = {};
     const register = (name: string, node: Node, parent?: string) => {
       const key = `${parent}:${name}`;
@@ -79,7 +71,8 @@ export class GroupBase {
       .attr("ry", 8)
       .attr("width", (d) => d.groupWidth())
       .attr("height", (d) => d.groupHeight())
-      .style("fill", (d, i) => d.color(i));
+      // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+      .style("fill", (d, i) => d.color(i.toString()));
 
     group.append("text").text((d) => d.name);
 
@@ -111,7 +104,7 @@ const WebColable = (Base: typeof GroupBase) => {
   class Group extends Base {
     private leaves: number[]; // WebCola requires this
 
-    constructor(name: string, color: d3.scale.Ordinal<number, string>) {
+    constructor(name: string, color: Color) {
       super(name, color);
 
       this.leaves = [];
@@ -129,7 +122,7 @@ const Eventable = (Base: typeof GroupBase) => {
   class EventableGroup extends Base {
     private dispatch: d3.Dispatch;
 
-    constructor(name: string, color: d3.scale.Ordinal<number, string>) {
+    constructor(name: string, color: Color) {
       super(name, color);
 
       this.dispatch = d3.dispatch("rendered");
@@ -158,7 +151,7 @@ const Pluggable = (Base: typeof GroupBase) => {
   class Group extends Base {
     private static pluginConstructors: Constructor[] = [];
 
-    constructor(name: string, color: d3.scale.Ordinal<number, string>) {
+    constructor(name: string, color: Color) {
       super(name, color);
 
       for (const constructor of Group.pluginConstructors) {

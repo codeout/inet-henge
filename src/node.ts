@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 
+import { Color } from "./diagram";
 import { MetaData, MetaDataType } from "./meta_data";
 import { NodePosition } from "./position_cache";
 import { classify } from "./util";
@@ -19,10 +20,7 @@ export type NodeOptions = {
   width: number;
   height: number;
   metaKeys: string[];
-  // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-  // Also, it should have accepted undefined
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  color: any;
+  color: Color;
   tooltip: boolean;
 };
 
@@ -159,7 +157,7 @@ class NodeBase {
       .attr("height", (d) => d.nodeHeight())
       .attr("rx", 5)
       .attr("ry", 5)
-      .style("fill", (d) => d.options.color());
+      .style("fill", (d) => d.options.color(undefined));
   }
 
   static tick(node: d3.Selection<Node>): void {
