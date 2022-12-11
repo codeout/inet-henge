@@ -21,6 +21,7 @@ type DiagramOptionType = {
   height: number;
   nodeWidth: number;
   nodeHeight: number;
+  groupPadding: number;
   initialTicks: number;
   ticks: number;
   positionCache: boolean | string;
@@ -145,6 +146,7 @@ class DiagramBase {
       const links = data.links ? data.links.map((l, i) => new Link(l, i, this.options.meta, this.getLinkWidth)) : [];
       const groups = Group.divide(nodes, this.options.groupPattern, {
         color: this.options.color,
+        padding: this.options.groupPadding,
       } as GroupOptions);
       const tooltips = nodes.map((n) => new Tooltip(n, this.options.tooltip));
 

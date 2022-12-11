@@ -9,13 +9,18 @@ export type Constructor = (name: string, color: Color) => void;
 
 export type GroupOptions = {
   color: Color;
+  padding: number;
 };
 
 export class GroupBase {
+  private padding: number;
+
   // Not appropriately defined in @types/d3/index.d.ts
   private bounds: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  constructor(private name: string, private options: GroupOptions) {}
+  constructor(private name: string, private options: GroupOptions) {
+    this.padding = options.padding;
+  }
 
   transform(): string {
     return `translate(${this.bounds.x}, ${this.bounds.y})`;

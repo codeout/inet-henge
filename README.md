@@ -273,6 +273,19 @@ diagram.init("bandwidth");
 :warning: Make sure no stylesheet overrides customized link widths. :warning:
 
 
+### Group Size
+
+You can specify padding to increase the size of groups (default: 1):
+
+```js
+const diagram = new Diagram("#diagram", "data.json", {groupPadding: 30});
+```
+
+![Group Size](example/images/group_size.png)
+
+:bulb: Position calculation sometimes gets stuck when increasing `groupPadding`. [initialTicks](#ticks) may help in such cases.
+
+
 ### Ticks
 
 You can specify the number of steps (called as ticks) to calculate with [d3-force](https://github.com/d3/d3-force/blob/master/README.md) layout. Bigger ticks typically converge on a better layout, but it will take much longer until settlement. The default value is 1000.
