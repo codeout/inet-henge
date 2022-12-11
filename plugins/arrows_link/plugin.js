@@ -101,8 +101,8 @@ class LinkBase {
         else
             return "rotate(0)";
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     split() {
-        // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!this.metaList && !this.sourceMeta && !this.targetMeta)
             return [this];
         const meta = [];
@@ -122,8 +122,9 @@ class LinkBase {
         // eslint-disable-next-line max-len
         return `link ${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.source.name)} ${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.target.name)} ${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.source.name)}-${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.target.name)} ${this.extraClass}`;
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    static render(linkLayer, labelLayer, links) {
+    static render(linkLayer, // eslint-disable-line @typescript-eslint/no-explicit-any
+    labelLayer, // eslint-disable-line @typescript-eslint/no-explicit-any
+    links) {
         // Render lines
         const pathGroup = linkLayer
             .selectAll(".link")
@@ -459,7 +460,7 @@ class NodeBase {
             .attr("height", (d) => d.nodeHeight())
             .attr("rx", 5)
             .attr("ry", 5)
-            .style("fill", (d) => d.options.color());
+            .style("fill", (d) => d.options.color(undefined));
     }
     static tick(node) {
         node.attr("transform", (d) => d.transform());
@@ -652,10 +653,10 @@ class ArrowsLink extends _src_link__WEBPACK_IMPORTED_MODULE_1__.Link {
     }
 }
 const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
-        // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
         static load(Group, Node, Link) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-            Link.registerConstructor(function (data, id, metaKeys, linkWidth) {
+            Link.registerConstructor(function (
+            /* eslint-disable @typescript-eslint/no-unused-vars */
+            data, id, metaKeys, linkWidth) {
                 this.selected = false;
                 this.on("rendered", (element) => {
                     ArrowsLinkPlugin.appendMarker(element);

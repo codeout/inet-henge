@@ -2138,12 +2138,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class GroupBase {
-    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-    // Also, it should have accepted undefined
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-    constructor(name, color) {
+    constructor(name, options) {
         this.name = name;
-        this.color = color;
+        this.options = options;
+        this.padding = options.padding;
     }
     transform() {
         return `translate(${this.bounds.x}, ${this.bounds.y})`;
@@ -2154,14 +2152,11 @@ class GroupBase {
     groupHeight() {
         return this.bounds.height();
     }
-    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-    // Also, it should have accepted undefined
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-    static divide(nodes, pattern, color) {
+    static divide(nodes, pattern, options) {
         const groups = {};
         const register = (name, node, parent) => {
             const key = `${parent}:${name}`;
-            groups[key] = groups[key] || new Group(name, color);
+            groups[key] = groups[key] || new Group(name, options);
             groups[key].push(node);
         };
         nodes.forEach((node) => {
@@ -2177,8 +2172,8 @@ class GroupBase {
         });
         return this.array(groups);
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static array(groups) {
-        // eslint-disable-line @typescript-eslint/no-explicit-any
         return Object.keys(groups).map((g) => groups[g]);
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2196,7 +2191,8 @@ class GroupBase {
             .attr("ry", 8)
             .attr("width", (d) => d.groupWidth())
             .attr("height", (d) => d.groupHeight())
-            .style("fill", (d, i) => d.color(i));
+            // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+            .style("fill", (d, i) => d.options.color(i.toString()));
         group.append("text").text((d) => d.name);
         return group;
     }
@@ -2221,8 +2217,8 @@ class GroupBase {
 }
 const WebColable = (Base) => {
     class Group extends Base {
-        constructor(name, color) {
-            super(name, color);
+        constructor(name, options) {
+            super(name, options);
             this.leaves = [];
         }
         push(node) {
@@ -2233,8 +2229,8 @@ const WebColable = (Base) => {
 };
 const Eventable = (Base) => {
     class EventableGroup extends Base {
-        constructor(name, color) {
-            super(name, color);
+        constructor(name, options) {
+            super(name, options);
             this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
         static render(layer, groups) {
@@ -2253,11 +2249,11 @@ const Eventable = (Base) => {
 };
 const Pluggable = (Base) => {
     class Group extends Base {
-        constructor(name, color) {
-            super(name, color);
+        constructor(name, options) {
+            super(name, options);
             for (const constructor of Group.pluginConstructors) {
                 // Call Pluggable at last as constructor may call methods defined in other classes
-                constructor.bind(this)(name, color);
+                constructor.bind(this)(name, options);
             }
         }
         static registerConstructor(func) {
@@ -2369,8 +2365,8 @@ class LinkBase {
         else
             return "rotate(0)";
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     split() {
-        // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!this.metaList && !this.sourceMeta && !this.targetMeta)
             return [this];
         const meta = [];
@@ -2390,8 +2386,9 @@ class LinkBase {
         // eslint-disable-next-line max-len
         return `link ${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.source.name)} ${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.target.name)} ${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.source.name)}-${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.target.name)} ${this.extraClass}`;
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    static render(linkLayer, labelLayer, links) {
+    static render(linkLayer, // eslint-disable-line @typescript-eslint/no-explicit-any
+    labelLayer, // eslint-disable-line @typescript-eslint/no-explicit-any
+    links) {
         // Render lines
         const pathGroup = linkLayer
             .selectAll(".link")
@@ -2729,7 +2726,7 @@ class NodeBase {
             .attr("height", (d) => d.nodeHeight())
             .attr("rx", 5)
             .attr("ry", 5)
-            .style("fill", (d) => d.options.color());
+            .style("fill", (d) => d.options.color(undefined));
     }
     static tick(node) {
         node.attr("transform", (d) => d.transform());
@@ -2844,8 +2841,8 @@ class PositionCache {
             });
         return md5(JSON.stringify(data));
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     groupPosition(group) {
-        // eslint-disable-line @typescript-eslint/no-explicit-any
         const position = [];
         group.each((d) => {
             position.push({
@@ -2857,8 +2854,8 @@ class PositionCache {
         });
         return position;
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     nodePosition(node) {
-        // eslint-disable-line @typescript-eslint/no-explicit-any
         const position = [];
         node.each((d) => {
             position.push({
@@ -2868,8 +2865,8 @@ class PositionCache {
         });
         return position;
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     linkPosition(link) {
-        // eslint-disable-line @typescript-eslint/no-explicit-any
         const position = [];
         link.each((d) => {
             position.push({
@@ -3359,8 +3356,8 @@ class DiagramBase {
             .handleDisconnected(false)
             .size([this.options.width, this.options.height]);
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     initSvg() {
-        // eslint-disable-line @typescript-eslint/no-explicit-any
         this.zoom = d3__WEBPACK_IMPORTED_MODULE_1__.behavior.zoom();
         const container = d3__WEBPACK_IMPORTED_MODULE_1__.select(this.options.selector)
             .append("svg")
@@ -3389,7 +3386,10 @@ class DiagramBase {
                 }))
                 : [];
             const links = data.links ? data.links.map((l, i) => new _link__WEBPACK_IMPORTED_MODULE_3__.Link(l, i, this.options.meta, this.getLinkWidth)) : [];
-            const groups = _group__WEBPACK_IMPORTED_MODULE_2__.Group.divide(nodes, this.options.groupPattern, this.options.color);
+            const groups = _group__WEBPACK_IMPORTED_MODULE_2__.Group.divide(nodes, this.options.groupPattern, {
+                color: this.options.color,
+                padding: this.options.groupPadding,
+            });
             const tooltips = nodes.map((n) => new _tooltip__WEBPACK_IMPORTED_MODULE_6__.Tooltip(n, this.options.tooltip));
             this.cola.nodes(nodes).links(links).groups(groups);
             this.setDistance(this.cola);
@@ -3473,8 +3473,8 @@ class DiagramBase {
         _node__WEBPACK_IMPORTED_MODULE_4__.Node.reset();
         _link__WEBPACK_IMPORTED_MODULE_3__.Link.reset();
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static freeze(container) {
-        // eslint-disable-line @typescript-eslint/no-explicit-any
         container.each((d) => (d.fixed = true));
     }
     static dragstartCallback() {
@@ -3493,7 +3493,6 @@ class DiagramBase {
         this.uniqueUrl = `${this.options.urlOrData}?${new Date().getTime()}`;
         return this.uniqueUrl;
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     configureTick(group, node, link, path, label) {
         this.cola.on("tick", () => {
             _node__WEBPACK_IMPORTED_MODULE_4__.Node.tick(node);
@@ -3506,8 +3505,8 @@ class DiagramBase {
         for (let i = 0; i < count; i++)
             this.cola.tick();
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     zoomCallback(container) {
-        // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!this.initialTranslate) {
             this.saveInitialTranslate();
         }
@@ -3561,8 +3560,8 @@ const Eventable = (Base) => {
             super.render(arg);
             this.dispatch.rendered();
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         on(name, callback) {
-            // eslint-disable-line @typescript-eslint/no-explicit-any
             this.dispatch.on(name, callback);
         }
     }

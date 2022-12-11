@@ -181,7 +181,7 @@ class NodeBase {
             .attr("height", (d) => d.nodeHeight())
             .attr("rx", 5)
             .attr("ry", 5)
-            .style("fill", (d) => d.options.color());
+            .style("fill", (d) => d.options.color(undefined));
     }
     static tick(node) {
         node.attr("transform", (d) => d.transform());
@@ -369,7 +369,6 @@ class RemovableNode extends _src_node__WEBPACK_IMPORTED_MODULE_1__.Node {
     }
 }
 const RemovableNodePlugin = (_a = class RemovableNodePlugin {
-        // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
         static load(Group, Node, Link, options = {}) {
             if (options.showKey) {
                 RemovableNodePlugin.showKey = options.showKey;
@@ -377,9 +376,7 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
             if (options.hideKey) {
                 RemovableNodePlugin.hideKey = options.hideKey;
             }
-            // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-            // Also, it should have accepted undefined
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             Node.registerConstructor(function (data, id, options) {
                 this.selected = false;
                 this.on("rendered", (element) => {
