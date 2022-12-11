@@ -1,3 +1,10 @@
+## [1.2.5] - 2022-12-11
+
+### Added
+
+* Introduce "groupPadding" option to increase the size of groups
+
+
 ## [1.2.4] - 2022-12-01
 
 ### Fixed
