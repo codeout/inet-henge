@@ -1,22 +1,26 @@
 import * as d3 from "d3";
 
+import { Color } from "./diagram";
 import { Node } from "./node";
 import { GroupPosition } from "./position_cache";
 import { classify } from "./util";
 
-// Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-// Also, it should have accepted undefined
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Constructor = (name: string, color: any) => void;
+export type Constructor = (name: string, color: Color) => void;
+
+export type GroupOptions = {
+  color: Color;
+  padding: number;
+};
 
 export class GroupBase {
+  private padding: number;
+
   // Not appropriately defined in @types/d3/index.d.ts
   private bounds: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-  // Also, it should have accepted undefined
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-  constructor(private name: string, private color: any) {}
+  constructor(private name: string, private options: GroupOptions) {
+    this.padding = options.padding;
+  }
 
   transform(): string {
     return `translate(${this.bounds.x}, ${this.bounds.y})`;
@@ -30,14 +34,11 @@ export class GroupBase {
     return this.bounds.height();
   }
 
-  // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-  // Also, it should have accepted undefined
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-  static divide(nodes: Node[], pattern: RegExp, color: any): Group[] {
+  static divide(nodes: Node[], pattern: RegExp, options: GroupOptions): Group[] {
     const groups = {};
     const register = (name: string, node: Node, parent?: string) => {
       const key = `${parent}:${name}`;
-      groups[key] = groups[key] || new Group(name, color);
+      groups[key] = groups[key] || new Group(name, options);
       groups[key].push(node);
     };
 
@@ -58,8 +59,8 @@ export class GroupBase {
     return this.array(groups);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static array(groups: Record<string, any>): Group[] {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     return Object.keys(groups).map((g) => groups[g]);
   }
 
@@ -79,7 +80,8 @@ export class GroupBase {
       .attr("ry", 8)
       .attr("width", (d) => d.groupWidth())
       .attr("height", (d) => d.groupHeight())
-      .style("fill", (d, i) => d.color(i));
+      // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+      .style("fill", (d, i) => d.options.color(i.toString()));
 
     group.append("text").text((d) => d.name);
 
@@ -111,8 +113,8 @@ const WebColable = (Base: typeof GroupBase) => {
   class Group extends Base {
     private leaves: number[]; // WebCola requires this
 
-    constructor(name: string, color: d3.scale.Ordinal<number, string>) {
-      super(name, color);
+    constructor(name: string, options: GroupOptions) {
+      super(name, options);
 
       this.leaves = [];
     }
@@ -129,8 +131,8 @@ const Eventable = (Base: typeof GroupBase) => {
   class EventableGroup extends Base {
     private dispatch: d3.Dispatch;
 
-    constructor(name: string, color: d3.scale.Ordinal<number, string>) {
-      super(name, color);
+    constructor(name: string, options: GroupOptions) {
+      super(name, options);
 
       this.dispatch = d3.dispatch("rendered");
     }
@@ -158,12 +160,12 @@ const Pluggable = (Base: typeof GroupBase) => {
   class Group extends Base {
     private static pluginConstructors: Constructor[] = [];
 
-    constructor(name: string, color: d3.scale.Ordinal<number, string>) {
-      super(name, color);
+    constructor(name: string, options: GroupOptions) {
+      super(name, options);
 
       for (const constructor of Group.pluginConstructors) {
         // Call Pluggable at last as constructor may call methods defined in other classes
-        constructor.bind(this)(name, color);
+        constructor.bind(this)(name, options);
       }
     }
 

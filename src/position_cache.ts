@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+
 import { InetHengeDataType } from "./diagram";
 import { Group } from "./group";
 import { Link } from "./link";
@@ -69,8 +70,8 @@ export class PositionCache {
     return md5(JSON.stringify(data));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   groupPosition(group: d3.Selection<any>): GroupPosition[] {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     const position = [];
 
     group.each((d) => {
@@ -85,8 +86,8 @@ export class PositionCache {
     return position;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   nodePosition(node: d3.Selection<any>): NodePosition[] {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     const position = [];
 
     node.each((d: Node) => {
@@ -99,8 +100,8 @@ export class PositionCache {
     return position;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   linkPosition(link: d3.Selection<any>): LinkPosition[] {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     const position = [];
 
     link.each((d) => {

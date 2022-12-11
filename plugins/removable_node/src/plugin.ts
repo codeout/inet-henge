@@ -29,7 +29,6 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
   private static showKey = "Escape";
   private static hideKey = "d";
 
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   static load(Group, Node, Link, options: Options = {}): void {
     if (options.showKey) {
       RemovableNodePlugin.showKey = options.showKey;
@@ -38,9 +37,7 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
       RemovableNodePlugin.hideKey = options.hideKey;
     }
 
-    // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-    // Also, it should have accepted undefined
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Node.registerConstructor(function (data: NodeDataType, id: number, options: NodeOptions) {
       this.selected = false;
 

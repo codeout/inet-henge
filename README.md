@@ -28,6 +28,7 @@ JSON example:
 }
 ```
 
+
 ## Getting Started
 
 ```zsh
@@ -271,6 +272,20 @@ diagram.init("bandwidth");
 
 :warning: Make sure no stylesheet overrides customized link widths. :warning:
 
+
+### Group Size
+
+You can specify padding to increase the size of groups (default: 1):
+
+```js
+const diagram = new Diagram("#diagram", "data.json", {groupPadding: 30});
+```
+
+![Group Size](example/images/group_size.png)
+
+:bulb: Position calculation sometimes gets stuck when increasing `groupPadding`. [initialTicks](#ticks) may help in such cases.
+
+
 ### Ticks
 
 You can specify the number of steps (called as ticks) to calculate with [d3-force](https://github.com/d3/d3-force/blob/master/README.md) layout. Bigger ticks typically converge on a better layout, but it will take much longer until settlement. The default value is 1000.
@@ -294,6 +309,7 @@ If you increase `initialTicks`, inet-henge calculates faster in exchange for net
 
 20 ~ 100 `initialTicks` and 70 ~ 100 `ticks` should be good start for 800 nodes with 950 links for example. It takes 20 ~ 30 seconds to render in the benchmark environment.
 
+
 ### Position Cache
 
 inet-henge caches a calculated position of nodes, groups, and links for the next rendering. If you load the same JSON data, the cache will be used as a position hint. You can disable this behavior with `positionCache` option.
@@ -301,6 +317,7 @@ inet-henge caches a calculated position of nodes, groups, and links for the next
 ``` javascript
 const diagram = new Diagram("#diagram", "data.json", {positionCache: false});
 ```
+
 
 ### SVG viewport size
 
@@ -337,6 +354,7 @@ You can display multiple links between nodes by setting `bundle: true` in the co
 
 Nodes are connected to each other with a single link by default.
 
+
 ### Save positions after dragging nodes
 
 You can save positions of all nodes in browser even after dragging them by setting `positionCache: "fixed"` in the constructor like:
@@ -347,6 +365,7 @@ You can save positions of all nodes in browser even after dragging them by setti
  diagram.init("loopback", "interface");
 </script>
 ```
+
 
 ### Metadata tooltip
 
@@ -397,6 +416,7 @@ This example above will generate `<a href="https://example.com/POP01-bb02">POP01
 
 :warning: Those features may work, but still under development. The behavior might be changed :warning:
 
+
 ### Internal groups
 
 You can display node type based groups in POP-based [Node group](#Node-Group) by `group` definition in each node.
@@ -417,6 +437,7 @@ You can display node type based groups in POP-based [Node group](#Node-Group) by
 |-----------------------------------------------------------------|---------------------------------|
 |[Removable Node Plugin](../../tree/master/plugins/removable_node)|Hide and show nodes by key inputs|
 |[Arrows Link Plugin](../../tree/master/plugins/arrows_link)      |Make links bidirectional arrows  |
+
 
 ## Contributing
 

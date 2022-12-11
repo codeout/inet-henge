@@ -2,7 +2,7 @@ import "./hack_cola";
 
 import * as d3 from "d3";
 
-import { Group } from "./group";
+import { Group, GroupOptions } from "./group";
 import { Link, LinkDataType } from "./link";
 import { Node, NodeDataType, NodeOptions } from "./node";
 import { PositionCache } from "./position_cache";
@@ -13,12 +13,15 @@ const cola = require("cola"); // eslint-disable-line @typescript-eslint/no-var-r
 type LinkWidthFunction = (object) => number;
 export type HrefFunction = (object) => string;
 export type InetHengeDataType = { nodes: NodeDataType[]; links: LinkDataType[] };
+// Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+export type Color = d3.scale.Ordinal<string, string>;
 type DiagramOptionType = {
   // Options publicly available
   width: number;
   height: number;
   nodeWidth: number;
   nodeHeight: number;
+  groupPadding: number;
   initialTicks: number;
   ticks: number;
   positionCache: boolean | string;
@@ -32,8 +35,7 @@ type DiagramOptionType = {
   selector: string;
   urlOrData: string | InetHengeDataType;
   groupPattern: RegExp | undefined;
-  // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-  color: d3.scale.Ordinal<string, string>;
+  color: Color;
   maxTicks: number;
 
   meta: string[];
@@ -42,7 +44,6 @@ type DiagramOptionType = {
 class DiagramBase {
   private options: DiagramOptionType;
   private readonly setDistance: (object) => number;
-  private readonly tooltipHref: (object) => string;
   private getLinkWidth: LinkWidthFunction;
   private zoom: d3.behavior.Zoom<unknown>;
   private cola;
@@ -106,8 +107,8 @@ class DiagramBase {
       .size([this.options.width, this.options.height]);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initSvg(): d3.Selection<any> {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     this.zoom = d3.behavior.zoom();
     const container = d3
       .select(this.options.selector)
@@ -143,7 +144,10 @@ class DiagramBase {
           )
         : [];
       const links = data.links ? data.links.map((l, i) => new Link(l, i, this.options.meta, this.getLinkWidth)) : [];
-      const groups = Group.divide(nodes, this.options.groupPattern, this.options.color);
+      const groups = Group.divide(nodes, this.options.groupPattern, {
+        color: this.options.color,
+        padding: this.options.groupPadding,
+      } as GroupOptions);
       const tooltips = nodes.map((n) => new Tooltip(n, this.options.tooltip));
 
       this.cola.nodes(nodes).links(links).groups(groups);
@@ -250,8 +254,8 @@ class DiagramBase {
     Link.reset();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static freeze(container: d3.Selection<any>): void {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     container.each((d) => (d.fixed = true));
   }
 
@@ -273,13 +277,12 @@ class DiagramBase {
     return this.uniqueUrl;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private configureTick(
     group: d3.Selection<Group>,
     node: d3.Selection<Node>,
     link: d3.Selection<Link>,
     path?: d3.Selection<Link>,
-    label?: d3.Selection<any>,
+    label?: d3.Selection<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
   ): void {
     this.cola.on("tick", () => {
       Node.tick(node);
@@ -294,8 +297,8 @@ class DiagramBase {
     for (let i = 0; i < count; i++) this.cola.tick();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private zoomCallback(container: d3.Selection<any>): void {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     if (!this.initialTranslate) {
       this.saveInitialTranslate();
     }
@@ -365,8 +368,8 @@ const Eventable = (Base: typeof DiagramBase) => {
       this.dispatch.rendered();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     on(name: string, callback: () => any): void {
-      // eslint-disable-line @typescript-eslint/no-explicit-any
       this.dispatch.on(name, callback);
     }
   }
