@@ -55,7 +55,8 @@ class DiagramBase {
   private svg: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   constructor(container: string, urlOrData: string | InetHengeDataType, options: DiagramOptionType) {
-    this.options = options || ({} as DiagramOptionType);
+    options ||= {} as DiagramOptionType;
+    this.options = Object.assign({}, options);
     this.options.selector = container;
     this.options.urlOrData = urlOrData;
     this.options.groupPattern = options.pop;
