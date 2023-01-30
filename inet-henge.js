@@ -3311,7 +3311,8 @@ __webpack_require__.r(__webpack_exports__);
 const cola = __webpack_require__(/*! cola */ "cola"); // eslint-disable-line @typescript-eslint/no-var-requires
 class DiagramBase {
     constructor(container, urlOrData, options) {
-        this.options = options || {};
+        options || (options = {});
+        this.options = Object.assign({}, options);
         this.options.selector = container;
         this.options.urlOrData = urlOrData;
         this.options.groupPattern = options.pop;
