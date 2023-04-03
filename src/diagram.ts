@@ -196,7 +196,7 @@ class DiagramBase {
       this.positionCache = PositionCache.load(data, this.options.groupPattern);
       if (this.options.positionCache && this.positionCache) {
         // NOTE: Evaluate only when positionCache: true or 'fixed', and
-        //       when the stored position cache matches pair of given data and pop
+        //       when the stored position cache matches a pair of given data and pop
         Group.setPosition(group, this.positionCache.group);
         Node.setPosition(node, this.positionCache.node);
         Link.setPosition(link, this.positionCache.link);
