@@ -5,7 +5,7 @@ import * as d3 from "d3";
 import { Group, GroupOptions } from "./group";
 import { Link, LinkDataType } from "./link";
 import { Node, NodeDataType, NodeOptions } from "./node";
-import { PositionCache } from "./position_cache";
+import { NodePosition, PositionCache } from "./position_cache";
 import { Tooltip } from "./tooltip";
 
 const cola = require("cola"); // eslint-disable-line @typescript-eslint/no-var-requires
@@ -15,6 +15,9 @@ export type HrefFunction = (object) => string;
 export type InetHengeDataType = { nodes: NodeDataType[]; links: LinkDataType[] };
 // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
 export type Color = d3.scale.Ordinal<string, string>;
+type PositionHint = {
+  nodeCallback?: (node: Node) => NodePosition;
+};
 type DiagramOptionType = {
   // Options publicly available
   width: number;
@@ -25,6 +28,7 @@ type DiagramOptionType = {
   initialTicks: number;
   ticks: number;
   positionCache: boolean | string;
+  positionHint: PositionHint;
   bundle: boolean;
   pop: RegExp;
   distance: LinkWidthFunction;
@@ -49,6 +53,7 @@ class DiagramBase {
   private cola;
   private uniqueUrl: string;
   private positionCache: PositionCache;
+  private positionHint: PositionHint;
   private indicator: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   private initialTranslate: [number, number];
   private initialScale: number;
@@ -62,6 +67,7 @@ class DiagramBase {
     this.options.groupPattern = options.pop;
     this.options.width = options.width || 960;
     this.options.height = options.height || 600;
+    this.options.positionHint = options.positionHint || {};
 
     this.options.color = d3.scale.category20();
     this.options.initialTicks = options.initialTicks || 0;
@@ -201,6 +207,14 @@ class DiagramBase {
         Node.setPosition(node, this.positionCache.node);
         Link.setPosition(link, this.positionCache.link);
       } else {
+        if (this.options.positionHint.nodeCallback) {
+          Node.setPosition(
+            node,
+            node.data().map((d) => this.options.positionHint.nodeCallback(d)),
+          );
+          this.cola.start() // update internal positions of objects before ticks forward
+        }
+
         this.ticksForward();
         this.positionCache = new PositionCache(data, this.options.groupPattern);
         this.savePosition(group, node, link);
