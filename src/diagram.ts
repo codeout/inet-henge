@@ -156,7 +156,7 @@ class DiagramBase {
 
       // Start to update Link.source and Link.target with Node object after
       // initial layout iterations without any constraints.
-      this.cola.start(this.options.initialTicks, 0, 0, 0);
+      this.cola.start(this.options.initialTicks);
 
       const groupLayer = this.svg.append("g").attr("id", "groups");
       const linkLayer = this.svg.append("g").attr("id", "links");
