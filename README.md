@@ -435,8 +435,8 @@ You can display node type based groups in POP-based [Node group](#Node-Group) by
 
 |Name                                                             |Note                             |
 |-----------------------------------------------------------------|---------------------------------|
-|[Removable Node Plugin](../../tree/master/plugins/removable_node)|Hide and show nodes by key inputs|
-|[Arrows Link Plugin](../../tree/master/plugins/arrows_link)      |Make links bidirectional arrows  |
+|[Removable Node Plugin](../../tree/main/plugins/removable_node)  |Hide and show nodes by key inputs|
+|[Arrows Link Plugin](../../tree/main/plugins/arrows_link)        |Make links bidirectional arrows  |
 
 
 ## Contributing
