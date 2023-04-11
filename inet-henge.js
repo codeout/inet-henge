@@ -2733,8 +2733,14 @@ class NodeBase {
     }
     static setPosition(node, position) {
         node.attr("transform", (d, i) => {
-            d.x = position[i].x;
-            d.y = position[i].y;
+            var _a, _b, _c, _d;
+            if (((_a = position[i]) === null || _a === void 0 ? void 0 : _a.x) !== null &&
+                ((_b = position[i]) === null || _b === void 0 ? void 0 : _b.x) !== undefined &&
+                ((_c = position[i]) === null || _c === void 0 ? void 0 : _c.y) !== null &&
+                ((_d = position[i]) === null || _d === void 0 ? void 0 : _d.y) !== undefined) {
+                d.x = position[i].x;
+                d.y = position[i].y;
+            }
             return d.transform();
         });
     }
@@ -3318,6 +3324,7 @@ class DiagramBase {
         this.options.groupPattern = options.pop;
         this.options.width = options.width || 960;
         this.options.height = options.height || 600;
+        this.options.positionHint = options.positionHint || {};
         this.options.color = d3__WEBPACK_IMPORTED_MODULE_1__.scale.category20();
         this.options.initialTicks = options.initialTicks || 0;
         this.options.maxTicks = options.ticks || 1000;
@@ -3396,7 +3403,7 @@ class DiagramBase {
             this.setDistance(this.cola);
             // Start to update Link.source and Link.target with Node object after
             // initial layout iterations without any constraints.
-            this.cola.start(this.options.initialTicks, 0, 0, 0);
+            this.cola.start(this.options.initialTicks);
             const groupLayer = this.svg.append("g").attr("id", "groups");
             const linkLayer = this.svg.append("g").attr("id", "links");
             const nodeLayer = this.svg.append("g").attr("id", "nodes");
@@ -3425,12 +3432,16 @@ class DiagramBase {
             this.positionCache = _position_cache__WEBPACK_IMPORTED_MODULE_5__.PositionCache.load(data, this.options.groupPattern);
             if (this.options.positionCache && this.positionCache) {
                 // NOTE: Evaluate only when positionCache: true or 'fixed', and
-                //       when the stored position cache matches pair of given data and pop
+                //       when the stored position cache matches a pair of given data and pop
                 _group__WEBPACK_IMPORTED_MODULE_2__.Group.setPosition(group, this.positionCache.group);
                 _node__WEBPACK_IMPORTED_MODULE_4__.Node.setPosition(node, this.positionCache.node);
                 _link__WEBPACK_IMPORTED_MODULE_3__.Link.setPosition(link, this.positionCache.link);
             }
             else {
+                if (this.options.positionHint.nodeCallback) {
+                    _node__WEBPACK_IMPORTED_MODULE_4__.Node.setPosition(node, node.data().map((d) => this.options.positionHint.nodeCallback(d)));
+                    this.cola.start(); // update internal positions of objects before ticks forward
+                }
                 this.ticksForward();
                 this.positionCache = new _position_cache__WEBPACK_IMPORTED_MODULE_5__.PositionCache(data, this.options.groupPattern);
                 this.savePosition(group, node, link);
