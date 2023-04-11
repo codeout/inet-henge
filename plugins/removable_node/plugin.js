@@ -188,8 +188,14 @@ class NodeBase {
     }
     static setPosition(node, position) {
         node.attr("transform", (d, i) => {
-            d.x = position[i].x;
-            d.y = position[i].y;
+            var _a, _b, _c, _d;
+            if (((_a = position[i]) === null || _a === void 0 ? void 0 : _a.x) !== null &&
+                ((_b = position[i]) === null || _b === void 0 ? void 0 : _b.x) !== undefined &&
+                ((_c = position[i]) === null || _c === void 0 ? void 0 : _c.y) !== null &&
+                ((_d = position[i]) === null || _d === void 0 ? void 0 : _d.y) !== undefined) {
+                d.x = position[i].x;
+                d.y = position[i].y;
+            }
             return d.transform();
         });
     }

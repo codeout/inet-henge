@@ -366,6 +366,49 @@ You can save positions of all nodes in browser even after dragging them by setti
 </script>
 ```
 
+### Position hinting
+
+You can provide the coordinates of nodes as position hints to place them where you want. inet-henge calculates the layout by considering them. It always refers to position cache over hint when there is a cache.
+
+:bulb: They are "hints". Nodes won't be strictly placed there.
+
+```js
+const diagram = new Diagram("#diagram", "index.json", {
+  pop: /^([^\s-]+)-/,
+  bundle: true,
+  positionHint: {
+    nodeCallback: (node) => {
+      const [_, pop] = node.name.match(/^([^\s-]+)-/);
+
+      // specify the position of nodes in POP01
+      if (pop === "POP01") {
+        return { x: 600, y: 330 };
+      }
+
+      // unspecified
+      return null;
+    }
+  }
+});
+
+diagram.init("loopback", "interface", "description", "type");
+```
+
+* Use `nodeCallback` option to specify per node.
+  * The `Node` object is passed as an argument.
+  * Return value should be an object like `{x: 600, y: 330}`.
+  * If the callback returns `null`, this means that the node position is unspecified.
+
+![Position hinting](example/images/position_hints.png)
+
+#### :bulb: How position hinting works
+
+The position hints are initial positions technically.
+
+1. inet-henge places nodes according to the hints.
+    * When no hint is specified, the node will be placed in the center of the diagram.
+3. Then, it starts [the ticks calculation](#Ticks).
+
 
 ### Metadata tooltip
 

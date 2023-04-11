@@ -166,8 +166,15 @@ class NodeBase {
 
   static setPosition(node: d3.Selection<Node>, position: NodePosition[]): void {
     node.attr("transform", (d, i) => {
-      d.x = position[i].x;
-      d.y = position[i].y;
+      if (
+        position[i]?.x !== null &&
+        position[i]?.x !== undefined &&
+        position[i]?.y !== null &&
+        position[i]?.y !== undefined
+      ) {
+        d.x = position[i].x;
+        d.y = position[i].y;
+      }
       return d.transform();
     });
   }
