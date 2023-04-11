@@ -1,3 +1,10 @@
+## [1.3.0] - 2023-04-12
+
+### Added
+
+* Introduce "nodeCallback" option for position hinting
+
+
 ## [1.2.5] - 2022-12-11
 
 ### Added
