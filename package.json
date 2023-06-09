@@ -50,10 +50,12 @@
     "prod": "npx webpack --config $INIT_CWD/webpack.prod.js",
     "clean": "rm -rf $INIT_CWD/{inet-henge*.js*, plugin*.js*, dist}",
     "watch": "npx webpack --config $INIT_CWD/webpack.dev.js --watch",
+    "format": "npx prettier --ignore-unknown --ignore-path .gitignore --write",
 
     "build-all": "npm run build && for i in plugins/*; do cd $i; echo \uD83D\uDD35 $i; npm run build; cd -; done",
     "type-check-all": "npm run type-check && for i in plugins/*; do cd $i; echo \uD83D\uDD35 $i; npm run type-check; cd -; done",
     "lint-all": "npm run lint && for i in plugins/*; do cd $i; echo \uD83D\uDD35 $i; npm run lint; cd -; done",
-    "check-all": "npm run lint-all && npm run type-check-all"
+    "check-all": "npm run lint-all && npm run type-check-all",
+    "format-all": "npx prettier --ignore-unknown --ignore-path .gitignore --write **/*.ts"
   }
 }

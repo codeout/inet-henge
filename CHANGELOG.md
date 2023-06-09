@@ -2,87 +2,78 @@
 
 ### Added
 
-* Introduce "nodeCallback" option for position hinting
-
+- Introduce "nodeCallback" option for position hinting
 
 ## [1.2.5] - 2022-12-11
 
 ### Added
 
-* Introduce "groupPadding" option to increase the size of groups
-
+- Introduce "groupPadding" option to increase the size of groups
 
 ## [1.2.4] - 2022-12-01
 
 ### Fixed
 
-* Tooltip visibility control along with Bootstrap CSS
-
+- Tooltip visibility control along with Bootstrap CSS
 
 ## [1.2.2] - 2022-09-26
 
 ### Added
 
-* Introduce "nodeWidth" and "nodeHeight" options of `Diagram`
-
+- Introduce "nodeWidth" and "nodeHeight" options of `Diagram`
 
 ## [1.2.1] - 2022-03-09
 
 ### Added
 
-* Introduce "href" option to show `<a/>` in tooltips
-
+- Introduce "href" option to show `<a/>` in tooltips
 
 ## [1.2.0] - 2021-09-27
 
 ### Added
 
-* Introduce plugin system.
-  * Removable Node Plugin
-  * Arrows Link Plugin
+- Introduce plugin system.
+  - Removable Node Plugin
+  - Arrows Link Plugin
 
 ### Fixed
 
-* Use md5 instead of sha1 for positionCache hash. Bundling crypto results in an unexpectedly huge bundle size.
+- Use md5 instead of sha1 for positionCache hash. Bundling crypto results in an unexpectedly huge bundle size.
 
 ### Removed
 
-* Remove a deprecated method `Diagram.prototype.link_width`.
-
+- Remove a deprecated method `Diagram.prototype.link_width`.
 
 ## [1.1.1] - 2021-02-01
 
 ### Fixed
 
-* CSS escape to avoid "Uncaught DOMException: Failed to execute 'querySelector' on 'Document'"
-
+- CSS escape to avoid "Uncaught DOMException: Failed to execute 'querySelector' on 'Document'"
 
 ## [1.1.0] - 2020-11-09
 
 ### Added
 
-* Introduce "initialTicks" option for unconstrained initial layout iterations.
-
+- Introduce "initialTicks" option for unconstrained initial layout iterations.
 
 ## [1.0.2] - 2020-06-29
 
 ### Added
 
-* Create an npm package of inet-henge so that users can use it in other projects, even customize and rebuild.
-* Rewrote all .js with .ts to reuse in typescript projects.
-* Update the build environment, which was .js + babel + browserify, with .ts + webpack + ts-loader.
-
+- Create an npm package of inet-henge so that users can use it in other projects, even customize and rebuild.
+- Rewrote all .js with .ts to reuse in typescript projects.
+- Update the build environment, which was .js + babel + browserify, with .ts + webpack + ts-loader.
 
 ## [1.0.0] - 2020-02-25
 
 ### Added
 
-* Start versioning.
+- Start versioning.
 
 ### Fixed
 
-* Change SVG DOM structure to render link labels in front of nodes.
-  * :warning: This change breaks backward compatibility in CSS. Use `.link line` instead of `.link`, `.link text` instead of `.path-label`, and `.link text.hover` instead of `.link:hover ~ .path-label ` for instance.
+- Change SVG DOM structure to render link labels in front of nodes.
+  - :warning: This change breaks backward compatibility in CSS. Use `.link line` instead of `.link`, `.link text` instead of `.path-label`, and `.link text.hover` instead of `.link:hover ~ .path-label ` for instance.
 
 #### Previous SVG DOM
 
@@ -128,7 +119,6 @@
 ```
 
 #### v1.0.0's SVG DOM
-
 
 ```svg
 <svg width="960" height="600">

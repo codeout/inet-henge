@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8"/>
-    <link href="style.css" rel="stylesheet"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
-    <script src="../vendor/cola.min.js"></script>
-    <script src="../inet-henge.js"></script>
+  <meta charset="utf-8" />
+  <link href="style.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
+  <script src="../vendor/cola.min.js"></script>
+  <script src="../inet-henge.js"></script>
 </head>
 
 <body>
 <div id="diagram"></div>
 <script>
-  const distance = function (force) {
+  const distance = function(force) {
     force.jaccardLinkLengths(100, 0.2);
   };
-  const diagram = new Diagram('#diagram', 'shownet.json', {pop: /^([^\s-]+)-/, distance: distance});
-  diagram.init('interface');
+  const diagram = new Diagram("#diagram", "shownet.json", { pop: /^([^\s-]+)-/, distance: distance });
+  diagram.init("interface");
 </script>
 </body>
-
 </html>
