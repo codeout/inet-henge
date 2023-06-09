@@ -436,6 +436,20 @@ This example above will generate `<a href="https://example.com/POP01-bb02">POP01
 
 :bulb: Use `tooltip: "click"` to make tooltips sticky.
 
+### Initial Position and Scale
+
+You can specify initial position and scale of diagram.
+
+```html
+<script>
+  const diagram = new Diagram("#diagram", "index.json");
+  diagram.init();
+
+  // move 100px in both x and y, and show in 1/2 scale
+  diagram.attr("transform", "translate(100, 100) scale(0.5)");
+</script>
+```
+
 ## Experimental Features
 
 :warning: Those features may work, but still under development. The behavior might be changed :warning:
