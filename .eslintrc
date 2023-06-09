@@ -1,12 +1,6 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier"
-  ],
-  "plugins": [
-    "simple-import-sort"
-  ],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
+  "plugins": ["simple-import-sort"],
   "rules": {
     "@typescript-eslint/consistent-type-assertions": [
       "error",

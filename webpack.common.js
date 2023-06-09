@@ -5,19 +5,19 @@ module.exports = {
     libraryTarget: "umd",
   },
   resolve: {
-    extensions: [".ts", ".js"]
+    extensions: [".ts", ".js"],
   },
   module: {
     rules: [
       {
         test: /\.ts$/,
-        use: ["ts-loader"]
-      }
-    ]
+        use: ["ts-loader"],
+      },
+    ],
   },
   externals: {
     cola: "cola",
-    d3: "d3"
+    d3: "d3",
   },
-  devtool: "source-map"
+  devtool: "source-map",
 };

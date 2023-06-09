@@ -212,7 +212,7 @@ class DiagramBase {
             node,
             node.data().map((d) => this.options.positionHint.nodeCallback(d)),
           );
-          this.cola.start() // update internal positions of objects before ticks forward
+          this.cola.start(); // update internal positions of objects before ticks forward
         }
 
         this.ticksForward();

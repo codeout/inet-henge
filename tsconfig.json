@@ -5,10 +5,6 @@
     "outDir": "dist",
     "sourceMap": true
   },
-  "include": [
-    "src/*"
-  ],
-  "lib": [
-    "ES2017"
-  ]
+  "include": ["src/*"],
+  "lib": ["ES2017"]
 }

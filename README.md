@@ -28,7 +28,6 @@ JSON example:
 }
 ```
 
-
 ## Getting Started
 
 ```zsh
@@ -45,8 +44,7 @@ Then host the root directory in your favorite web server.
 ruby -run -e httpd . -p 8000
 ```
 
-Now you can see ```http://localhost:8000/example```.
-
+Now you can see `http://localhost:8000/example`.
 
 ```
 python -m SimpleHTTPServer  # python2
@@ -59,21 +57,19 @@ php -S 127.0.0.1:8000
 
 are also available to start a web server.
 
-
 ## Demo
 
-* [Shownet 2017 Network](https://codeout.github.io/inet-henge/shownet2017.html)
-* [Shownet 2016 Network](https://codeout.github.io/inet-henge/shownet2016.html)
-
+- [Shownet 2017 Network](https://codeout.github.io/inet-henge/shownet2017.html)
+- [Shownet 2016 Network](https://codeout.github.io/inet-henge/shownet2016.html)
 
 ## Usage
 
 In example [here](example/shownet.html), load related assets at first:
 
-* d3.js v3
-* cola.js
-  * :warning: **It doesn't support d3.js v4** :warning:
-* inet-henge.js
+- d3.js v3
+- cola.js
+  - :warning: **It doesn't support d3.js v4** :warning:
+- inet-henge.js
 
 ```html
 <!DOCTYPE html>
@@ -92,11 +88,10 @@ In example [here](example/shownet.html), load related assets at first:
 
 define a blank container:
 
-
 ```html
-  <body>
-    <div id="diagram"></div>
-  </body>
+<body>
+  <div id="diagram"></div>
+</body>
 ```
 
 and render your network diagram:
@@ -121,10 +116,9 @@ Object is also acceptable:
 </html>
 ```
 
-inet-henge.js renders your network diagram as SVG within ```<div id="diagram"></div>```. In the example above the diagram also displays metadata labelled ```"interface"``` which defined in JSON data.
+inet-henge.js renders your network diagram as SVG within `<div id="diagram"></div>`. In the example above the diagram also displays metadata labelled `"interface"` which defined in JSON data.
 
 ![Shownet2016 example](example/images/shownet.png)
-
 
 ### JSON Data
 
@@ -170,21 +164,19 @@ new Diagram("#diagram", "index.json").init("interface");
 
 :point_up: This will render metadata on both ends of links.
 
-
 ### Node Group
 
 Nodes get rendered in groups when you specify which node belongs to which group by regular expression.
 
 When the first three characters describe POP name, you can group nodes by doing this:
 
-``` javascript
-const diagram = new Diagram("#diagram", "data.json", {pop: /^.{3}/})
+```javascript
+const diagram = new Diagram("#diagram", "data.json", { pop: /^.{3}/ });
 ```
-
 
 ### Labels
 
-When ```init()``` API is called with arguments, inet-henge finds corresponding metadata and show them as labels.
+When `init()` API is called with arguments, inet-henge finds corresponding metadata and show them as labels.
 
 To place a loopback address on nodes:
 
@@ -227,23 +219,21 @@ new Diagram("#diagram", "index.json").init("bandwidth", "intf-name");
 
 ![Label on link](example/images/link_label.png)
 
-
 ### Node Size
 
 You can change node width and height:
 
 ```js
-const diagram = new Diagram("#diagram", "data.json", {nodeWidth: 120, nodeHeight: 30});
+const diagram = new Diagram("#diagram", "data.json", { nodeWidth: 120, nodeHeight: 30 });
 ```
 
 ![Node Size](example/images/node_size.png)
 
 Width `60` and heigh `40` (px) by default.
 
-
 ### Link Width
 
-You can use ```linkWidth()``` API to customize link widths. The argument should be a function which calculates metadata and returns value for ```stroke-width``` of SVG.
+You can use `linkWidth()` API to customize link widths. The argument should be a function which calculates metadata and returns value for `stroke-width` of SVG.
 
 ```js
 const diagram = new Diagram("#diagram", "index.json");
@@ -272,32 +262,30 @@ diagram.init("bandwidth");
 
 :warning: Make sure no stylesheet overrides customized link widths. :warning:
 
-
 ### Group Size
 
 You can specify padding to increase the size of groups (default: 1):
 
 ```js
-const diagram = new Diagram("#diagram", "data.json", {groupPadding: 30});
+const diagram = new Diagram("#diagram", "data.json", { groupPadding: 30 });
 ```
 
 ![Group Size](example/images/group_size.png)
 
 :bulb: Position calculation sometimes gets stuck when increasing `groupPadding`. [initialTicks](#ticks) may help in such cases.
 
-
 ### Ticks
 
 You can specify the number of steps (called as ticks) to calculate with [d3-force](https://github.com/d3/d3-force/blob/master/README.md) layout. Bigger ticks typically converge on a better layout, but it will take much longer until settlement. The default value is 1000.
 
-``` javascript
-const diagram = new Diagram("#diagram", "data.json", {ticks: 3000});
+```javascript
+const diagram = new Diagram("#diagram", "data.json", { ticks: 3000 });
 ```
 
 For large scale network diagrams, you can also specify the number of initial unconstrained ticks.
 
-``` javascript
-const diagram = new Diagram("#diagram", "data.json", {initialTicks: 100, ticks: 100});
+```javascript
+const diagram = new Diagram("#diagram", "data.json", { initialTicks: 100, ticks: 100 });
 ```
 
 inet-henge calculates the layout in two iteration phases:
@@ -309,22 +297,20 @@ If you increase `initialTicks`, inet-henge calculates faster in exchange for net
 
 20 ~ 100 `initialTicks` and 70 ~ 100 `ticks` should be good start for 800 nodes with 950 links for example. It takes 20 ~ 30 seconds to render in the benchmark environment.
 
-
 ### Position Cache
 
 inet-henge caches a calculated position of nodes, groups, and links for the next rendering. If you load the same JSON data, the cache will be used as a position hint. You can disable this behavior with `positionCache` option.
 
-``` javascript
-const diagram = new Diagram("#diagram", "data.json", {positionCache: false});
+```javascript
+const diagram = new Diagram("#diagram", "data.json", { positionCache: false });
 ```
-
 
 ### SVG viewport size
 
 You can change svg's viewport size:
 
 ```js
-const diagram = new Diagram("#diagram", "data.json", {width: 1200, height: 600});
+const diagram = new Diagram("#diagram", "data.json", { width: 1200, height: 600 });
 ```
 
 This will generate:
@@ -333,11 +319,9 @@ This will generate:
 <svg width="1200" height="600">
 ```
 
-
 ### Style
 
 inet-henge generates an SVG image, so you can customize the style by using CSS.
-
 
 ### Display bundles
 
@@ -345,8 +329,8 @@ You can display multiple links between nodes by setting `bundle: true` in the co
 
 ```html
 <script>
- const diagram = new Diagram("#diagram", "index.json", {pop: /^([^\s-]+)-/, bundle: true});
- diagram.init("loopback", "interface");
+  const diagram = new Diagram("#diagram", "index.json", { pop: /^([^\s-]+)-/, bundle: true });
+  diagram.init("loopback", "interface");
 </script>
 ```
 
@@ -354,15 +338,14 @@ You can display multiple links between nodes by setting `bundle: true` in the co
 
 Nodes are connected to each other with a single link by default.
 
-
 ### Save positions after dragging nodes
 
 You can save positions of all nodes in browser even after dragging them by setting `positionCache: "fixed"` in the constructor like:
 
 ```html
 <script>
- const diagram = new Diagram("#diagram", "index.json", {pop: /^([^\s-]+)-/, positionCache: "fixed"});
- diagram.init("loopback", "interface");
+  const diagram = new Diagram("#diagram", "index.json", { pop: /^([^\s-]+)-/, positionCache: "fixed" });
+  diagram.init("loopback", "interface");
 </script>
 ```
 
@@ -387,17 +370,17 @@ const diagram = new Diagram("#diagram", "index.json", {
 
       // unspecified
       return null;
-    }
-  }
+    },
+  },
 });
 
 diagram.init("loopback", "interface", "description", "type");
 ```
 
-* Use `nodeCallback` option to specify per node.
-  * The `Node` object is passed as an argument.
-  * Return value should be an object like `{x: 600, y: 330}`.
-  * If the callback returns `null`, this means that the node position is unspecified.
+- Use `nodeCallback` option to specify per node.
+  - The `Node` object is passed as an argument.
+  - Return value should be an object like `{x: 600, y: 330}`.
+  - If the callback returns `null`, this means that the node position is unspecified.
 
 ![Position hinting](example/images/position_hints.png)
 
@@ -406,9 +389,8 @@ diagram.init("loopback", "interface", "description", "type");
 The position hints are initial positions technically.
 
 1. inet-henge places nodes according to the hints.
-    * When no hint is specified, the node will be placed in the center of the diagram.
-3. Then, it starts [the ticks calculation](#Ticks).
-
+   - When no hint is specified, the node will be placed in the center of the diagram.
+2. Then, it starts [the ticks calculation](#Ticks).
 
 ### Metadata tooltip
 
@@ -416,8 +398,8 @@ You can display node metadata in the tooltip, instead of always showing as node 
 
 ```html
 <script>
- const diagram = new Diagram("#diagram", "index.json", {pop: /^([^\s-]+)-/, tooltip: "click"});
- diagram.init("description", "type");
+  const diagram = new Diagram("#diagram", "index.json", { pop: /^([^\s-]+)-/, tooltip: "click" });
+  diagram.init("description", "type");
 </script>
 ```
 
@@ -441,24 +423,22 @@ You can show `<a href="...">...</a>` in node metadata tooltips.
 
 ```html
 <script>
- const diagram = new Diagram("#diagram", "index.json", {
-   pop: /^([^\s-]+)-/,
-   tooltip: "click",
-   href: (t) => `https://example.com/${t.node.name}`,
-   });
- diagram.init("description", "type");
+  const diagram = new Diagram("#diagram", "index.json", {
+    pop: /^([^\s-]+)-/,
+    tooltip: "click",
+    href: (t) => `https://example.com/${t.node.name}`,
+  });
+  diagram.init("description", "type");
 </script>
 ```
 
-This example above will generate `<a href="https://example.com/POP01-bb02">POP01-bb02</a>`. Metadata are also available like ```href: (t) => `https://example.com/${t.node.meta?.type}/${t.node.name}`,```.
+This example above will generate `<a href="https://example.com/POP01-bb02">POP01-bb02</a>`. Metadata are also available like `` href: (t) => `https://example.com/${t.node.meta?.type}/${t.node.name}`, ``.
 
 :bulb: Use `tooltip: "click"` to make tooltips sticky.
-
 
 ## Experimental Features
 
 :warning: Those features may work, but still under development. The behavior might be changed :warning:
-
 
 ### Internal groups
 
@@ -473,14 +453,12 @@ You can display node type based groups in POP-based [Node group](#Node-Group) by
 
 ![Internal group](example/images/internal_group.png)
 
-
 ## Plugins
 
-|Name                                                             |Note                             |
-|-----------------------------------------------------------------|---------------------------------|
-|[Removable Node Plugin](../../tree/main/plugins/removable_node)  |Hide and show nodes by key inputs|
-|[Arrows Link Plugin](../../tree/main/plugins/arrows_link)        |Make links bidirectional arrows  |
-
+| Name                                                            | Note                              |
+| --------------------------------------------------------------- | --------------------------------- |
+| [Removable Node Plugin](../../tree/main/plugins/removable_node) | Hide and show nodes by key inputs |
+| [Arrows Link Plugin](../../tree/main/plugins/arrows_link)       | Make links bidirectional arrows   |
 
 ## Contributing
 
@@ -488,7 +466,6 @@ Please report issues or enhancement requests to [GitHub issues](https://github.c
 For questions or feedbacks write to my twitter @codeout.
 
 Or send a pull request to fix.
-
 
 ## Copyright and License
 

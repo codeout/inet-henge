@@ -1,9 +1,25 @@
 {
   "nodes": [
-    { "name": "POP01-bb01", "meta": {"description": "This is a router", "type": "Backbone"}, "icon": "./images/router.png" },
-    { "name": "POP01-bb02", "meta": {"description": "This is a router", "type": "Backbone"}, "icon": "./images/router.png" },
-    { "name": "POP01-ag01", "meta": {"description": "This is a router", "type": "Aggregation"}, "icon": "./images/switch.png" },
-    { "name": "POP01-ag02", "meta": {"description": "This is a router", "type": "Aggregation"}, "icon": "./images/switch.png" },
+    {
+      "name": "POP01-bb01",
+      "meta": { "description": "This is a router", "type": "Backbone" },
+      "icon": "./images/router.png"
+    },
+    {
+      "name": "POP01-bb02",
+      "meta": { "description": "This is a router", "type": "Backbone" },
+      "icon": "./images/router.png"
+    },
+    {
+      "name": "POP01-ag01",
+      "meta": { "description": "This is a router", "type": "Aggregation" },
+      "icon": "./images/switch.png"
+    },
+    {
+      "name": "POP01-ag02",
+      "meta": { "description": "This is a router", "type": "Aggregation" },
+      "icon": "./images/switch.png"
+    },
     { "name": "POP02-bb01", "meta": { "loopback": "10.0.0.1" } },
     { "name": "POP02-bb02" },
     { "name": "POP02-ag01" },
@@ -17,15 +33,24 @@
   "links": [
     { "source": "POP01-bb01", "target": "POP01-bb02" },
     { "source": "POP02-bb01", "target": "POP02-bb02" },
-    { "source": "POP03-bb01", "target": "POP03-bb02",
-      "meta": { "interface": { "source": "ge-0/0/0", "target": "Te0/0/0/0" } } },
+    {
+      "source": "POP03-bb01",
+      "target": "POP03-bb02",
+      "meta": { "interface": { "source": "ge-0/0/0", "target": "Te0/0/0/0" } }
+    },
     { "source": "POP01-bb01", "target": "POP02-bb01" },
     { "source": "POP01-bb01", "target": "POP03-bb01" },
     { "source": "POP01-bb02", "target": "POP02-bb02" },
-    { "source": "POP01-bb02", "target": "POP03-bb02",
-      "meta": { "interface": { "source": "ge-0/0/0", "target": "Te0/0/0/0" } } },
-    { "source": "POP01-bb02", "target": "POP03-bb02",
-      "meta": { "interface": { "source": "ge-0/0/1", "target": "Te0/0/0/1" } } },
+    {
+      "source": "POP01-bb02",
+      "target": "POP03-bb02",
+      "meta": { "interface": { "source": "ge-0/0/0", "target": "Te0/0/0/0" } }
+    },
+    {
+      "source": "POP01-bb02",
+      "target": "POP03-bb02",
+      "meta": { "interface": { "source": "ge-0/0/1", "target": "Te0/0/0/1" } }
+    },
     { "source": "POP02-bb01", "target": "POP03-bb02" },
     { "source": "POP02-bb02", "target": "POP03-bb01" },
     { "source": "POP01-ag01", "target": "POP01-ag02" },
