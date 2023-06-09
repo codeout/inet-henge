@@ -1,3 +1,9 @@
+## [1.3.1] - 2023-06-10
+
+### Fixed
+
+- Zoom origin when initial translate is specified
+
 ## [1.3.0] - 2023-04-12
 
 ### Added
