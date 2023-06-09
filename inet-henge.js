@@ -3522,11 +3522,12 @@ class DiagramBase {
         if (!this.initialTranslate) {
             this.saveInitialTranslate();
         }
-        d3__WEBPACK_IMPORTED_MODULE_1__.event.scale *= this.initialScale;
-        d3__WEBPACK_IMPORTED_MODULE_1__.event.translate[0] += this.initialTranslate[0];
-        d3__WEBPACK_IMPORTED_MODULE_1__.event.translate[1] += this.initialTranslate[1];
-        _link__WEBPACK_IMPORTED_MODULE_3__.Link.zoom(d3__WEBPACK_IMPORTED_MODULE_1__.event.scale);
-        container.attr("transform", `translate(${d3__WEBPACK_IMPORTED_MODULE_1__.event.translate}) scale(${d3__WEBPACK_IMPORTED_MODULE_1__.event.scale})`);
+        const event = d3__WEBPACK_IMPORTED_MODULE_1__.event;
+        event.scale *= this.initialScale;
+        event.translate[0] += this.initialTranslate[0];
+        event.translate[1] += this.initialTranslate[1];
+        _link__WEBPACK_IMPORTED_MODULE_3__.Link.zoom(event.scale);
+        container.attr("transform", `translate(${event.translate}) scale(${event.scale})`);
     }
     displayLoadMessage() {
         this.indicator = this.svg
