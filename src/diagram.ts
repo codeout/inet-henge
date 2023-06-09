@@ -318,14 +318,16 @@ class DiagramBase {
       this.saveInitialTranslate();
     }
 
-    (d3.event as d3.ZoomEvent).scale *= this.initialScale;
-    (d3.event as d3.ZoomEvent).translate[0] += this.initialTranslate[0];
-    (d3.event as d3.ZoomEvent).translate[1] += this.initialTranslate[1];
+    const event = d3.event as d3.ZoomEvent;
 
-    Link.zoom((d3.event as d3.ZoomEvent).scale);
+    event.scale *= this.initialScale;
+    event.translate[0] += this.initialTranslate[0];
+    event.translate[1] += this.initialTranslate[1];
+
+    Link.zoom(event.scale);
     container.attr(
       "transform",
-      `translate(${(d3.event as d3.ZoomEvent).translate}) scale(${(d3.event as d3.ZoomEvent).scale})`,
+      `translate(${event.translate}) scale(${event.scale})`,
     );
   }
 
