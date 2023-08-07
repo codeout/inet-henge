@@ -268,11 +268,11 @@ export class LinkBase {
   shiftBundle(multiplier: number): string {
     const gap = this.margin() * multiplier;
 
-    const width = Math.abs((this.target as Node).x - (this.source as Node).x);
-    const height = Math.abs((this.source as Node).y - (this.target as Node).y);
-    const length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
+    const x = (this.target as Node).x - (this.source as Node).x;
+    const y = (this.target as Node).y - (this.source as Node).y;
+    const length = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 
-    return `translate(${(gap * height) / length}, ${(gap * width) / length})`;
+    return `translate(${(-gap * y) / length}, ${(gap * x) / length})`;
   }
 
   static reset(): void {
