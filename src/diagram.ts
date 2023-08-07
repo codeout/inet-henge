@@ -325,10 +325,7 @@ class DiagramBase {
     event.translate[1] += this.initialTranslate[1];
 
     Link.zoom(event.scale);
-    container.attr(
-      "transform",
-      `translate(${event.translate}) scale(${event.scale})`,
-    );
+    container.attr("transform", `translate(${event.translate}) scale(${event.scale})`);
   }
 
   private displayLoadMessage() {
