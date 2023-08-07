@@ -2,6 +2,7 @@ import "./hack_cola";
 
 import * as d3 from "d3";
 
+import { Bundle } from "./bundle";
 import { Group, GroupOptions } from "./group";
 import { Link, LinkDataType } from "./link";
 import { Node, NodeDataType, NodeOptions } from "./node";
@@ -150,12 +151,13 @@ class DiagramBase {
               } as NodeOptions),
           )
         : [];
-      const links = data.links ? data.links.map((l, i) => new Link(l, i, this.options.meta, this.getLinkWidth)) : [];
+      const links = data.links ? Bundle.sortByBundle(data.links).map((l, i) => new Link(l, i, this.options.meta, this.getLinkWidth)) : [];
       const groups = Group.divide(nodes, this.options.groupPattern, {
         color: this.options.color,
         padding: this.options.groupPadding,
       } as GroupOptions);
       const tooltips = nodes.map((n) => new Tooltip(n, this.options.tooltip));
+      const bundles = Bundle.divide(links)
 
       this.cola.nodes(nodes).links(links).groups(groups);
       this.setDistance(this.cola);
@@ -171,6 +173,7 @@ class DiagramBase {
       const tooltipLayer = this.svg.append("g").attr("id", "tooltips");
 
       const [link, path, label] = Link.render(linkLayer, linkLabelLayer, links);
+      const bundle = Bundle.render(linkLayer, bundles)
 
       const group = Group.render(groupLayer, groups).call(
         this.cola
@@ -178,7 +181,7 @@ class DiagramBase {
           .on("dragstart", DiagramBase.dragstartCallback)
           .on("drag", () => {
             if (this.options.bundle) {
-              Link.shiftBundle(link, path, label);
+              Link.shiftBundle(link, path, label, bundle);
             }
           }),
       );
@@ -189,7 +192,7 @@ class DiagramBase {
           .on("dragstart", DiagramBase.dragstartCallback)
           .on("drag", () => {
             if (this.options.bundle) {
-              Link.shiftBundle(link, path, label);
+              Link.shiftBundle(link, path, label, bundle);
             }
 
             Tooltip.followNode(tooltip);
@@ -227,7 +230,7 @@ class DiagramBase {
 
       this.cola.start();
       if (this.options.bundle) {
-        Link.shiftBundle(link, path, label);
+        Link.shiftBundle(link, path, label, bundle);
       }
 
       path.attr("d", (d) => d.d()); // make sure path calculation is done
@@ -267,6 +270,7 @@ class DiagramBase {
     d3.select("body svg").remove();
     Node.reset();
     Link.reset();
+    Bundle.reset();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

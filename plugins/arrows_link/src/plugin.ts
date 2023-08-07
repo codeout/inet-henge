@@ -5,8 +5,8 @@ import { Node } from "../../../src/node";
 import { PluginClass } from "../../../src/plugin";
 
 class ArrowsLink extends Link {
-  protected readonly source: number | Node;
-  protected readonly target: number | Node;
+  public readonly source: number | Node;
+  public readonly target: number | Node;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static tick(link: d3.Selection<ArrowsLink>, path: d3.Selection<ArrowsLink>, label: d3.Selection<any>) {

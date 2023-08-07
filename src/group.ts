@@ -39,6 +39,7 @@ export class GroupBase {
     const register = (name: string, node: Node, parent?: string) => {
       const key = `${parent}:${name}`;
       groups[key] = groups[key] || new Group(name, options);
+      // hacky but required due to WebCola implementation
       groups[key].push(node);
     };
 

@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 
+import { Bundle } from "./bundle";
 import { MetaData, MetaDataType } from "./meta_data";
 import { Node } from "./node";
 import { LinkPosition } from "./position_cache";
@@ -10,6 +11,7 @@ export type Constructor = (data: LinkDataType, id: number, metaKeys: string[], l
 export type LinkDataType = {
   source: string;
   target: string;
+  bundle?: number | string;
   meta: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   class: string;
 };
@@ -17,8 +19,10 @@ export type LinkDataType = {
 export class LinkBase {
   private static groups: Record<string, number[]>;
 
-  protected readonly source: number | Node;
-  protected readonly target: number | Node;
+  public readonly bundle?: number | string;
+  public readonly source: number | Node;
+  public readonly target: number | Node;
+
   private readonly metaList: MetaDataType[];
   private readonly sourceMeta: MetaDataType[];
   private readonly targetMeta: MetaDataType[];
@@ -34,6 +38,7 @@ export class LinkBase {
   constructor(data: LinkDataType, public id: number, metaKeys: string[], linkWidth: (object) => number) {
     this.source = Node.idByName(data.source);
     this.target = Node.idByName(data.target);
+    this.bundle = data.bundle;
     this.metaList = new MetaData(data.meta).get(metaKeys);
     this.sourceMeta = new MetaData(data.meta, "source").get(metaKeys);
     this.targetMeta = new MetaData(data.meta, "target").get(metaKeys);
@@ -96,6 +101,10 @@ export class LinkBase {
     return this._margin;
   }
 
+  group(): number[] {
+    return Link.groups[[(this.source as Node).id, (this.target as Node).id].sort().toString()];
+  }
+
   // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
   private tspanXOffset() {
     if (this.isNamedPath()) return 0;
@@ -140,6 +149,23 @@ export class LinkBase {
     return `link ${classify((this.source as Node).name)} ${classify((this.target as Node).name)} ${classify(
       (this.source as Node).name,
     )}-${classify((this.target as Node).name)} ${this.extraClass}`;
+  }
+
+  // after transform is applied
+  centerCoordinates() {
+    const link = d3.select(`.link #${this.linkId()}`).node() as SVGLineElement;
+    const bbox = link.getBBox();
+    const transform = link.transform.baseVal.consolidate();
+
+    return [bbox.x + bbox.width / 2 + transform?.matrix.e || 0, bbox.y + bbox.height / 2 + transform?.matrix.f || 0];
+  }
+
+  angle() {
+    const link = d3.select(`.link #${this.linkId()}`).node() as SVGLineElement;
+    return (
+      (Math.atan2(link.y2.baseVal.value - link.y1.baseVal.value, link.x2.baseVal.value - link.x1.baseVal.value) * 180) /
+      Math.PI
+    );
   }
 
   static render(
@@ -254,24 +280,30 @@ export class LinkBase {
   }
 
   private shiftMultiplier() {
-    if(!this._shiftMultiplier) {
-      const members = Link.groups[[(this.source as Node).id, (this.target as Node).id].sort().toString()] || [];
+    if (!this._shiftMultiplier) {
+      const members = this.group() || [];
       this._shiftMultiplier = members.indexOf(this.id) - (members.length - 1) / 2;
     }
 
     return this._shiftMultiplier;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static shiftBundle(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>) {
+  static shiftBundle(
+    link: d3.Selection<Link>,
+    path: d3.Selection<Link>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    label: d3.Selection<any>,
+    bundle: d3.Selection<Bundle>,
+  ) {
     const transform = (d: Link) => d.shiftBundle(d.shiftMultiplier());
 
     link.attr("transform", transform);
     path.attr("transform", transform);
     label.attr("transform", transform);
+    Bundle.shiftBundle(bundle);
   }
 
-  private shiftBundle(multiplier: number) {
+  shiftBundle(multiplier: number) {
     const gap = this.margin() * multiplier;
 
     const x = (this.target as Node).x - (this.source as Node).x;
