@@ -56,11 +56,7 @@ export class GroupBase {
       node.group.forEach((name) => register(name, node, String(result)));
     });
 
-    return this.array(groups);
-  }
-
-  static array(groups: Record<string, Group>) {
-    return Object.keys(groups).map((g) => groups[g]);
+    return Object.values(groups as Record<string, Group>)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
