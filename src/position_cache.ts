@@ -30,15 +30,15 @@ export class PositionCache {
     this.cachedMd5 = md5;
   }
 
-  static getAll(): { [key: string]: CacheDataType } {
+  static getAll(): Record<string, CacheDataType> {
     return JSON.parse(localStorage.getItem("positionCache")) || {};
   }
 
-  static get(): CacheDataType {
+  static get() {
     return this.getAll()[location.pathname] || ({} as CacheDataType);
   }
 
-  save(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>): void {
+  save(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>) {
     const cache = PositionCache.getAll();
     cache[location.pathname] = {
       md5: this.md5(),
@@ -50,7 +50,7 @@ export class PositionCache {
     localStorage.setItem("positionCache", JSON.stringify(cache));
   }
 
-  md5(data?: ExtendedInetHengeDataType, pop?: RegExp): string {
+  md5(data?: ExtendedInetHengeDataType, pop?: RegExp) {
     data = cloneDeep(data || this.data) as ExtendedInetHengeDataType;
     data.pop = String(pop || this.pop);
     if (data.pop === "undefined") {
@@ -67,12 +67,12 @@ export class PositionCache {
         delete i.meta;
       });
 
-    return md5(JSON.stringify(data));
+    return md5(JSON.stringify(data)) as string;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  groupPosition(group: d3.Selection<any>): GroupPosition[] {
-    const position = [];
+  groupPosition(group: d3.Selection<any>) {
+    const position: GroupPosition[] = [];
 
     group.each((d) => {
       position.push({
@@ -87,8 +87,8 @@ export class PositionCache {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  nodePosition(node: d3.Selection<any>): NodePosition[] {
-    const position = [];
+  nodePosition(node: d3.Selection<any>) {
+    const position: NodePosition[] = [];
 
     node.each((d: Node) => {
       position.push({
@@ -101,8 +101,8 @@ export class PositionCache {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  linkPosition(link: d3.Selection<any>): LinkPosition[] {
-    const position = [];
+  linkPosition(link: d3.Selection<any>) {
+    const position: LinkPosition[] = [];
 
     link.each((d) => {
       position.push({
@@ -116,11 +116,11 @@ export class PositionCache {
     return position;
   }
 
-  match(data: InetHengeDataType, pop: RegExp): boolean {
+  match(data: InetHengeDataType, pop: RegExp) {
     return this.cachedMd5 === this.md5(data as ExtendedInetHengeDataType, pop);
   }
 
-  static load(data: InetHengeDataType, pop: RegExp): PositionCache | undefined {
+  static load(data: InetHengeDataType, pop: RegExp) {
     const cache = this.get();
     if (cache) {
       const position = new PositionCache(data, pop, cache.md5);

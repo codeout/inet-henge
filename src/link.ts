@@ -57,30 +57,29 @@ export class LinkBase {
     (Link.groups[key] || (Link.groups[key] = [])).push(id);
   }
 
-
-  isNamedPath(): boolean {
+  isNamedPath() {
     return this.metaList.length > 0;
   }
 
-  isReversePath(): boolean {
+  isReversePath() {
     return this.targetMeta.length > 0;
   }
 
-  d(): string {
+  d() {
     return `M ${(this.source as Node).x} ${(this.source as Node).y} L ${(this.target as Node).x} ${
       (this.target as Node).y
     }`;
   }
 
-  pathId(): string {
+  pathId() {
     return `path${this.id}`;
   }
 
-  linkId(): string {
+  linkId() {
     return `link${this.id}`;
   }
 
-  margin(): number {
+  margin() {
     if (!this._margin) {
       const margin = window.getComputedStyle(document.getElementById(this.linkId())).margin;
 
@@ -97,28 +96,28 @@ export class LinkBase {
   }
 
   // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
-  tspanXOffset(): number {
+  tspanXOffset() {
     if (this.isNamedPath()) return 0;
     else if (this.isReversePath()) return -this.labelXOffset;
     else return this.labelXOffset;
   }
 
-  tspanYOffset(): string {
+  tspanYOffset() {
     if (this.isNamedPath()) return `${-this.labelYOffset + 0.7}em`;
     else return `${this.labelYOffset}em`;
   }
 
-  rotate(bbox: SVGRect): string {
+  rotate(bbox: SVGRect) {
     if ((this.source as Node).x > (this.target as Node).x)
       return `rotate(180 ${bbox.x + bbox.width / 2} ${bbox.y + bbox.height / 2})`;
     else return "rotate(0)";
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  split(): Record<string, any>[] {
+  split() {
     if (!this.metaList && !this.sourceMeta && !this.targetMeta) return [this];
 
-    const meta = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const meta: Record<string, any>[] = [];
     ["metaList", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
       if (this[key]) {
         const duped = Object.assign(Object.create(this), this);
@@ -131,11 +130,11 @@ export class LinkBase {
     return meta;
   }
 
-  hasMeta(): boolean {
+  hasMeta() {
     return this.metaList.length > 0 || this.sourceMeta.length > 0 || this.targetMeta.length > 0;
   }
 
-  class(): string {
+  class() {
     // eslint-disable-next-line max-len
     return `link ${classify((this.source as Node).name)} ${classify((this.target as Node).name)} ${classify(
       (this.source as Node).name,
@@ -204,15 +203,15 @@ export class LinkBase {
     return [link, path, text];
   }
 
-  private static theOtherEnd(container: SVGGElement): void {
+  private static theOtherEnd(container: SVGGElement) {
     d3.select(container).attr("class", "reverse").attr("text-anchor", "end").attr("startOffset", "100%");
   }
 
-  private static center(container: SVGGElement): void {
+  private static center(container: SVGGElement) {
     d3.select(container).attr("class", "center").attr("text-anchor", "middle").attr("startOffset", "50%");
   }
 
-  private static appendTspans(container: SVGGElement, meta: MetaDataType[]): void {
+  private static appendTspans(container: SVGGElement, meta: MetaDataType[]) {
     meta.forEach((m) => {
       d3.select(container)
         .append("tspan")
@@ -224,7 +223,7 @@ export class LinkBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static tick(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>): void {
+  static tick(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>) {
     link
       .attr("x1", (d) => (d.source as Node).x)
       .attr("y1", (d) => (d.source as Node).y)
@@ -238,14 +237,14 @@ export class LinkBase {
       });
   }
 
-  static zoom(scale?: number): void {
+  static zoom(scale?: number) {
     let visibility = "hidden";
     if (scale && scale > 1.5) visibility = "visible";
 
     d3.selectAll(".link text").style("visibility", visibility);
   }
 
-  static setPosition(link: d3.Selection<Link>, position: LinkPosition[]): void {
+  static setPosition(link: d3.Selection<Link>, position: LinkPosition[]) {
     link
       .attr("x1", (d, i) => position[i].x1)
       .attr("y1", (d, i) => position[i].y1)
@@ -253,13 +252,13 @@ export class LinkBase {
       .attr("y2", (d, i) => position[i].y2);
   }
 
-  private static shiftMultiplier(link: Link): number {
+  private static shiftMultiplier(link: Link) {
     const members = Link.groups[[(link.source as Node).id, (link.target as Node).id].sort().toString()] || [];
     return members.indexOf(link.id) - (members.length - 1) / 2;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static shiftBundle(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>): void {
+  static shiftBundle(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>) {
     const transform = (d) => d.shiftBundle(Link.shiftMultiplier(d));
 
     link.attr("transform", transform);
@@ -267,7 +266,7 @@ export class LinkBase {
     label.attr("transform", transform);
   }
 
-  shiftBundle(multiplier: number): string {
+  shiftBundle(multiplier: number) {
     const gap = this.margin() * multiplier;
 
     const x = (this.target as Node).x - (this.source as Node).x;
@@ -277,7 +276,7 @@ export class LinkBase {
     return `translate(${(-gap * y) / length}, ${(gap * x) / length})`;
   }
 
-  static reset(): void {
+  static reset() {
     Link.groups = null;
   }
 }
@@ -304,7 +303,7 @@ const Eventable = (Base: typeof LinkBase) => {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    on(name: string, callback: (element: SVGGElement) => any): void {
+    on(name: string, callback: (element: SVGGElement) => any) {
       this.dispatch.on(name, callback);
     }
   }
@@ -325,7 +324,7 @@ const Pluggable = (Base: typeof LinkBase) => {
       }
     }
 
-    static registerConstructor(func: Constructor): void {
+    static registerConstructor(func: Constructor) {
       Link.pluginConstructors.push(func);
     }
   }

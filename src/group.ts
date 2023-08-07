@@ -22,19 +22,19 @@ export class GroupBase {
     this.padding = options.padding;
   }
 
-  transform(): string {
+  transform() {
     return `translate(${this.bounds.x}, ${this.bounds.y})`;
   }
 
-  groupWidth(): number {
+  groupWidth() {
     return this.bounds.width();
   }
 
-  groupHeight(): number {
+  groupHeight() {
     return this.bounds.height();
   }
 
-  static divide(nodes: Node[], pattern: RegExp, options: GroupOptions): Group[] {
+  static divide(nodes: Node[], pattern: RegExp, options: GroupOptions) {
     const groups = {};
     const register = (name: string, node: Node, parent?: string) => {
       const key = `${parent}:${name}`;
@@ -59,14 +59,13 @@ export class GroupBase {
     return this.array(groups);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static array(groups: Record<string, any>): Group[] {
+  static array(groups: Record<string, Group>) {
     return Object.keys(groups).map((g) => groups[g]);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static render(layer: d3.Selection<any>, groups: Group[]): d3.Selection<Group> {
-    const group = layer
+  static render(layer: d3.Selection<any>, groups: Group[]) {
+    const group: d3.Selection<Group> = layer
       .selectAll(".group")
       .data(groups)
       .enter()
@@ -88,7 +87,7 @@ export class GroupBase {
     return group;
   }
 
-  static tick(group: d3.Selection<Group>): void {
+  static tick(group: d3.Selection<Group>) {
     group.attr("transform", (d) => d.transform());
     group
       .selectAll("rect")
@@ -96,7 +95,7 @@ export class GroupBase {
       .attr("height", (d) => d.groupHeight());
   }
 
-  static setPosition(group: d3.Selection<Group>, position: GroupPosition[]): void {
+  static setPosition(group: d3.Selection<Group>, position: GroupPosition[]) {
     group.attr("transform", (d, i) => {
       d.bounds.x = position[i].x;
       d.bounds.y = position[i].y;
@@ -119,7 +118,7 @@ const WebColable = (Base: typeof GroupBase) => {
       this.leaves = [];
     }
 
-    push(node: Node): void {
+    push(node: Node) {
       this.leaves.push(node.id);
     }
   }
@@ -148,7 +147,7 @@ const Eventable = (Base: typeof GroupBase) => {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    on(name: string, callback: (element: SVGGElement) => any): void {
+    on(name: string, callback: (element: SVGGElement) => any) {
       this.dispatch.on(name, callback);
     }
   }
@@ -169,7 +168,7 @@ const Pluggable = (Base: typeof GroupBase) => {
       }
     }
 
-    static registerConstructor(func: Constructor): void {
+    static registerConstructor(func: Constructor) {
       Group.pluginConstructors.push(func);
     }
   }
