@@ -54,12 +54,12 @@ class NodeBase {
     this.padding = 3;
     this.tspanOffset = "1.1em";
 
-    this.register(id, data.name);
+    this.register(id);
   }
 
-  register(id: number, name: string): void {
+  private register(id: number) {
     Node.all = Node.all || {};
-    Node.all[name] = id;
+    Node.all[this.name] = id;
   }
 
   transform(): string {

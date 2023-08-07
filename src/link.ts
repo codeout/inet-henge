@@ -15,7 +15,7 @@ export type LinkDataType = {
 };
 
 export class LinkBase {
-  private static groups: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  private static groups: Record<string, number[]>;
 
   protected readonly source: number | Node;
   protected readonly target: number | Node;
@@ -46,8 +46,17 @@ export class LinkBase {
     this.labelYOffset = 1.5; // em
     this.color = "#7a4e4e";
 
-    this.register(id, this.source, this.target);
+    this.register(id);
   }
+
+  private register(id: number) {
+    Link.groups = Link.groups || {};
+
+    // source and target
+    const key = [this.source, this.target].sort().toString();
+    (Link.groups[key] || (Link.groups[key] = [])).push(id);
+  }
+
 
   isNamedPath(): boolean {
     return this.metaList.length > 0;
@@ -242,13 +251,6 @@ export class LinkBase {
       .attr("y1", (d, i) => position[i].y1)
       .attr("x2", (d, i) => position[i].x2)
       .attr("y2", (d, i) => position[i].y2);
-  }
-
-  register(id: number, source: number, target: number): void {
-    Link.groups = Link.groups || {};
-    const key = [source, target].sort().toString();
-    Link.groups[key] = Link.groups[key] || [];
-    Link.groups[key].push(id);
   }
 
   private static shiftMultiplier(link: Link): number {
