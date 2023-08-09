@@ -334,7 +334,7 @@ You can display multiple links between nodes by setting `bundle: true` in the co
 </script>
 ```
 
-![Bundle example](example/images/bundle.png)
+![Bundle example](example/images/bundle01.png)
 
 Nodes are connected to each other with a single link by default.
 
@@ -466,6 +466,26 @@ You can display node type based groups in POP-based [Node group](#Node-Group) by
 ```
 
 ![Internal group](example/images/internal_group.png)
+
+### Bundle Mark
+
+You can show a "tie" over bundled links by `bundle:` definition in each link.
+
+```json
+  "links": [
+    { "source": "POP01-bb01", "target": "POP01-bb02", "bundle": "lag 1" },
+    { "source": "POP01-bb01", "target": "POP01-bb02", "bundle": "lag 1" },
+    { "source": "POP01-bb01", "target": "POP01-bb02"}
+  ]
+```
+
+![Bundle example](example/images/bundle02.png)
+
+- Define bundle name as `bundle:` to specify which link belongs to the bundle ( integer or string value )
+- Set `bundle: true` when initializing `Diagram`. See [Display bundles](#display-bundles) section for details.
+- inet-henge draws a "tie" when there are multiple links in bundle among the same node pair. It doesn't draw the mark between different node pairs, even when bundle names are the same.
+
+:warning: Multi-chassis bundling is not supported.
 
 ## Plugins
 
