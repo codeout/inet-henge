@@ -91,11 +91,11 @@ class NodeBase {
         this.height = options.height || 40;
         this.padding = 3;
         this.tspanOffset = "1.1em";
-        this.register(id, data.name);
+        this.register(id);
     }
-    register(id, name) {
+    register(id) {
         Node.all = Node.all || {};
-        Node.all[name] = id;
+        Node.all[this.name] = id;
     }
     transform() {
         const x = this.x - this.width / 2 + this.padding;

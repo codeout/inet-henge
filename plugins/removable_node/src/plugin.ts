@@ -12,15 +12,15 @@ type Options = {
 class RemovableNode extends Node {
   public selected;
 
-  public toggleSelected(): void {
+  public toggleSelected() {
     this.selected = !this.selected;
   }
 
-  public reset(): void {
+  public reset() {
     this.selected = false;
   }
 
-  public textColor(): string {
+  public textColor() {
     return this.selected ? "red" : "black";
   }
 }
@@ -29,7 +29,7 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
   private static showKey = "Escape";
   private static hideKey = "d";
 
-  static load(Group, Node, Link, options: Options = {}): void {
+  static load(Group, Node, Link, options: Options = {}) {
     if (options.showKey) {
       RemovableNodePlugin.showKey = options.showKey;
     }
@@ -57,7 +57,7 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
   /**
    * Configure keyboard event listener to show or hide Nodes and Links
    */
-  private static configureRemovableNodes(): void {
+  private static configureRemovableNodes() {
     d3.select("body").on("keydown", () => {
       switch ((d3.event as KeyboardEvent).key) {
         case RemovableNodePlugin.showKey:
@@ -72,7 +72,7 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
   /**
    * Configure click event listener to select Nodes
    */
-  private static configureRemovableNode(element: SVGGElement): void {
+  private static configureRemovableNode(element: SVGGElement) {
     const d3Element = d3.select(element);
     d3Element.on("click.removableNode", function (this: SVGGElement, d: RemovableNode) {
       // Do nothing for dragging
@@ -85,13 +85,13 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
     });
   }
 
-  private static applyColor(element: SVGGElement): void {
+  private static applyColor(element: SVGGElement) {
     d3.select(element)
       .select("text tspan")
       .style("fill", (d: RemovableNode) => d.textColor());
   }
 
-  private static show(): void {
+  private static show() {
     d3.selectAll(".node")
       .style("display", "inline")
       .each(function (this: SVGGElement, d: RemovableNode) {
@@ -102,7 +102,7 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
     RemovableNodePlugin.showLinks();
   }
 
-  private static hide(): void {
+  private static hide() {
     d3.selectAll(".node").style("display", (d: RemovableNode) => {
       if (d.selected) {
         // Hide connected elements
@@ -115,15 +115,15 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
     });
   }
 
-  private static showLinks(): void {
+  private static showLinks() {
     d3.selectAll(`.link`).style("display", "inline");
   }
 
-  private static hideLinks(nodeName: string): void {
+  private static hideLinks(nodeName: string) {
     d3.selectAll(`.link.${classify(nodeName)}`).style("display", "none");
   }
 
-  private static hideToolTips(nodeName: string): void {
+  private static hideToolTips(nodeName: string) {
     d3.selectAll(`.tooltip.${classify(nodeName)}`).attr("visibility", "hidden");
   }
 };

@@ -54,44 +54,44 @@ class NodeBase {
     this.padding = 3;
     this.tspanOffset = "1.1em";
 
-    this.register(id, data.name);
+    this.register(id);
   }
 
-  register(id: number, name: string): void {
+  private register(id: number) {
     Node.all = Node.all || {};
-    Node.all[name] = id;
+    Node.all[this.name] = id;
   }
 
-  transform(): string {
+  transform() {
     const x = this.x - this.width / 2 + this.padding;
     const y = this.y - this.height / 2 + this.padding;
     return `translate(${x}, ${y})`;
   }
 
-  nodeWidth(): number {
+  private nodeWidth() {
     return this.width - 2 * this.padding;
   }
 
-  nodeHeight(): number {
+  private nodeHeight() {
     return this.height - 2 * this.padding;
   }
 
-  xForText(): number {
+  private xForText() {
     return this.width / 2;
   }
 
-  yForText(): number {
+  private yForText() {
     return this.height / 2;
   }
 
-  static idByName(name: string): number {
+  static idByName(name: string) {
     if (Node.all[name] === undefined) throw `Unknown node "${name}"`;
     return Node.all[name];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static render(layer: d3.Selection<any>, nodes: Node[]): d3.Selection<Node> {
-    const node = layer
+  static render(layer: d3.Selection<any>, nodes: Node[]) {
+    const node: d3.Selection<Node> = layer
       .selectAll(".node")
       .data(nodes)
       .enter()
@@ -110,7 +110,7 @@ class NodeBase {
     return node;
   }
 
-  private static appendText(container: SVGGElement): void {
+  private static appendText(container: SVGGElement) {
     const text = (d3.select(container) as d3.Selection<Node>)
       .append("text")
       .attr("text-anchor", "middle")
@@ -129,7 +129,7 @@ class NodeBase {
     });
   }
 
-  private static appendTspans(container: d3.Selection<Node>, meta: MetaDataType[]): void {
+  private static appendTspans(container: d3.Selection<Node>, meta: MetaDataType[]) {
     meta.forEach((m) => {
       container
         .append("tspan")
@@ -140,7 +140,7 @@ class NodeBase {
     });
   }
 
-  private static appendImage(container: SVGGElement): void {
+  private static appendImage(container: SVGGElement) {
     (d3.select(container) as d3.Selection<Node>)
       .attr("class", (d) => `node image ${classify(d.name)} ${d.extraClass}`)
       .append("image")
@@ -149,7 +149,7 @@ class NodeBase {
       .attr("height", (d) => d.nodeHeight());
   }
 
-  private static appendRect(container: SVGGElement): void {
+  private static appendRect(container: SVGGElement) {
     (d3.select(container) as d3.Selection<Node>)
       .attr("class", (d) => `node rect ${classify(d.name)} ${d.extraClass}`)
       .append("rect")
@@ -160,11 +160,11 @@ class NodeBase {
       .style("fill", (d) => d.options.color(undefined));
   }
 
-  static tick(node: d3.Selection<Node>): void {
+  static tick(node: d3.Selection<Node>) {
     node.attr("transform", (d) => d.transform());
   }
 
-  static setPosition(node: d3.Selection<Node>, position: NodePosition[]): void {
+  static setPosition(node: d3.Selection<Node>, position: NodePosition[]) {
     node.attr("transform", (d, i) => {
       if (
         position[i]?.x !== null &&
@@ -179,7 +179,7 @@ class NodeBase {
     });
   }
 
-  static reset(): void {
+  static reset() {
     Node.all = null;
   }
 }
@@ -205,7 +205,7 @@ const Eventable = (Base: typeof NodeBase) => {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    on(name: string, callback: (element: SVGGElement) => any): void {
+    on(name: string, callback: (element: SVGGElement) => any) {
       this.dispatch.on(name, callback);
     }
   }
@@ -226,7 +226,7 @@ const Pluggable = (Base: typeof NodeBase) => {
       }
     }
 
-    static registerConstructor(func: Constructor): void {
+    static registerConstructor(func: Constructor) {
       Node.pluginConstructors.push(func);
     }
   }

@@ -5,29 +5,29 @@ import { Node } from "../../../src/node";
 import { PluginClass } from "../../../src/plugin";
 
 class ArrowsLink extends Link {
-  protected readonly source: number | Node;
-  protected readonly target: number | Node;
+  public readonly source: number | Node;
+  public readonly target: number | Node;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static tick(link: d3.Selection<ArrowsLink>, path: d3.Selection<ArrowsLink>, label: d3.Selection<any>): void {
+  static tick(link: d3.Selection<ArrowsLink>, path: d3.Selection<ArrowsLink>, label: d3.Selection<any>) {
     super.tick(link, path, label);
 
     link.attr("x2", (d) => d.x2());
     link.attr("y2", (d) => d.y2());
   }
 
-  length(): number {
+  length() {
     return Math.sqrt(
       ((this.source as Node).x - (this.target as Node).x) ** 2 +
         ((this.source as Node).y - (this.target as Node).y) ** 2,
     );
   }
 
-  x2(): number {
+  x2() {
     return (this.source as Node).x + (0.5 - 5 / this.length()) * ((this.target as Node).x - (this.source as Node).x);
   }
 
-  y2(): number {
+  y2() {
     return (this.source as Node).y + (0.5 - 5 / this.length()) * ((this.target as Node).y - (this.source as Node).y);
   }
 }
@@ -35,7 +35,7 @@ class ArrowsLink extends Link {
 export const ArrowsLinkPlugin: PluginClass = class ArrowsLinkPlugin {
   private static isMarkerDefined = false;
 
-  static load(Group, Node, Link): void {
+  static load(Group, Node, Link) {
     Link.registerConstructor(function (
       /* eslint-disable @typescript-eslint/no-unused-vars */
       data: LinkDataType,
