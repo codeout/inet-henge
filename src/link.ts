@@ -29,6 +29,7 @@ export class LinkBase {
   private readonly labelYOffset: number;
   private color: string;
   private _margin: number;
+  private _shiftMultiplier: number;
 
   constructor(data: LinkDataType, public id: number, metaKeys: string[], linkWidth: (object) => number) {
     this.source = Node.idByName(data.source);
@@ -252,14 +253,18 @@ export class LinkBase {
       .attr("y2", (d, i) => position[i].y2);
   }
 
-  private static shiftMultiplier(link: Link) {
-    const members = Link.groups[[(link.source as Node).id, (link.target as Node).id].sort().toString()] || [];
-    return members.indexOf(link.id) - (members.length - 1) / 2;
+  private shiftMultiplier() {
+    if(!this._shiftMultiplier) {
+      const members = Link.groups[[(this.source as Node).id, (this.target as Node).id].sort().toString()] || [];
+      this._shiftMultiplier = members.indexOf(this.id) - (members.length - 1) / 2;
+    }
+
+    return this._shiftMultiplier;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static shiftBundle(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>) {
-    const transform = (d) => d.shiftBundle(Link.shiftMultiplier(d));
+    const transform = (d: Link) => d.shiftBundle(d.shiftMultiplier());
 
     link.attr("transform", transform);
     path.attr("transform", transform);
