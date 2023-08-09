@@ -30,11 +30,11 @@ export class PositionCache {
     this.cachedMd5 = md5;
   }
 
-  static getAll(): Record<string, CacheDataType> {
+  private static getAll(): Record<string, CacheDataType> {
     return JSON.parse(localStorage.getItem("positionCache")) || {};
   }
 
-  static get() {
+  private static get() {
     return this.getAll()[location.pathname] || ({} as CacheDataType);
   }
 
@@ -50,7 +50,7 @@ export class PositionCache {
     localStorage.setItem("positionCache", JSON.stringify(cache));
   }
 
-  md5(data?: ExtendedInetHengeDataType, pop?: RegExp) {
+  private md5(data?: ExtendedInetHengeDataType, pop?: RegExp) {
     data = cloneDeep(data || this.data) as ExtendedInetHengeDataType;
     data.pop = String(pop || this.pop);
     if (data.pop === "undefined") {
@@ -71,7 +71,7 @@ export class PositionCache {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  groupPosition(group: d3.Selection<any>) {
+  private groupPosition(group: d3.Selection<any>) {
     const position: GroupPosition[] = [];
 
     group.each((d) => {
@@ -87,7 +87,7 @@ export class PositionCache {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  nodePosition(node: d3.Selection<any>) {
+  private nodePosition(node: d3.Selection<any>) {
     const position: NodePosition[] = [];
 
     node.each((d: Node) => {
@@ -101,7 +101,7 @@ export class PositionCache {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  linkPosition(link: d3.Selection<any>) {
+  private linkPosition(link: d3.Selection<any>) {
     const position: LinkPosition[] = [];
 
     link.each((d) => {
@@ -116,7 +116,7 @@ export class PositionCache {
     return position;
   }
 
-  match(data: InetHengeDataType, pop: RegExp) {
+  private match(data: InetHengeDataType, pop: RegExp) {
     return this.cachedMd5 === this.md5(data as ExtendedInetHengeDataType, pop);
   }
 

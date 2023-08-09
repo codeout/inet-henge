@@ -68,19 +68,19 @@ class NodeBase {
     return `translate(${x}, ${y})`;
   }
 
-  nodeWidth() {
+  private nodeWidth() {
     return this.width - 2 * this.padding;
   }
 
-  nodeHeight() {
+  private nodeHeight() {
     return this.height - 2 * this.padding;
   }
 
-  xForText() {
+  private xForText() {
     return this.width / 2;
   }
 
-  yForText() {
+  private yForText() {
     return this.height / 2;
   }
 

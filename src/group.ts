@@ -26,11 +26,11 @@ export class GroupBase {
     return `translate(${this.bounds.x}, ${this.bounds.y})`;
   }
 
-  groupWidth() {
+  private groupWidth() {
     return this.bounds.width();
   }
 
-  groupHeight() {
+  private groupHeight() {
     return this.bounds.height();
   }
 

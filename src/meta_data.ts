@@ -8,14 +8,14 @@ export class MetaData {
     return this.slice(keys).filter((k) => typeof k.value === "string");
   }
 
-  slice(keys: string[]) {
+  private slice(keys: string[]) {
     if (!this.data) return [];
 
     if (this.extraKey) return this.sliceWithExtraKey(keys);
     else return this.sliceWithoutExtraKey(keys);
   }
 
-  sliceWithExtraKey(keys: string[]) {
+  private sliceWithExtraKey(keys: string[]) {
     const data: MetaDataType[] = [];
 
     keys.forEach((k) => {
@@ -25,7 +25,7 @@ export class MetaData {
     return data;
   }
 
-  sliceWithoutExtraKey(keys: string[]) {
+  private sliceWithoutExtraKey(keys: string[]) {
     const data: MetaDataType[] = [];
 
     keys.forEach((k) => {

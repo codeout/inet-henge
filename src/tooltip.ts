@@ -15,7 +15,7 @@ export class Tooltip {
     this.visibility = "hidden";
   }
 
-  tspanOffsetY(isHeader: boolean) {
+  private tspanOffsetY(isHeader: boolean) {
     return isHeader ? "2em" : "1.1em";
   }
 
@@ -23,11 +23,11 @@ export class Tooltip {
     return `translate(${this.node.x}, ${this.node.y})`;
   }
 
-  class() {
+  private class() {
     return `tooltip ${this.nodeId()}`;
   }
 
-  nodeId(escape = false) {
+  private nodeId(escape = false) {
     let id = classify(this.node.name);
 
     if (escape) {
@@ -37,17 +37,17 @@ export class Tooltip {
     return id;
   }
 
-  setVisibility(visibility: string | null) {
+  private setVisibility(visibility: string | null) {
     this.visibility = visibility === "visible" ? "visible" : "hidden";
   }
 
   // This doesn't actually toggle visibility, but returns string for toggled visibility
-  toggleVisibility() {
+  private toggleVisibility() {
     this.visibility = this.visibility === "hidden" ? "visible" : "hidden";
     return this.visibility;
   }
 
-  toggleVisibilityCallback(element: SVGGElement) {
+  private toggleVisibilityCallback(element: SVGGElement) {
     return () => {
       // Do nothing for dragging
       if ((d3.event as MouseEvent).defaultPrevented) {
@@ -67,17 +67,17 @@ export class Tooltip {
     };
   }
 
-  configureNodeClickCallback(element: SVGGElement) {
+  private configureNodeClickCallback(element: SVGGElement) {
     d3.select(`#${this.nodeId(true)}`).on("click.tooltip", this.toggleVisibilityCallback(element));
   }
 
-  configureNodeHoverCallback(element: SVGGElement) {
+  private configureNodeHoverCallback(element: SVGGElement) {
     d3.select(`#${this.nodeId(true)}`).on("mouseenter.tooltip", this.toggleVisibilityCallback(element));
     d3.select(`#${this.nodeId(true)}`).on("mouseleave.tooltip", this.toggleVisibilityCallback(element));
   }
 
   // Make tooltip selectable
-  disableZoom(element: SVGGElement) {
+  private disableZoom(element: SVGGElement) {
     d3.select(element).on("mousedown.tooltip", () => {
       (d3.event as MouseEvent).stopPropagation();
     });

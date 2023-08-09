@@ -57,11 +57,11 @@ export class LinkBase {
     (Link.groups[key] || (Link.groups[key] = [])).push(id);
   }
 
-  isNamedPath() {
+  private isNamedPath() {
     return this.metaList.length > 0;
   }
 
-  isReversePath() {
+  private isReversePath() {
     return this.targetMeta.length > 0;
   }
 
@@ -71,15 +71,15 @@ export class LinkBase {
     }`;
   }
 
-  pathId() {
+  private pathId() {
     return `path${this.id}`;
   }
 
-  linkId() {
+  private linkId() {
     return `link${this.id}`;
   }
 
-  margin() {
+  private margin() {
     if (!this._margin) {
       const margin = window.getComputedStyle(document.getElementById(this.linkId())).margin;
 
@@ -96,24 +96,24 @@ export class LinkBase {
   }
 
   // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
-  tspanXOffset() {
+  private tspanXOffset() {
     if (this.isNamedPath()) return 0;
     else if (this.isReversePath()) return -this.labelXOffset;
     else return this.labelXOffset;
   }
 
-  tspanYOffset() {
+  private tspanYOffset() {
     if (this.isNamedPath()) return `${-this.labelYOffset + 0.7}em`;
     else return `${this.labelYOffset}em`;
   }
 
-  rotate(bbox: SVGRect) {
+  private rotate(bbox: SVGRect) {
     if ((this.source as Node).x > (this.target as Node).x)
       return `rotate(180 ${bbox.x + bbox.width / 2} ${bbox.y + bbox.height / 2})`;
     else return "rotate(0)";
   }
 
-  split() {
+  private split() {
     if (!this.metaList && !this.sourceMeta && !this.targetMeta) return [this];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -130,7 +130,7 @@ export class LinkBase {
     return meta;
   }
 
-  hasMeta() {
+  private hasMeta() {
     return this.metaList.length > 0 || this.sourceMeta.length > 0 || this.targetMeta.length > 0;
   }
 
@@ -266,7 +266,7 @@ export class LinkBase {
     label.attr("transform", transform);
   }
 
-  shiftBundle(multiplier: number) {
+  private shiftBundle(multiplier: number) {
     const gap = this.margin() * multiplier;
 
     const x = (this.target as Node).x - (this.source as Node).x;
