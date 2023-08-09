@@ -114,7 +114,7 @@ export class Bundle {
       ((last[1] - first[1]) * this.space) / gap + last[1],
     ];
 
-    return `M ${start[0]} ${start[1]} A ${gap/2 + 10},5 ${angle} 1,0 ${end[0]} ${end[1]}`;
+    return `M ${start[0]} ${start[1]} A ${gap / 2 + 10},5 ${angle} 1,0 ${end[0]} ${end[1]}`;
   }
 
   private shiftMultiplier() {
