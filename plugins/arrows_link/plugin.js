@@ -12,6 +12,119 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/bundle.ts":
+/*!***********************!*\
+  !*** ./src/bundle.ts ***!
+  \***********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Bundle": () => (/* binding */ Bundle)
+/* harmony export */ });
+class Bundle {
+    constructor(links, id) {
+        this.id = id;
+        this.links = links;
+        this.color = "#7a4e4e";
+        this.width = 2;
+        this.space = 4;
+    }
+    static divide(links) {
+        Bundle.groups = {};
+        for (const l of links) {
+            if (l.bundle) {
+                const key = this.groupKey(l);
+                (Bundle.groups[key] || (Bundle.groups[key] = [])).push(l.id);
+            }
+        }
+        return Object.values(Bundle.groups).map((ids, i) => {
+            return new Bundle(ids.map((id) => links[id]), i);
+        });
+    }
+    static groupKey(link) {
+        return JSON.stringify([link.source, link.target, link.bundle]);
+    }
+    static render(linkLayer, // eslint-disable-line @typescript-eslint/no-explicit-any
+    bundles) {
+        const bundleGroup = linkLayer
+            .selectAll(".bundle")
+            .data(bundles)
+            .enter()
+            .append("g")
+            .attr("class", (d) => d.class());
+        const bundle = bundleGroup
+            .append("path")
+            .attr("d", (d) => d.d())
+            .attr("stroke", (d) => d.color)
+            .attr("stroke-width", (d) => d.width)
+            .attr("fill", "none")
+            .attr("id", (d) => d.bundleId());
+        return bundle;
+    }
+    static reset() {
+        Bundle.groups = null;
+    }
+    // sort by bundle with preserving order
+    static sortByBundle(links) {
+        return links.sort((a, b) => {
+            switch (true) {
+                case !!a.bundle && !b.bundle:
+                    return -1;
+                case !a.bundle && !!b.bundle:
+                    return 1;
+                case !a.bundle && !b.bundle:
+                    return 0;
+                // !!a.bundle && !!b.bundle === true
+                case a.bundle.toString() < b.bundle.toString():
+                    return -1;
+                case a.bundle.toString() > b.bundle.toString():
+                    return 1;
+                default:
+                    return 0;
+            }
+        });
+    }
+    d() {
+        const first = this.links[0].centerCoordinates();
+        const last = this.links[this.links.length - 1].centerCoordinates();
+        const gap = Math.sqrt(Math.pow(first[0] - last[0], 2) + Math.pow(first[1] - last[1], 2));
+        if (gap === 0) {
+            return "";
+        }
+        const angle = this.links[0].angle() + 90;
+        const start = [
+            ((first[0] - last[0]) * this.space) / gap + first[0],
+            ((first[1] - last[1]) * this.space) / gap + first[1],
+        ];
+        const end = [
+            ((last[0] - first[0]) * this.space) / gap + last[0],
+            ((last[1] - first[1]) * this.space) / gap + last[1],
+        ];
+        return `M ${start[0]} ${start[1]} A ${gap / 2 + 10},5 ${angle} 1,0 ${end[0]} ${end[1]}`;
+    }
+    shiftMultiplier() {
+        if (!this._shiftMultiplier) {
+            const members = this.links[0].group() || [];
+            this._shiftMultiplier = this.links.reduce((sum, l) => (sum += l.id - (members.length - 1) / 2), 0) / 2;
+        }
+        return this._shiftMultiplier;
+    }
+    static shiftBundle(bundle) {
+        bundle.attr("d", (d) => d.d());
+    }
+    class() {
+        // modified link's class
+        return this.links[0].class().replace(/^link/, "bundle");
+    }
+    bundleId() {
+        return `bundle${this.id}`;
+    }
+}
+
+
+/***/ }),
+
 /***/ "./src/link.ts":
 /*!*********************!*\
   !*** ./src/link.ts ***!
@@ -25,9 +138,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _meta_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./meta_data */ "./src/meta_data.ts");
-/* harmony import */ var _node__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node */ "./src/node.ts");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./util */ "./src/util.ts");
+/* harmony import */ var _bundle__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bundle */ "./src/bundle.ts");
+/* harmony import */ var _meta_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./meta_data */ "./src/meta_data.ts");
+/* harmony import */ var _node__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node */ "./src/node.ts");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./util */ "./src/util.ts");
+
 
 
 
@@ -35,11 +150,12 @@ __webpack_require__.r(__webpack_exports__);
 class LinkBase {
     constructor(data, id, metaKeys, linkWidth) {
         this.id = id;
-        this.source = _node__WEBPACK_IMPORTED_MODULE_2__.Node.idByName(data.source);
-        this.target = _node__WEBPACK_IMPORTED_MODULE_2__.Node.idByName(data.target);
-        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta).get(metaKeys);
-        this.sourceMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta, "source").get(metaKeys);
-        this.targetMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_1__.MetaData(data.meta, "target").get(metaKeys);
+        this.source = _node__WEBPACK_IMPORTED_MODULE_3__.Node.idByName(data.source);
+        this.target = _node__WEBPACK_IMPORTED_MODULE_3__.Node.idByName(data.target);
+        this.bundle = data.bundle;
+        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta).get(metaKeys);
+        this.sourceMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "source").get(metaKeys);
+        this.targetMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "target").get(metaKeys);
         this.extraClass = data.class || "";
         if (typeof linkWidth === "function")
             this.width = linkWidth(data.meta) || 3;
@@ -49,7 +165,13 @@ class LinkBase {
         this.labelXOffset = 20;
         this.labelYOffset = 1.5; // em
         this.color = "#7a4e4e";
-        this.register(id, this.source, this.target);
+        this.register(id);
+    }
+    register(id) {
+        Link.groups = Link.groups || {};
+        // source and target
+        const key = [this.source, this.target].sort().toString();
+        (Link.groups[key] || (Link.groups[key] = [])).push(id);
     }
     isNamedPath() {
         return this.metaList.length > 0;
@@ -80,6 +202,9 @@ class LinkBase {
         }
         return this._margin;
     }
+    group() {
+        return Link.groups[[this.source.id, this.target.id].sort().toString()];
+    }
     // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
     tspanXOffset() {
         if (this.isNamedPath())
@@ -101,10 +226,10 @@ class LinkBase {
         else
             return "rotate(0)";
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     split() {
         if (!this.metaList && !this.sourceMeta && !this.targetMeta)
             return [this];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const meta = [];
         ["metaList", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
             if (this[key]) {
@@ -120,7 +245,19 @@ class LinkBase {
     }
     class() {
         // eslint-disable-next-line max-len
-        return `link ${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.source.name)} ${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.target.name)} ${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.source.name)}-${(0,_util__WEBPACK_IMPORTED_MODULE_3__.classify)(this.target.name)} ${this.extraClass}`;
+        return `link ${(0,_util__WEBPACK_IMPORTED_MODULE_4__.classify)(this.source.name)} ${(0,_util__WEBPACK_IMPORTED_MODULE_4__.classify)(this.target.name)} ${(0,_util__WEBPACK_IMPORTED_MODULE_4__.classify)(this.source.name)}-${(0,_util__WEBPACK_IMPORTED_MODULE_4__.classify)(this.target.name)} ${this.extraClass}`;
+    }
+    // after transform is applied
+    centerCoordinates() {
+        const link = d3__WEBPACK_IMPORTED_MODULE_0__.select(`.link #${this.linkId()}`).node();
+        const bbox = link.getBBox();
+        const transform = link.transform.baseVal.consolidate();
+        return [bbox.x + bbox.width / 2 + (transform === null || transform === void 0 ? void 0 : transform.matrix.e) || 0, bbox.y + bbox.height / 2 + (transform === null || transform === void 0 ? void 0 : transform.matrix.f) || 0];
+    }
+    angle() {
+        const link = d3__WEBPACK_IMPORTED_MODULE_0__.select(`.link #${this.linkId()}`).node();
+        return ((Math.atan2(link.y2.baseVal.value - link.y1.baseVal.value, link.x2.baseVal.value - link.x1.baseVal.value) * 180) /
+            Math.PI);
     }
     static render(linkLayer, // eslint-disable-line @typescript-eslint/no-explicit-any
     labelLayer, // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -216,29 +353,28 @@ class LinkBase {
             .attr("x2", (d, i) => position[i].x2)
             .attr("y2", (d, i) => position[i].y2);
     }
-    register(id, source, target) {
-        Link.groups = Link.groups || {};
-        const key = [source, target].sort().toString();
-        Link.groups[key] = Link.groups[key] || [];
-        Link.groups[key].push(id);
+    shiftMultiplier() {
+        if (!this._shiftMultiplier) {
+            const members = this.group() || [];
+            this._shiftMultiplier = members.indexOf(this.id) - (members.length - 1) / 2;
+        }
+        return this._shiftMultiplier;
     }
-    static shiftMultiplier(link) {
-        const members = Link.groups[[link.source.id, link.target.id].sort().toString()] || [];
-        return members.indexOf(link.id) - (members.length - 1) / 2;
-    }
+    static shiftBundle(link, path, 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    static shiftBundle(link, path, label) {
-        const transform = (d) => d.shiftBundle(Link.shiftMultiplier(d));
+    label, bundle) {
+        const transform = (d) => d.shiftBundle(d.shiftMultiplier());
         link.attr("transform", transform);
         path.attr("transform", transform);
         label.attr("transform", transform);
+        _bundle__WEBPACK_IMPORTED_MODULE_1__.Bundle.shiftBundle(bundle);
     }
     shiftBundle(multiplier) {
         const gap = this.margin() * multiplier;
-        const width = Math.abs(this.target.x - this.source.x);
-        const height = Math.abs(this.source.y - this.target.y);
-        const length = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
-        return `translate(${(gap * height) / length}, ${(gap * width) / length})`;
+        const x = this.target.x - this.source.x;
+        const y = this.target.y - this.source.y;
+        const length = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        return `translate(${(-gap * y) / length}, ${(gap * x) / length})`;
     }
     static reset() {
         Link.groups = null;
@@ -370,11 +506,11 @@ class NodeBase {
         this.height = options.height || 40;
         this.padding = 3;
         this.tspanOffset = "1.1em";
-        this.register(id, data.name);
+        this.register(id);
     }
-    register(id, name) {
+    register(id) {
         Node.all = Node.all || {};
-        Node.all[name] = id;
+        Node.all[this.name] = id;
     }
     transform() {
         const x = this.x - this.width / 2 + this.padding;
