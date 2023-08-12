@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link href="css/style.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
+  <script src="js/cola.min.js"></script>
+  <script src="js/inet-henge.js"></script>
+  <style>
+    .node text {
+        fill: #fff;
+    }
+  </style>
+</head>
+
+<body>
+<div id="diagram"></div>
+<script>
+  const diagram = new Diagram("#diagram", "data/clos.json", {
+    positionCache: false,
+    positionHint: {
+      nodeCallback: (node) => {
+        switch (true) {
+          case /^spine/.test(node.name):
+            return { x: 300, y: 100 };
+          case /^leaf/.test(node.name):
+            return { x: 300, y: 200 };
+          case /^server/.test(node.name):
+            return { x: 300, y: 300 };
+        }
+      }
+    },
+    positionConstraints: [{
+      axis: "y",
+      nodesCallback: (nodes) => [
+        nodes.filter((n) => /^spine/.test(n.name)),
+        nodes.filter((n) => /^leaf/.test(n.name)),
+        nodes.filter((n) => /^server/.test(n.name)),
+      ]
+    }]
+  });
+  diagram.init();
+</script>
+</body>
+</html>
