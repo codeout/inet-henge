@@ -454,6 +454,51 @@ You can specify initial position and scale of diagram.
 
 :warning: Those features may work, but still under development. The behavior might be changed :warning:
 
+### Position constraints
+
+You can apply x-axis or y-axis based position constraints to nodes.
+
+Here is [an example](https://codeout.github.io/inet-henge/clos.html).
+
+![Position constraints](example/images/clos.png)
+
+```html
+<script>
+  const diagram = new Diagram("#diagram", "clos.json", {
+    positionHint: {
+      nodeCallback: (node) => {
+        switch (true) {
+          // spines, leaves, and servers from the top
+          case /^spine/.test(node.name):
+            return { x: 300, y: 100 };
+          case /^leaf/.test(node.name):
+            return { x: 300, y: 200 };
+          case /^server/.test(node.name):
+            return { x: 300, y: 300 };
+        }
+      }
+    },
+    positionConstraints: [{
+      axis: "y",
+      nodesCallback: (nodes) => [
+        // all spines should be in line in y-axis. leaves and servers as well.
+        nodes.filter((n) => /^spine/.test(n.name)),
+        nodes.filter((n) => /^leaf/.test(n.name)),
+        nodes.filter((n) => /^server/.test(n.name)),
+      ]
+    }]
+  });
+  diagram.init();
+</script>
+```
+
+- Use `nodesCallback` option to create node groups.
+  - The Node object is passed as an argument.
+  - Individual constraints will be applied to each group.
+
+You may want to define [Position hinting](#position-hinting) besides constraints.
+Please note that hint is just a hint and nodes won't be strictly placed there, while constraint is always satisfied.
+
 ### Internal groups
 
 You can display node type based groups in POP-based [Node group](#Node-Group) by `group` definition in each node.
