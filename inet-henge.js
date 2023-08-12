@@ -3460,6 +3460,7 @@ class DiagramBase {
         this.options.width = options.width || 960;
         this.options.height = options.height || 600;
         this.options.positionHint = options.positionHint || {};
+        this.options.positionConstraints = options.positionConstraints || [];
         this.options.color = d3__WEBPACK_IMPORTED_MODULE_1__.scale.category20();
         this.options.initialTicks = options.initialTicks || 0;
         this.options.maxTicks = options.ticks || 1000;
@@ -3538,6 +3539,7 @@ class DiagramBase {
             const tooltips = nodes.map((n) => new _tooltip__WEBPACK_IMPORTED_MODULE_7__.Tooltip(n, this.options.tooltip));
             const bundles = _bundle__WEBPACK_IMPORTED_MODULE_2__.Bundle.divide(links);
             this.cola.nodes(nodes).links(links).groups(groups);
+            this.applyConstraints(this.options.positionConstraints, nodes);
             this.setDistance(this.cola);
             // Start to update Link.source and Link.target with Node object after
             // initial layout iterations without any constraints.
@@ -3586,8 +3588,8 @@ class DiagramBase {
                 this.savePosition(group, node, link);
             }
             this.hideLoadMessage();
-            // render path
-            this.configureTick(group, node, link, path, label);
+            this.configureTick(group, node, link, path, label); // render path
+            this.removeConstraints();
             this.cola.start();
             if (this.options.bundle) {
                 _link__WEBPACK_IMPORTED_MODULE_4__.Link.shiftBundle(link, path, label, bundle);
@@ -3693,6 +3695,22 @@ class DiagramBase {
     }
     savePosition(group, node, link) {
         this.positionCache.save(group, node, link);
+    }
+    applyConstraints(constraints, nodes) {
+        const colaConstraints = [];
+        for (const constraint of constraints) {
+            for (const ns of constraint.nodesCallback(nodes)) {
+                colaConstraints.push({
+                    type: "alignment",
+                    axis: constraint.axis,
+                    offsets: ns.map((n) => ({ node: n.id, offset: 0 })),
+                });
+            }
+        }
+        this.cola.constraints(colaConstraints);
+    }
+    removeConstraints() {
+        this.cola.constraints([]);
     }
 }
 const Pluggable = (Base) => {
