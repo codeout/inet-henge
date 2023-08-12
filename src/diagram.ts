@@ -2,6 +2,7 @@ import "./hack_cola";
 
 import * as d3 from "d3";
 
+import { WebColaConstraint } from "../types/WebCola";
 import { Bundle } from "./bundle";
 import { Group, GroupOptions } from "./group";
 import { Link, LinkDataType } from "./link";
@@ -19,6 +20,10 @@ export type Color = d3.scale.Ordinal<string, string>;
 type PositionHint = {
   nodeCallback?: (node: Node) => NodePosition;
 };
+type PositionConstraint = {
+  axis: "x" | "y";
+  nodesCallback: (nodes: Node[]) => Node[][];
+};
 type DiagramOptionType = {
   // Options publicly available
   width: number;
@@ -30,6 +35,7 @@ type DiagramOptionType = {
   ticks: number;
   positionCache: boolean | string;
   positionHint: PositionHint;
+  positionConstraints: PositionConstraint[];
   bundle: boolean;
   pop: RegExp;
   distance: LinkWidthFunction;
@@ -69,6 +75,7 @@ class DiagramBase {
     this.options.width = options.width || 960;
     this.options.height = options.height || 600;
     this.options.positionHint = options.positionHint || {};
+    this.options.positionConstraints = options.positionConstraints || [];
 
     this.options.color = d3.scale.category20();
     this.options.initialTicks = options.initialTicks || 0;
@@ -162,6 +169,7 @@ class DiagramBase {
       const bundles = Bundle.divide(links);
 
       this.cola.nodes(nodes).links(links).groups(groups);
+      this.applyConstraints(this.options.positionConstraints, nodes);
       this.setDistance(this.cola);
 
       // Start to update Link.source and Link.target with Node object after
@@ -227,8 +235,8 @@ class DiagramBase {
 
       this.hideLoadMessage();
 
-      // render path
-      this.configureTick(group, node, link, path, label);
+      this.configureTick(group, node, link, path, label); // render path
+      this.removeConstraints();
 
       this.cola.start();
       if (this.options.bundle) {
@@ -360,6 +368,26 @@ class DiagramBase {
 
   private savePosition(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>) {
     this.positionCache.save(group, node, link);
+  }
+
+  private applyConstraints(constraints: PositionConstraint[], nodes: Node[]) {
+    const colaConstraints: WebColaConstraint[] = [];
+
+    for (const constraint of constraints) {
+      for (const ns of constraint.nodesCallback(nodes)) {
+        colaConstraints.push({
+          type: "alignment",
+          axis: constraint.axis,
+          offsets: ns.map((n) => ({ node: n.id, offset: 0 })),
+        });
+      }
+    }
+
+    this.cola.constraints(colaConstraints);
+  }
+
+  private removeConstraints() {
+    this.cola.constraints([]);
   }
 }
 
