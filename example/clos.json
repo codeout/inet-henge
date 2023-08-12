@@ -1,0 +1,45 @@
+{
+  "nodes": [
+    { "name":  "spine01" },
+    { "name":  "spine02" },
+    { "name":  "leaf01" },
+    { "name":  "leaf02" },
+    { "name":  "leaf03" },
+    { "name":  "leaf04" },
+    { "name":  "leaf05" },
+    { "name":  "leaf06" },
+    { "name":  "server01" },
+    { "name":  "server02" },
+    { "name":  "server03" },
+    { "name":  "server04" },
+    { "name":  "server05" },
+    { "name":  "server06" }
+  ],
+
+  "links": [
+    {"source": "spine01", "target": "leaf01" },
+    {"source": "spine01", "target": "leaf02" },
+    {"source": "spine01", "target": "leaf03" },
+    {"source": "spine01", "target": "leaf04" },
+    {"source": "spine01", "target": "leaf05" },
+    {"source": "spine01", "target": "leaf06" },
+    {"source": "spine02", "target": "leaf01" },
+    {"source": "spine02", "target": "leaf02" },
+    {"source": "spine02", "target": "leaf03" },
+    {"source": "spine02", "target": "leaf04" },
+    {"source": "spine02", "target": "leaf05" },
+    {"source": "spine02", "target": "leaf06" },
+    {"source":  "server01", "target":  "leaf01"},
+    {"source":  "server01", "target":  "leaf02"},
+    {"source":  "server02", "target":  "leaf01"},
+    {"source":  "server02", "target":  "leaf02"},
+    {"source":  "server03", "target":  "leaf03"},
+    {"source":  "server03", "target":  "leaf04"},
+    {"source":  "server04", "target":  "leaf03"},
+    {"source":  "server04", "target":  "leaf04"},
+    {"source":  "server05", "target":  "leaf05"},
+    {"source":  "server05", "target":  "leaf06"},
+    {"source":  "server06", "target":  "leaf05"},
+    {"source":  "server06", "target":  "leaf06"}
+  ]
+}
