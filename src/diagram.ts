@@ -159,7 +159,13 @@ class DiagramBase {
           )
         : [];
       const links = data.links
-        ? Bundle.sortByBundle(data.links).map((l, i) => new Link(l, i, this.options.meta, this.getLinkWidth))
+        ? Bundle.sortByBundle(data.links).map(
+            (l, i) =>
+              new Link(l, i, {
+                metaKeys: this.options.meta,
+                linkWidth: this.getLinkWidth,
+              }),
+          )
         : [];
       const groups = Group.divide(nodes, this.options.groupPattern, {
         color: this.options.color,

@@ -16,6 +16,11 @@ export type LinkDataType = {
   class: string;
 };
 
+export type LinkOptions = {
+  metaKeys: string[];
+  linkWidth: (object) => number;
+};
+
 export class LinkBase {
   private static groups: Record<string, number[]>;
 
@@ -35,17 +40,17 @@ export class LinkBase {
   private _margin: number;
   private _shiftMultiplier: number;
 
-  constructor(data: LinkDataType, public id: number, metaKeys: string[], linkWidth: (object) => number) {
+  constructor(data: LinkDataType, public id: number, private options: LinkOptions) {
     this.source = Node.idByName(data.source);
     this.target = Node.idByName(data.target);
     this.bundle = data.bundle;
-    this.metaList = new MetaData(data.meta).get(metaKeys);
-    this.sourceMeta = new MetaData(data.meta, "source").get(metaKeys);
-    this.targetMeta = new MetaData(data.meta, "target").get(metaKeys);
+    this.metaList = new MetaData(data.meta).get(options.metaKeys);
+    this.sourceMeta = new MetaData(data.meta, "source").get(options.metaKeys);
+    this.targetMeta = new MetaData(data.meta, "target").get(options.metaKeys);
     this.extraClass = data.class || "";
 
-    if (typeof linkWidth === "function") this.width = linkWidth(data.meta) || 3;
-    else this.width = linkWidth || 3;
+    if (typeof options.linkWidth === "function") this.width = options.linkWidth(data.meta) || 3;
+    else this.width = options.linkWidth || 3;
 
     this.defaultMargin = 15;
     this.labelXOffset = 20;
@@ -322,8 +327,8 @@ const Eventable = (Base: typeof LinkBase) => {
   class EventableLink extends Base {
     private dispatch: d3.Dispatch;
 
-    constructor(data: LinkDataType, id: number, metaKeys: string[], linkWidth: (object) => number) {
-      super(data, id, metaKeys, linkWidth);
+    constructor(data: LinkDataType, id: number, options: LinkOptions) {
+      super(data, id, options);
 
       this.dispatch = d3.dispatch("rendered");
     }
@@ -352,12 +357,12 @@ const Pluggable = (Base: typeof LinkBase) => {
   class Link extends Base {
     private static pluginConstructors: Constructor[] = [];
 
-    constructor(data: LinkDataType, id: number, metaKeys: string[], linkWidth: (object) => number) {
-      super(data, id, metaKeys, linkWidth);
+    constructor(data: LinkDataType, id: number, options: LinkOptions) {
+      super(data, id, options);
 
       for (const constructor of Link.pluginConstructors) {
         // Call Pluggable at last as constructor may call methods defined in other classes
-        constructor.bind(this)(data, id, metaKeys, linkWidth);
+        constructor.bind(this)(data, id, options);
       }
     }
 
