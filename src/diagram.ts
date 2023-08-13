@@ -165,7 +165,7 @@ class DiagramBase {
         color: this.options.color,
         padding: this.options.groupPadding,
       } as GroupOptions);
-      const tooltips = nodes.map((n) => new Tooltip(n, this.options.tooltip));
+      const nodeTooltips = nodes.map((n) => new Tooltip(n, this.options.tooltip));
       const bundles = Bundle.divide(links);
 
       this.cola.nodes(nodes).links(links).groups(groups);
@@ -205,7 +205,7 @@ class DiagramBase {
               Link.shiftBundle(link, path, label, bundle);
             }
 
-            Tooltip.followNode(tooltip);
+            Tooltip.followNode(nodeTooltip);
           }),
       );
 
@@ -246,7 +246,7 @@ class DiagramBase {
       path.attr("d", (d) => d.d()); // make sure path calculation is done
       DiagramBase.freeze(node);
 
-      const tooltip = Tooltip.render(tooltipLayer, tooltips);
+      const nodeTooltip = Tooltip.render(tooltipLayer, nodeTooltips);
 
       // NOTE: This is an experimental option
       if (this.options.positionCache === "fixed") {
