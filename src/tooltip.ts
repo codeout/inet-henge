@@ -2,40 +2,33 @@ import * as d3 from "d3";
 
 import { HrefFunction } from "./diagram";
 import { MetaDataType } from "./meta_data";
-import { Node } from "./node";
-import { classify } from "./util";
 
-export class Tooltip {
+export abstract class Tooltip {
   static href: HrefFunction;
-  private offsetX: number;
+  protected static type: "node" | "link";
+
+  protected offsetX: number;
   private visibility: string;
 
-  constructor(private node: Node, private eventType: string) {
+  constructor(private eventType: string) {
     this.offsetX = 30;
     this.visibility = "hidden";
   }
 
-  private tspanOffsetY(isHeader: boolean) {
+  protected tspanOffsetY(isHeader: boolean) {
     return isHeader ? "2em" : "1.1em";
   }
 
-  transform() {
-    return `translate(${this.node.x}, ${this.node.y})`;
+  transform(): string {
+    throw new Error("not implemented");
   }
 
   private class() {
-    return `tooltip ${this.nodeId()}`;
+    return `tooltip ${(this.constructor as typeof Tooltip).type}-tooltip ${this.objectId()}`;
   }
 
-  private nodeId(escape = false) {
-    let id = classify(this.node.name);
-
-    if (escape) {
-      id = CSS.escape(id);
-    }
-
-    return id;
-  }
+  // Object id which has this tooltip
+  protected abstract objectId(boolean?): string;
 
   private setVisibility(visibility: string | null) {
     this.visibility = visibility === "visible" ? "visible" : "hidden";
@@ -67,13 +60,13 @@ export class Tooltip {
     };
   }
 
-  private configureNodeClickCallback(element: SVGGElement) {
-    d3.select(`#${this.nodeId(true)}`).on("click.tooltip", this.toggleVisibilityCallback(element));
+  private configureObjectClickCallback(element: SVGGElement) {
+    d3.select(`#${this.objectId(true)}`).on("click.tooltip", this.toggleVisibilityCallback(element));
   }
 
-  private configureNodeHoverCallback(element: SVGGElement) {
-    d3.select(`#${this.nodeId(true)}`).on("mouseenter.tooltip", this.toggleVisibilityCallback(element));
-    d3.select(`#${this.nodeId(true)}`).on("mouseleave.tooltip", this.toggleVisibilityCallback(element));
+  private configureObjectHoverCallback(element: SVGGElement) {
+    d3.select(`#${this.objectId(true)}`).on("mouseenter.tooltip", this.toggleVisibilityCallback(element));
+    d3.select(`#${this.objectId(true)}`).on("mouseleave.tooltip", this.toggleVisibilityCallback(element));
   }
 
   // Make tooltip selectable
@@ -88,9 +81,11 @@ export class Tooltip {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static render(layer: d3.Selection<any>, tooltips: Tooltip[]) {
+  static render<T extends Tooltip>(layer: d3.Selection<any>, tooltips: T[]) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const cls = this;
     const tooltip = layer
-      .selectAll(".tooltip")
+      .selectAll(`.tooltip.${cls.type}-tooltip`)
       .data(tooltips)
       .enter()
       .append("g")
@@ -99,12 +94,12 @@ export class Tooltip {
       .attr("transform", (d) => d.transform());
 
     tooltip.each(function (d) {
-      Tooltip.appendText(this);
+      cls.appendText(this);
 
       if (d.eventType === "hover") {
-        d.configureNodeHoverCallback(this);
+        d.configureObjectHoverCallback(this);
       } else {
-        d.configureNodeClickCallback(this);
+        d.configureObjectClickCallback(this);
       }
 
       d.disableZoom(this);
@@ -113,14 +108,14 @@ export class Tooltip {
     return tooltip;
   }
 
-  private static fill(element: SVGPathElement) {
+  protected static fill(element: SVGPathElement) {
     // If no "fill" style is defined
     if (getComputedStyle(element).fill.match(/\(0,\s*0,\s*0\)/)) {
       return "#f8f1e9";
     }
   }
 
-  private static pathD(x: number, y: number, width: number, height: number) {
+  protected static pathD(x: number, y: number, width: number, height: number) {
     const round = 8;
 
     return (
@@ -136,39 +131,11 @@ export class Tooltip {
     );
   }
 
-  private static appendText(container: SVGGElement) {
-    const path = d3.select(container).append("path") as d3.Selection<Tooltip>;
-
-    const text = d3.select(container).append("text") as d3.Selection<Tooltip>;
-    text
-      .append("tspan")
-      .attr("x", (d) => d.offsetX + 40)
-      .attr("class", "name")
-      .text("node:");
-    const nodeName = text.append("tspan").attr("dx", 10).attr("class", "value");
-
-    if (typeof this.href === "function") {
-      nodeName
-        .append("a")
-        .attr("href", (d) => Tooltip.href(d))
-        .text((d) => d.node.name);
-    } else {
-      nodeName.text((d) => d.node.name);
-    }
-
-    text.each(function (d) {
-      Tooltip.appendTspans(text, d.node.metaList);
-
-      // Add "d" after bbox calculation
-      const bbox = this.getBBox();
-      path.attr("d", Tooltip.pathD(30, 0, bbox.width + 40, bbox.height + 20)).style("fill", function () {
-        return Tooltip.fill(this);
-      });
-    });
+  protected static appendText(container: SVGGElement) {
+    throw new Error("not implemented");
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private static appendTspans(container: d3.Selection<Tooltip>, meta: MetaDataType[]) {
+  protected static appendTspans<T extends Tooltip>(container: d3.Selection<T>, meta: MetaDataType[]) {
     meta.forEach((m, i) => {
       container
         .append("tspan")
@@ -181,7 +148,7 @@ export class Tooltip {
     });
   }
 
-  static followNode(tooltip: d3.Selection<Tooltip>) {
+  static followObject(tooltip: d3.Selection<Tooltip>) {
     tooltip.attr("transform", (d) => d.transform());
   }
 }

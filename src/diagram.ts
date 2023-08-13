@@ -7,8 +7,8 @@ import { Bundle } from "./bundle";
 import { Group, GroupOptions } from "./group";
 import { Link, LinkDataType } from "./link";
 import { Node, NodeDataType, NodeOptions } from "./node";
+import { NodeTooltip } from "./node_tooltip";
 import { NodePosition, PositionCache } from "./position_cache";
-import { Tooltip } from "./tooltip";
 
 const cola = require("cola"); // eslint-disable-line @typescript-eslint/no-var-requires
 
@@ -87,7 +87,7 @@ class DiagramBase {
     this.options.tooltip = options.tooltip;
 
     this.setDistance = this.linkDistance(options.distance || 150);
-    Tooltip.setHref(options.href);
+    NodeTooltip.setHref(options.href);
   }
 
   init(...meta: string[]) {
@@ -171,7 +171,7 @@ class DiagramBase {
         color: this.options.color,
         padding: this.options.groupPadding,
       } as GroupOptions);
-      const nodeTooltips = nodes.map((n) => new Tooltip(n, this.options.tooltip));
+      const nodeTooltips = nodes.map((n) => new NodeTooltip(n, this.options.tooltip));
       const bundles = Bundle.divide(links);
 
       this.cola.nodes(nodes).links(links).groups(groups);
@@ -211,7 +211,7 @@ class DiagramBase {
               Link.shiftBundle(link, path, label, bundle);
             }
 
-            Tooltip.followNode(nodeTooltip);
+            NodeTooltip.followObject(nodeTooltip);
           }),
       );
 
@@ -252,7 +252,7 @@ class DiagramBase {
       path.attr("d", (d) => d.d()); // make sure path calculation is done
       DiagramBase.freeze(node);
 
-      const nodeTooltip = Tooltip.render(tooltipLayer, nodeTooltips);
+      const nodeTooltip = NodeTooltip.render<NodeTooltip>(tooltipLayer, nodeTooltips);
 
       // NOTE: This is an experimental option
       if (this.options.positionCache === "fixed") {
