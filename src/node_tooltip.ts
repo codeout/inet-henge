@@ -2,7 +2,6 @@ import * as d3 from "d3";
 
 import { Node } from "./node";
 import { Tooltip } from "./tooltip";
-import { classify } from "./util";
 
 export class NodeTooltip extends Tooltip {
   protected static type = "node" as const;
@@ -16,7 +15,7 @@ export class NodeTooltip extends Tooltip {
   }
 
   protected objectId(escape = false) {
-    let id = classify(this.node.name);
+    let id = this.node.nodeId();
 
     if (escape) {
       id = CSS.escape(id);

@@ -89,6 +89,10 @@ class NodeBase {
     return Node.all[name];
   }
 
+  public nodeId() {
+    return classify(this.name);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static render(layer: d3.Selection<any>, nodes: Node[]) {
     const node: d3.Selection<Node> = layer
@@ -96,7 +100,7 @@ class NodeBase {
       .data(nodes)
       .enter()
       .append("g")
-      .attr("id", (d) => classify(d.name))
+      .attr("id", (d) => d.nodeId())
       .attr("name", (d) => d.name)
       .attr("transform", (d) => d.transform());
 
