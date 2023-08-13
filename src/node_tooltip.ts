@@ -49,9 +49,11 @@ export class NodeTooltip extends Tooltip {
 
       // Add "d" after bbox calculation
       const bbox = this.getBBox();
-      path.attr("d", NodeTooltip.pathD(30, 0, bbox.width + 40, bbox.height + 20)).style("fill", function () {
-        return NodeTooltip.fill(this);
-      });
+      path
+        .attr("d", (d) => NodeTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20))
+        .style("fill", function () {
+          return NodeTooltip.fill(this);
+        });
     });
   }
 }
