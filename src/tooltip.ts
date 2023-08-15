@@ -2,6 +2,10 @@ import * as d3 from "d3";
 
 import { HrefFunction } from "./diagram";
 
+type TooltipOptions = {
+  offsetX?: number;
+};
+
 export abstract class Tooltip {
   static href: HrefFunction;
   protected static type: "node" | "link";
@@ -9,8 +13,8 @@ export abstract class Tooltip {
   protected offsetX: number;
   private visibility: string;
 
-  constructor(private eventType: string) {
-    this.offsetX = 30;
+  constructor(private eventType: string, options: TooltipOptions = {}) {
+    this.offsetX = options.offsetX !== undefined ? options.offsetX : 30;
     this.visibility = "hidden";
   }
 
@@ -168,11 +172,11 @@ export abstract class Tooltip {
     const a = d3
       .select(container)
       .append("a")
-      .attr("href", (d) => (d.constructor as typeof Tooltip).href(d, "node"));
+      .attr("href", (d) => (d.constructor as typeof Tooltip).href(d, (d.constructor as typeof Tooltip).type));
     const size = 20;
     const svg = a
       .append("svg")
-      .attr("x", bbox.width + 28 - size)
+      .attr("x", (d) => bbox.width + d.offsetX - 2 - size)
       .attr("y", bbox.height - 30 - size)
       .attr("width", size)
       .attr("height", size)

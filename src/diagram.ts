@@ -6,6 +6,7 @@ import { WebColaConstraint } from "../types/WebCola";
 import { Bundle } from "./bundle";
 import { Group, GroupOptions } from "./group";
 import { Link, LinkDataType } from "./link";
+import { LinkTooltip } from "./link_tooltip";
 import { Node, NodeDataType, NodeOptions } from "./node";
 import { NodeTooltip } from "./node_tooltip";
 import { NodePosition, PositionCache } from "./position_cache";
@@ -13,7 +14,7 @@ import { NodePosition, PositionCache } from "./position_cache";
 const cola = require("cola"); // eslint-disable-line @typescript-eslint/no-var-requires
 
 type LinkWidthFunction = (object) => number;
-export type HrefFunction = (object) => string;
+export type HrefFunction = (object, type?: "node" | "link") => string;
 export type InetHengeDataType = { nodes: NodeDataType[]; links: LinkDataType[] };
 // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
 export type Color = d3.scale.Ordinal<string, string>;
@@ -88,6 +89,7 @@ class DiagramBase {
 
     this.setDistance = this.linkDistance(options.distance || 150);
     NodeTooltip.setHref(options.href);
+    LinkTooltip.setHref(options.href);
   }
 
   init(...meta: string[]) {
@@ -172,6 +174,7 @@ class DiagramBase {
         padding: this.options.groupPadding,
       } as GroupOptions);
       const nodeTooltips = nodes.map((n) => new NodeTooltip(n, this.options.tooltip));
+      const linkTooltips = links.map((l) => new LinkTooltip(l, this.options.tooltip));
       const bundles = Bundle.divide(links);
 
       this.cola.nodes(nodes).links(links).groups(groups);
@@ -212,6 +215,7 @@ class DiagramBase {
             }
 
             NodeTooltip.followObject(nodeTooltip);
+            LinkTooltip.followObject(linkTooltip);
           }),
       );
 
@@ -253,6 +257,7 @@ class DiagramBase {
       DiagramBase.freeze(node);
 
       const nodeTooltip = NodeTooltip.render<NodeTooltip>(tooltipLayer, nodeTooltips);
+      const linkTooltip = LinkTooltip.render<LinkTooltip>(tooltipLayer, linkTooltips);
 
       // NOTE: This is an experimental option
       if (this.options.positionCache === "fixed") {

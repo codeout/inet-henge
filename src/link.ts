@@ -27,10 +27,10 @@ export class LinkBase {
   public readonly bundle?: number | string;
   public readonly source: number | Node;
   public readonly target: number | Node;
+  public readonly metaList: MetaDataType[];
+  public readonly sourceMeta: MetaDataType[];
+  public readonly targetMeta: MetaDataType[];
 
-  private readonly metaList: MetaDataType[];
-  private readonly sourceMeta: MetaDataType[];
-  private readonly targetMeta: MetaDataType[];
   private readonly extraClass: string;
   private width: number;
   private readonly defaultMargin: number;
@@ -86,7 +86,7 @@ export class LinkBase {
     return `path${this.id}`;
   }
 
-  private linkId() {
+  public linkId() {
     return `link${this.id}`;
   }
 
