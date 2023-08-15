@@ -96,6 +96,10 @@ export abstract class Tooltip {
     tooltip.each(function (d) {
       cls.appendText(this);
 
+      if (typeof (d.constructor as typeof Tooltip).href === "function") {
+        cls.appendExternalLinkIcon(this);
+      }
+
       if (d.eventType === "hover") {
         d.configureObjectHoverCallback(this);
       } else {
@@ -146,6 +150,32 @@ export abstract class Tooltip {
 
       container.append("tspan").attr("dx", 10).attr("class", "value").text(m.value);
     });
+  }
+
+  // modified https://tabler-icons.io/i/external-link
+  protected static appendExternalLinkIcon(container: SVGGElement) {
+    const bbox = container.getBBox();
+    const a = d3
+      .select(container)
+      .append("a")
+      .attr("href", (d) => (d.constructor as typeof Tooltip).href(d, "node"));
+    const size = 20;
+    const svg = a
+      .append("svg")
+      .attr("x", bbox.width + 28 - size)
+      .attr("y", bbox.height - 30 - size)
+      .attr("width", size)
+      .attr("height", size)
+      .attr("viewBox", `0 0 24 24`)
+      .attr("stroke-width", 2)
+      .attr("fill", "none")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-linejoin", "round")
+      .attr("class", "icon external-link");
+    svg.append("path").attr("d", `M0 0h24v24H0z`).attr("stroke", "none").attr("fill", "#fff").attr("fill-opacity", 0);
+    svg.append("path").attr("d", "M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6");
+    svg.append("path").attr("d", "M11 13l9 -9");
+    svg.append("path").attr("d", "M15 4h5v5");
   }
 
   static followObject(tooltip: d3.Selection<Tooltip>) {

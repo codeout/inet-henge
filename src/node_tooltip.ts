@@ -26,23 +26,18 @@ export class NodeTooltip extends Tooltip {
 
   protected static appendText(container: SVGGElement) {
     const path = d3.select(container).append("path") as d3.Selection<NodeTooltip>;
-
     const text = d3.select(container).append("text") as d3.Selection<NodeTooltip>;
+
     text
       .append("tspan")
       .attr("x", (d) => d.offsetX + 40)
       .attr("class", "name")
       .text("node:");
-    const nodeName = text.append("tspan").attr("dx", 10).attr("class", "value");
-
-    if (typeof this.href === "function") {
-      nodeName
-        .append("a")
-        .attr("href", (d) => NodeTooltip.href(d))
-        .text((d) => d.node.name);
-    } else {
-      nodeName.text((d) => d.node.name);
-    }
+    text
+      .append("tspan")
+      .attr("dx", 10)
+      .attr("class", "value")
+      .text((d) => d.node.name);
 
     text.each(function (d) {
       NodeTooltip.appendMetaText(text, d.node.metaList);
