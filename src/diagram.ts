@@ -154,7 +154,7 @@ class DiagramBase {
                 height: this.options.nodeHeight,
                 metaKeys: this.options.meta,
                 color: this.options.color,
-                tooltip: this.options.tooltip !== undefined,
+                tooltip: !!this.options.tooltip,
               } as NodeOptions),
           )
         : [];
