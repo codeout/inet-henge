@@ -1,7 +1,6 @@
 import * as d3 from "d3";
 
 import { HrefFunction } from "./diagram";
-import { MetaDataType } from "./meta_data";
 
 export abstract class Tooltip {
   static href: HrefFunction;
@@ -139,17 +138,28 @@ export abstract class Tooltip {
     throw new Error("not implemented");
   }
 
-  protected static appendMetaText<T extends Tooltip>(container: d3.Selection<T>, meta: MetaDataType[]) {
-    meta.forEach((m, i) => {
-      container
-        .append("tspan")
-        .attr("x", (d) => d.offsetX + 40)
-        .attr("dy", (d) => d.tspanOffsetY(i === 0))
-        .attr("class", "name")
-        .text(`${m.class}:`);
+  /**
+   * Append "name: value" to the container
+   * @param container
+   * @param name
+   * @param value
+   * @param marginTop Render wide margin if true, ordinary marin if false, and no margin if undefined
+   * @protected
+   */
+  protected static appendNameValue<T extends Tooltip>(
+    container: d3.Selection<T>,
+    name: string,
+    value: (d: T) => string,
+    marginTop?: boolean,
+  ) {
+    container
+      .append("tspan")
+      .attr("x", (d) => d.offsetX + 40)
+      .attr("dy", (d) => (marginTop === undefined ? undefined : d.tspanOffsetY(marginTop)))
+      .attr("class", "name")
+      .text(`${name}:`);
 
-      container.append("tspan").attr("dx", 10).attr("class", "value").text(m.value);
-    });
+    container.append("tspan").attr("dx", 10).attr("class", "value").text(value);
   }
 
   // modified https://tabler-icons.io/i/external-link

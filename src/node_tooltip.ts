@@ -28,19 +28,12 @@ export class NodeTooltip extends Tooltip {
     const path = d3.select(container).append("path") as d3.Selection<NodeTooltip>;
     const text = d3.select(container).append("text") as d3.Selection<NodeTooltip>;
 
-    text
-      .append("tspan")
-      .attr("x", (d) => d.offsetX + 40)
-      .attr("class", "name")
-      .text("node:");
-    text
-      .append("tspan")
-      .attr("dx", 10)
-      .attr("class", "value")
-      .text((d) => d.node.name);
+    NodeTooltip.appendNameValue(text, "node", (d) => d.node.name);
 
     text.each(function (d) {
-      NodeTooltip.appendMetaText(text, d.node.metaList);
+      d.node.metaList.forEach((m, i) => {
+        NodeTooltip.appendNameValue(text, m.class, m.value, i === 0);
+      });
 
       // Add "d" after bbox calculation
       const bbox = this.getBBox();
