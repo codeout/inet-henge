@@ -45,7 +45,7 @@ export class NodeTooltip extends Tooltip {
     }
 
     text.each(function (d) {
-      NodeTooltip.appendTspans(text, d.node.metaList);
+      NodeTooltip.appendMetaText(text, d.node.metaList);
 
       // Add "d" after bbox calculation
       const bbox = this.getBBox();

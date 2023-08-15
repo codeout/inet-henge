@@ -128,12 +128,12 @@ class NodeBase {
     text.each((d) => {
       // Show meta only when "tooltip" option is not configured
       if (!d.options.tooltip) {
-        Node.appendTspans(text, d.metaList);
+        Node.appendMetaText(text, d.metaList);
       }
     });
   }
 
-  private static appendTspans(container: d3.Selection<Node>, meta: MetaDataType[]) {
+  private static appendMetaText(container: d3.Selection<Node>, meta: MetaDataType[]) {
     meta.forEach((m) => {
       container
         .append("tspan")

@@ -135,7 +135,7 @@ export abstract class Tooltip {
     throw new Error("not implemented");
   }
 
-  protected static appendTspans<T extends Tooltip>(container: d3.Selection<T>, meta: MetaDataType[]) {
+  protected static appendMetaText<T extends Tooltip>(container: d3.Selection<T>, meta: MetaDataType[]) {
     meta.forEach((m, i) => {
       container
         .append("tspan")

@@ -222,9 +222,9 @@ export class LinkBase {
     const textPath = text.append("textPath").attr("xlink:href", (d: Link) => `#${d.pathId()}`);
 
     textPath.each(function (d: Link) {
-      Link.appendTspans(this, d.metaList);
-      Link.appendTspans(this, d.sourceMeta);
-      Link.appendTspans(this, d.targetMeta);
+      Link.appendMetaText(this, d.metaList);
+      Link.appendMetaText(this, d.sourceMeta);
+      Link.appendMetaText(this, d.targetMeta);
 
       if (d.isNamedPath()) Link.center(this);
 
@@ -243,7 +243,7 @@ export class LinkBase {
     d3.select(container).attr("class", "center").attr("text-anchor", "middle").attr("startOffset", "50%");
   }
 
-  private static appendTspans(container: SVGGElement, meta: MetaDataType[]) {
+  private static appendMetaText(container: SVGGElement, meta: MetaDataType[]) {
     meta.forEach((m) => {
       d3.select(container)
         .append("tspan")
