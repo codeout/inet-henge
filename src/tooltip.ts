@@ -15,8 +15,8 @@ export abstract class Tooltip {
     this.visibility = "hidden";
   }
 
-  protected tspanOffsetY(isHeader: boolean) {
-    return isHeader ? "2em" : "1.1em";
+  protected tspanOffsetY(marginTop: boolean) {
+    return marginTop ? "2em" : "1.1em";
   }
 
   transform(): string {
