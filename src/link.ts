@@ -68,7 +68,7 @@ export class LinkBase {
     (Link.groups[key] || (Link.groups[key] = [])).push(id);
   }
 
-  private isNamedPath() {
+  private isLabelledPath() {
     return this.metaList.length > 0;
   }
 
@@ -112,13 +112,18 @@ export class LinkBase {
 
   // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
   private tspanXOffset() {
-    if (this.isNamedPath()) return 0;
-    else if (this.isReversePath()) return -this.labelXOffset;
-    else return this.labelXOffset;
+    switch (true) {
+      case this.isLabelledPath():
+        return 0;
+      case this.isReversePath():
+        return -this.labelXOffset;
+      default:
+        return this.labelXOffset;
+    }
   }
 
   private tspanYOffset() {
-    if (this.isNamedPath()) return `${-this.labelYOffset + 0.7}em`;
+    if (this.isLabelledPath()) return `${-this.labelYOffset + 0.7}em`;
     else return `${this.labelYOffset}em`;
   }
 
@@ -226,7 +231,7 @@ export class LinkBase {
       Link.appendMetaText(this, d.sourceMeta);
       Link.appendMetaText(this, d.targetMeta);
 
-      if (d.isNamedPath()) Link.center(this);
+      if (d.isLabelledPath()) Link.center(this);
 
       if (d.isReversePath()) Link.theOtherEnd(this);
     });
