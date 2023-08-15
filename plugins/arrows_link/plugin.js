@@ -148,19 +148,20 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class LinkBase {
-    constructor(data, id, metaKeys, linkWidth) {
+    constructor(data, id, options) {
         this.id = id;
+        this.options = options;
         this.source = _node__WEBPACK_IMPORTED_MODULE_3__.Node.idByName(data.source);
         this.target = _node__WEBPACK_IMPORTED_MODULE_3__.Node.idByName(data.target);
         this.bundle = data.bundle;
-        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta).get(metaKeys);
-        this.sourceMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "source").get(metaKeys);
-        this.targetMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "target").get(metaKeys);
+        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta).get(options.metaKeys);
+        this.sourceMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "source").get(options.metaKeys);
+        this.targetMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "target").get(options.metaKeys);
         this.extraClass = data.class || "";
-        if (typeof linkWidth === "function")
-            this.width = linkWidth(data.meta) || 3;
+        if (typeof options.linkWidth === "function")
+            this.width = options.linkWidth(data.meta) || 3;
         else
-            this.width = linkWidth || 3;
+            this.width = options.linkWidth || 3;
         this.defaultMargin = 15;
         this.labelXOffset = 20;
         this.labelYOffset = 1.5; // em
@@ -173,7 +174,7 @@ class LinkBase {
         const key = [this.source, this.target].sort().toString();
         (Link.groups[key] || (Link.groups[key] = [])).push(id);
     }
-    isNamedPath() {
+    isLabelledPath() {
         return this.metaList.length > 0;
     }
     isReversePath() {
@@ -207,15 +208,17 @@ class LinkBase {
     }
     // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
     tspanXOffset() {
-        if (this.isNamedPath())
-            return 0;
-        else if (this.isReversePath())
-            return -this.labelXOffset;
-        else
-            return this.labelXOffset;
+        switch (true) {
+            case this.isLabelledPath():
+                return 0;
+            case this.isReversePath():
+                return -this.labelXOffset;
+            default:
+                return this.labelXOffset;
+        }
     }
     tspanYOffset() {
-        if (this.isNamedPath())
+        if (this.isLabelledPath())
             return `${-this.labelYOffset + 0.7}em`;
         else
             return `${this.labelYOffset}em`;
@@ -299,10 +302,10 @@ class LinkBase {
             .attr("class", (d) => d.pathId()); // Bind text with pathId as class
         const textPath = text.append("textPath").attr("xlink:href", (d) => `#${d.pathId()}`);
         textPath.each(function (d) {
-            Link.appendTspans(this, d.metaList);
-            Link.appendTspans(this, d.sourceMeta);
-            Link.appendTspans(this, d.targetMeta);
-            if (d.isNamedPath())
+            Link.appendMetaText(this, d.metaList);
+            Link.appendMetaText(this, d.sourceMeta);
+            Link.appendMetaText(this, d.targetMeta);
+            if (d.isLabelledPath())
                 Link.center(this);
             if (d.isReversePath())
                 Link.theOtherEnd(this);
@@ -316,7 +319,7 @@ class LinkBase {
     static center(container) {
         d3__WEBPACK_IMPORTED_MODULE_0__.select(container).attr("class", "center").attr("text-anchor", "middle").attr("startOffset", "50%");
     }
-    static appendTspans(container, meta) {
+    static appendMetaText(container, meta) {
         meta.forEach((m) => {
             d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
                 .append("tspan")
@@ -382,8 +385,8 @@ class LinkBase {
 }
 const Eventable = (Base) => {
     class EventableLink extends Base {
-        constructor(data, id, metaKeys, linkWidth) {
-            super(data, id, metaKeys, linkWidth);
+        constructor(data, id, options) {
+            super(data, id, options);
             this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -403,11 +406,11 @@ const Eventable = (Base) => {
 };
 const Pluggable = (Base) => {
     class Link extends Base {
-        constructor(data, id, metaKeys, linkWidth) {
-            super(data, id, metaKeys, linkWidth);
+        constructor(data, id, options) {
+            super(data, id, options);
             for (const constructor of Link.pluginConstructors) {
                 // Call Pluggable at last as constructor may call methods defined in other classes
-                constructor.bind(this)(data, id, metaKeys, linkWidth);
+                constructor.bind(this)(data, id, options);
             }
         }
         static registerConstructor(func) {
@@ -534,6 +537,9 @@ class NodeBase {
             throw `Unknown node "${name}"`;
         return Node.all[name];
     }
+    nodeId() {
+        return (0,_util__WEBPACK_IMPORTED_MODULE_2__.classify)(this.name);
+    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer, nodes) {
         const node = layer
@@ -541,7 +547,7 @@ class NodeBase {
             .data(nodes)
             .enter()
             .append("g")
-            .attr("id", (d) => (0,_util__WEBPACK_IMPORTED_MODULE_2__.classify)(d.name))
+            .attr("id", (d) => d.nodeId())
             .attr("name", (d) => d.name)
             .attr("transform", (d) => d.transform());
         node.each(function (d) {
@@ -566,11 +572,11 @@ class NodeBase {
         text.each((d) => {
             // Show meta only when "tooltip" option is not configured
             if (!d.options.tooltip) {
-                Node.appendTspans(text, d.metaList);
+                Node.appendMetaText(text, d.metaList);
             }
         });
     }
-    static appendTspans(container, meta) {
+    static appendMetaText(container, meta) {
         meta.forEach((m) => {
             container
                 .append("tspan")
