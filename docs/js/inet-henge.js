@@ -2410,19 +2410,20 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class LinkBase {
-    constructor(data, id, metaKeys, linkWidth) {
+    constructor(data, id, options) {
         this.id = id;
+        this.options = options;
         this.source = _node__WEBPACK_IMPORTED_MODULE_3__.Node.idByName(data.source);
         this.target = _node__WEBPACK_IMPORTED_MODULE_3__.Node.idByName(data.target);
         this.bundle = data.bundle;
-        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta).get(metaKeys);
-        this.sourceMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "source").get(metaKeys);
-        this.targetMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "target").get(metaKeys);
+        this.metaList = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta).get(options.metaKeys);
+        this.sourceMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "source").get(options.metaKeys);
+        this.targetMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "target").get(options.metaKeys);
         this.extraClass = data.class || "";
-        if (typeof linkWidth === "function")
-            this.width = linkWidth(data.meta) || 3;
+        if (typeof options.linkWidth === "function")
+            this.width = options.linkWidth(data.meta) || 3;
         else
-            this.width = linkWidth || 3;
+            this.width = options.linkWidth || 3;
         this.defaultMargin = 15;
         this.labelXOffset = 20;
         this.labelYOffset = 1.5; // em
@@ -2435,7 +2436,7 @@ class LinkBase {
         const key = [this.source, this.target].sort().toString();
         (Link.groups[key] || (Link.groups[key] = [])).push(id);
     }
-    isNamedPath() {
+    isLabelledPath() {
         return this.metaList.length > 0;
     }
     isReversePath() {
@@ -2469,15 +2470,17 @@ class LinkBase {
     }
     // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
     tspanXOffset() {
-        if (this.isNamedPath())
-            return 0;
-        else if (this.isReversePath())
-            return -this.labelXOffset;
-        else
-            return this.labelXOffset;
+        switch (true) {
+            case this.isLabelledPath():
+                return 0;
+            case this.isReversePath():
+                return -this.labelXOffset;
+            default:
+                return this.labelXOffset;
+        }
     }
     tspanYOffset() {
-        if (this.isNamedPath())
+        if (this.isLabelledPath())
             return `${-this.labelYOffset + 0.7}em`;
         else
             return `${this.labelYOffset}em`;
@@ -2561,10 +2564,10 @@ class LinkBase {
             .attr("class", (d) => d.pathId()); // Bind text with pathId as class
         const textPath = text.append("textPath").attr("xlink:href", (d) => `#${d.pathId()}`);
         textPath.each(function (d) {
-            Link.appendTspans(this, d.metaList);
-            Link.appendTspans(this, d.sourceMeta);
-            Link.appendTspans(this, d.targetMeta);
-            if (d.isNamedPath())
+            Link.appendMetaText(this, d.metaList);
+            Link.appendMetaText(this, d.sourceMeta);
+            Link.appendMetaText(this, d.targetMeta);
+            if (d.isLabelledPath())
                 Link.center(this);
             if (d.isReversePath())
                 Link.theOtherEnd(this);
@@ -2578,7 +2581,7 @@ class LinkBase {
     static center(container) {
         d3__WEBPACK_IMPORTED_MODULE_0__.select(container).attr("class", "center").attr("text-anchor", "middle").attr("startOffset", "50%");
     }
-    static appendTspans(container, meta) {
+    static appendMetaText(container, meta) {
         meta.forEach((m) => {
             d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
                 .append("tspan")
@@ -2644,8 +2647,8 @@ class LinkBase {
 }
 const Eventable = (Base) => {
     class EventableLink extends Base {
-        constructor(data, id, metaKeys, linkWidth) {
-            super(data, id, metaKeys, linkWidth);
+        constructor(data, id, options) {
+            super(data, id, options);
             this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2665,11 +2668,11 @@ const Eventable = (Base) => {
 };
 const Pluggable = (Base) => {
     class Link extends Base {
-        constructor(data, id, metaKeys, linkWidth) {
-            super(data, id, metaKeys, linkWidth);
+        constructor(data, id, options) {
+            super(data, id, options);
             for (const constructor of Link.pluginConstructors) {
                 // Call Pluggable at last as constructor may call methods defined in other classes
-                constructor.bind(this)(data, id, metaKeys, linkWidth);
+                constructor.bind(this)(data, id, options);
             }
         }
         static registerConstructor(func) {
@@ -2684,6 +2687,75 @@ class EventableLink extends Eventable(LinkBase) {
 // Call Pluggable at last as constructor may call methods defined in other classes
 class Link extends Pluggable(EventableLink) {
 }
+
+
+
+/***/ }),
+
+/***/ "./src/link_tooltip.ts":
+/*!*****************************!*\
+  !*** ./src/link_tooltip.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "LinkTooltip": () => (/* binding */ LinkTooltip)
+/* harmony export */ });
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _tooltip__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./tooltip */ "./src/tooltip.ts");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./util */ "./src/util.ts");
+
+
+
+class LinkTooltip extends _tooltip__WEBPACK_IMPORTED_MODULE_1__.Tooltip {
+    constructor(link, eventType) {
+        super(eventType, { offsetX: 10 });
+        this.link = link;
+    }
+    transform() {
+        const [x, y] = this.link.centerCoordinates();
+        return `translate(${x}, ${y})`;
+    }
+    objectId(escape = false) {
+        let id = (0,_util__WEBPACK_IMPORTED_MODULE_2__.classify)(this.link.linkId());
+        if (escape) {
+            id = CSS.escape(id);
+        }
+        return id;
+    }
+    static appendText(container) {
+        const path = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("path");
+        const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("text");
+        LinkTooltip.appendNameValue(text, "source", (d) => d.link.source.name);
+        text.each(function (d) {
+            d.link.sourceMeta.forEach((m, i) => {
+                LinkTooltip.appendNameValue(text, m.class, m.value, false);
+            });
+        });
+        LinkTooltip.appendNameValue(text, "target", (d) => d.link.source.name, true);
+        text.each(function (d) {
+            d.link.targetMeta.forEach((m, i) => {
+                LinkTooltip.appendNameValue(text, m.class, m.value, false);
+            });
+        });
+        text.each(function (d) {
+            d.link.metaList.forEach((m, i) => {
+                LinkTooltip.appendNameValue(text, m.class, m.value, i === 0);
+            });
+            // Add "d" after bbox calculation
+            const bbox = this.getBBox();
+            path
+                .attr("d", (d) => LinkTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20))
+                .style("fill", function () {
+                return LinkTooltip.fill(this);
+            });
+        });
+    }
+}
+LinkTooltip.type = "link";
 
 
 
@@ -2798,6 +2870,9 @@ class NodeBase {
             throw `Unknown node "${name}"`;
         return Node.all[name];
     }
+    nodeId() {
+        return (0,_util__WEBPACK_IMPORTED_MODULE_2__.classify)(this.name);
+    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer, nodes) {
         const node = layer
@@ -2805,7 +2880,7 @@ class NodeBase {
             .data(nodes)
             .enter()
             .append("g")
-            .attr("id", (d) => (0,_util__WEBPACK_IMPORTED_MODULE_2__.classify)(d.name))
+            .attr("id", (d) => d.nodeId())
             .attr("name", (d) => d.name)
             .attr("transform", (d) => d.transform());
         node.each(function (d) {
@@ -2830,11 +2905,11 @@ class NodeBase {
         text.each((d) => {
             // Show meta only when "tooltip" option is not configured
             if (!d.options.tooltip) {
-                Node.appendTspans(text, d.metaList);
+                Node.appendMetaText(text, d.metaList);
             }
         });
     }
-    static appendTspans(container, meta) {
+    static appendMetaText(container, meta) {
         meta.forEach((m) => {
             container
                 .append("tspan")
@@ -2923,6 +2998,61 @@ class EventableNode extends Eventable(NodeBase) {
 // Call Pluggable at last as constructor may call methods defined in other classes
 class Node extends Pluggable(EventableNode) {
 }
+
+
+
+/***/ }),
+
+/***/ "./src/node_tooltip.ts":
+/*!*****************************!*\
+  !*** ./src/node_tooltip.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "NodeTooltip": () => (/* binding */ NodeTooltip)
+/* harmony export */ });
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _tooltip__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./tooltip */ "./src/tooltip.ts");
+
+
+class NodeTooltip extends _tooltip__WEBPACK_IMPORTED_MODULE_1__.Tooltip {
+    constructor(node, eventType) {
+        super(eventType);
+        this.node = node;
+    }
+    transform() {
+        return `translate(${this.node.x}, ${this.node.y})`;
+    }
+    objectId(escape = false) {
+        let id = this.node.nodeId();
+        if (escape) {
+            id = CSS.escape(id);
+        }
+        return id;
+    }
+    static appendText(container) {
+        const path = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("path");
+        const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("text");
+        NodeTooltip.appendNameValue(text, "node", (d) => d.node.name);
+        text.each(function (d) {
+            d.node.metaList.forEach((m, i) => {
+                NodeTooltip.appendNameValue(text, m.class, m.value, i === 0);
+            });
+            // Add "d" after bbox calculation
+            const bbox = this.getBBox();
+            path
+                .attr("d", (d) => NodeTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20))
+                .style("fill", function () {
+                return NodeTooltip.fill(this);
+            });
+        });
+    }
+}
+NodeTooltip.type = "node";
 
 
 
@@ -3052,31 +3182,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util */ "./src/util.ts");
-
 
 class Tooltip {
-    constructor(node, eventType) {
-        this.node = node;
+    constructor(eventType, options = {}) {
         this.eventType = eventType;
-        this.offsetX = 30;
+        this.offsetX = options.offsetX !== undefined ? options.offsetX : 30;
         this.visibility = "hidden";
     }
-    tspanOffsetY(isHeader) {
-        return isHeader ? "2em" : "1.1em";
+    tspanOffsetY(marginTop) {
+        return marginTop ? "2em" : "1.1em";
     }
     transform() {
-        return `translate(${this.node.x}, ${this.node.y})`;
+        throw new Error("not implemented");
     }
     class() {
-        return `tooltip ${this.nodeId()}`;
-    }
-    nodeId(escape = false) {
-        let id = (0,_util__WEBPACK_IMPORTED_MODULE_1__.classify)(this.node.name);
-        if (escape) {
-            id = CSS.escape(id);
-        }
-        return id;
+        return `tooltip ${this.constructor.type}-tooltip ${this.objectId()}`;
     }
     setVisibility(visibility) {
         this.visibility = visibility === "visible" ? "visible" : "hidden";
@@ -3104,12 +3224,12 @@ class Tooltip {
             });
         };
     }
-    configureNodeClickCallback(element) {
-        d3__WEBPACK_IMPORTED_MODULE_0__.select(`#${this.nodeId(true)}`).on("click.tooltip", this.toggleVisibilityCallback(element));
+    configureObjectClickCallback(element) {
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(`#${this.objectId(true)}`).on("click.tooltip", this.toggleVisibilityCallback(element));
     }
-    configureNodeHoverCallback(element) {
-        d3__WEBPACK_IMPORTED_MODULE_0__.select(`#${this.nodeId(true)}`).on("mouseenter.tooltip", this.toggleVisibilityCallback(element));
-        d3__WEBPACK_IMPORTED_MODULE_0__.select(`#${this.nodeId(true)}`).on("mouseleave.tooltip", this.toggleVisibilityCallback(element));
+    configureObjectHoverCallback(element) {
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(`#${this.objectId(true)}`).on("mouseenter.tooltip", this.toggleVisibilityCallback(element));
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(`#${this.objectId(true)}`).on("mouseleave.tooltip", this.toggleVisibilityCallback(element));
     }
     // Make tooltip selectable
     disableZoom(element) {
@@ -3123,8 +3243,10 @@ class Tooltip {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer, tooltips) {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const cls = this;
         const tooltip = layer
-            .selectAll(".tooltip")
+            .selectAll(`.tooltip.${cls.type}-tooltip`)
             .data(tooltips)
             .enter()
             .append("g")
@@ -3132,12 +3254,15 @@ class Tooltip {
             .attr("class", (d) => d.class())
             .attr("transform", (d) => d.transform());
         tooltip.each(function (d) {
-            Tooltip.appendText(this);
+            cls.appendText(this);
+            if (typeof d.constructor.href === "function") {
+                cls.appendExternalLinkIcon(this);
+            }
             if (d.eventType === "hover") {
-                d.configureNodeHoverCallback(this);
+                d.configureObjectHoverCallback(this);
             }
             else {
-                d.configureNodeClickCallback(this);
+                d.configureObjectClickCallback(this);
             }
             d.disableZoom(this);
         });
@@ -3162,45 +3287,50 @@ class Tooltip {
             `L ${x + 20},${y + 10} Z`);
     }
     static appendText(container) {
-        const path = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("path");
-        const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("text");
-        text
+        throw new Error("not implemented");
+    }
+    /**
+     * Append "name: value" to the container
+     * @param container
+     * @param name
+     * @param value
+     * @param marginTop Render wide margin if true, ordinary marin if false, and no margin if undefined
+     * @protected
+     */
+    static appendNameValue(container, name, value, marginTop) {
+        container
             .append("tspan")
             .attr("x", (d) => d.offsetX + 40)
+            .attr("dy", (d) => (marginTop === undefined ? undefined : d.tspanOffsetY(marginTop)))
             .attr("class", "name")
-            .text("node:");
-        const nodeName = text.append("tspan").attr("dx", 10).attr("class", "value");
-        if (typeof this.href === "function") {
-            nodeName
-                .append("a")
-                .attr("href", (d) => Tooltip.href(d))
-                .text((d) => d.node.name);
-        }
-        else {
-            nodeName.text((d) => d.node.name);
-        }
-        text.each(function (d) {
-            Tooltip.appendTspans(text, d.node.metaList);
-            // Add "d" after bbox calculation
-            const bbox = this.getBBox();
-            path.attr("d", Tooltip.pathD(30, 0, bbox.width + 40, bbox.height + 20)).style("fill", function () {
-                return Tooltip.fill(this);
-            });
-        });
+            .text(`${name}:`);
+        container.append("tspan").attr("dx", 10).attr("class", "value").text(value);
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    static appendTspans(container, meta) {
-        meta.forEach((m, i) => {
-            container
-                .append("tspan")
-                .attr("x", (d) => d.offsetX + 40)
-                .attr("dy", (d) => d.tspanOffsetY(i === 0))
-                .attr("class", "name")
-                .text(`${m.class}:`);
-            container.append("tspan").attr("dx", 10).attr("class", "value").text(m.value);
-        });
+    // modified https://tabler-icons.io/i/external-link
+    static appendExternalLinkIcon(container) {
+        const bbox = container.getBBox();
+        const a = d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
+            .append("a")
+            .attr("href", (d) => d.constructor.href(d, d.constructor.type));
+        const size = 20;
+        const svg = a
+            .append("svg")
+            .attr("x", (d) => bbox.width + d.offsetX - 2 - size)
+            .attr("y", bbox.height - 30 - size)
+            .attr("width", size)
+            .attr("height", size)
+            .attr("viewBox", `0 0 24 24`)
+            .attr("stroke-width", 2)
+            .attr("fill", "none")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .attr("class", "icon external-link");
+        svg.append("path").attr("d", `M0 0h24v24H0z`).attr("stroke", "none").attr("fill", "#fff").attr("fill-opacity", 0);
+        svg.append("path").attr("d", "M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6");
+        svg.append("path").attr("d", "M11 13l9 -9");
+        svg.append("path").attr("d", "M15 4h5v5");
     }
-    static followNode(tooltip) {
+    static followObject(tooltip) {
         tooltip.attr("transform", (d) => d.transform());
     }
 }
@@ -3438,9 +3568,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _bundle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bundle */ "./src/bundle.ts");
 /* harmony import */ var _group__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./group */ "./src/group.ts");
 /* harmony import */ var _link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./link */ "./src/link.ts");
-/* harmony import */ var _node__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./node */ "./src/node.ts");
-/* harmony import */ var _position_cache__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./position_cache */ "./src/position_cache.ts");
-/* harmony import */ var _tooltip__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./tooltip */ "./src/tooltip.ts");
+/* harmony import */ var _link_tooltip__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./link_tooltip */ "./src/link_tooltip.ts");
+/* harmony import */ var _node__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./node */ "./src/node.ts");
+/* harmony import */ var _node_tooltip__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./node_tooltip */ "./src/node_tooltip.ts");
+/* harmony import */ var _position_cache__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./position_cache */ "./src/position_cache.ts");
+
 
 
 
@@ -3470,7 +3602,8 @@ class DiagramBase {
         this.options.bundle = "bundle" in options ? options.bundle : false;
         this.options.tooltip = options.tooltip;
         this.setDistance = this.linkDistance(options.distance || 150);
-        _tooltip__WEBPACK_IMPORTED_MODULE_7__.Tooltip.setHref(options.href);
+        _node_tooltip__WEBPACK_IMPORTED_MODULE_7__.NodeTooltip.setHref(options.href);
+        _link_tooltip__WEBPACK_IMPORTED_MODULE_5__.LinkTooltip.setHref(options.href);
     }
     init(...meta) {
         this.options.meta = meta;
@@ -3521,22 +3654,26 @@ class DiagramBase {
     render(data) {
         try {
             const nodes = data.nodes
-                ? data.nodes.map((n, i) => new _node__WEBPACK_IMPORTED_MODULE_5__.Node(n, i, {
+                ? data.nodes.map((n, i) => new _node__WEBPACK_IMPORTED_MODULE_6__.Node(n, i, {
                     width: this.options.nodeWidth,
                     height: this.options.nodeHeight,
                     metaKeys: this.options.meta,
                     color: this.options.color,
-                    tooltip: this.options.tooltip !== undefined,
+                    tooltip: !!this.options.tooltip,
                 }))
                 : [];
             const links = data.links
-                ? _bundle__WEBPACK_IMPORTED_MODULE_2__.Bundle.sortByBundle(data.links).map((l, i) => new _link__WEBPACK_IMPORTED_MODULE_4__.Link(l, i, this.options.meta, this.getLinkWidth))
+                ? _bundle__WEBPACK_IMPORTED_MODULE_2__.Bundle.sortByBundle(data.links).map((l, i) => new _link__WEBPACK_IMPORTED_MODULE_4__.Link(l, i, {
+                    metaKeys: this.options.meta,
+                    linkWidth: this.getLinkWidth,
+                }))
                 : [];
             const groups = _group__WEBPACK_IMPORTED_MODULE_3__.Group.divide(nodes, this.options.groupPattern, {
                 color: this.options.color,
                 padding: this.options.groupPadding,
             });
-            const tooltips = nodes.map((n) => new _tooltip__WEBPACK_IMPORTED_MODULE_7__.Tooltip(n, this.options.tooltip));
+            const nodeTooltips = nodes.map((n) => new _node_tooltip__WEBPACK_IMPORTED_MODULE_7__.NodeTooltip(n, this.options.tooltip));
+            const linkTooltips = links.map((l) => new _link_tooltip__WEBPACK_IMPORTED_MODULE_5__.LinkTooltip(l, this.options.tooltip));
             const bundles = _bundle__WEBPACK_IMPORTED_MODULE_2__.Bundle.divide(links);
             this.cola.nodes(nodes).links(links).groups(groups);
             this.applyConstraints(this.options.positionConstraints, nodes);
@@ -3559,32 +3696,33 @@ class DiagramBase {
                     _link__WEBPACK_IMPORTED_MODULE_4__.Link.shiftBundle(link, path, label, bundle);
                 }
             }));
-            const node = _node__WEBPACK_IMPORTED_MODULE_5__.Node.render(nodeLayer, nodes).call(this.cola
+            const node = _node__WEBPACK_IMPORTED_MODULE_6__.Node.render(nodeLayer, nodes).call(this.cola
                 .drag()
                 .on("dragstart", DiagramBase.dragstartCallback)
                 .on("drag", () => {
                 if (this.options.bundle) {
                     _link__WEBPACK_IMPORTED_MODULE_4__.Link.shiftBundle(link, path, label, bundle);
                 }
-                _tooltip__WEBPACK_IMPORTED_MODULE_7__.Tooltip.followNode(tooltip);
+                _node_tooltip__WEBPACK_IMPORTED_MODULE_7__.NodeTooltip.followObject(nodeTooltip);
+                _link_tooltip__WEBPACK_IMPORTED_MODULE_5__.LinkTooltip.followObject(linkTooltip);
             }));
             // without path calculation
             this.configureTick(group, node, link);
-            this.positionCache = _position_cache__WEBPACK_IMPORTED_MODULE_6__.PositionCache.load(data, this.options.groupPattern);
+            this.positionCache = _position_cache__WEBPACK_IMPORTED_MODULE_8__.PositionCache.load(data, this.options.groupPattern);
             if (this.options.positionCache && this.positionCache) {
                 // NOTE: Evaluate only when positionCache: true or 'fixed', and
                 //       when the stored position cache matches a pair of given data and pop
                 _group__WEBPACK_IMPORTED_MODULE_3__.Group.setPosition(group, this.positionCache.group);
-                _node__WEBPACK_IMPORTED_MODULE_5__.Node.setPosition(node, this.positionCache.node);
+                _node__WEBPACK_IMPORTED_MODULE_6__.Node.setPosition(node, this.positionCache.node);
                 _link__WEBPACK_IMPORTED_MODULE_4__.Link.setPosition(link, this.positionCache.link);
             }
             else {
                 if (this.options.positionHint.nodeCallback) {
-                    _node__WEBPACK_IMPORTED_MODULE_5__.Node.setPosition(node, node.data().map((d) => this.options.positionHint.nodeCallback(d)));
+                    _node__WEBPACK_IMPORTED_MODULE_6__.Node.setPosition(node, node.data().map((d) => this.options.positionHint.nodeCallback(d)));
                     this.cola.start(); // update internal positions of objects before ticks forward
                 }
                 this.ticksForward();
-                this.positionCache = new _position_cache__WEBPACK_IMPORTED_MODULE_6__.PositionCache(data, this.options.groupPattern);
+                this.positionCache = new _position_cache__WEBPACK_IMPORTED_MODULE_8__.PositionCache(data, this.options.groupPattern);
                 this.savePosition(group, node, link);
             }
             this.hideLoadMessage();
@@ -3596,7 +3734,8 @@ class DiagramBase {
             }
             path.attr("d", (d) => d.d()); // make sure path calculation is done
             DiagramBase.freeze(node);
-            const tooltip = _tooltip__WEBPACK_IMPORTED_MODULE_7__.Tooltip.render(tooltipLayer, tooltips);
+            const nodeTooltip = _node_tooltip__WEBPACK_IMPORTED_MODULE_7__.NodeTooltip.render(tooltipLayer, nodeTooltips);
+            const linkTooltip = _link_tooltip__WEBPACK_IMPORTED_MODULE_5__.LinkTooltip.render(tooltipLayer, linkTooltips);
             // NOTE: This is an experimental option
             if (this.options.positionCache === "fixed") {
                 this.cola.on("end", () => {
@@ -3623,7 +3762,7 @@ class DiagramBase {
     }
     destroy() {
         d3__WEBPACK_IMPORTED_MODULE_1__.select("body svg").remove();
-        _node__WEBPACK_IMPORTED_MODULE_5__.Node.reset();
+        _node__WEBPACK_IMPORTED_MODULE_6__.Node.reset();
         _link__WEBPACK_IMPORTED_MODULE_4__.Link.reset();
         _bundle__WEBPACK_IMPORTED_MODULE_2__.Bundle.reset();
     }
@@ -3649,7 +3788,7 @@ class DiagramBase {
     }
     configureTick(group, node, link, path, label) {
         this.cola.on("tick", () => {
-            _node__WEBPACK_IMPORTED_MODULE_5__.Node.tick(node);
+            _node__WEBPACK_IMPORTED_MODULE_6__.Node.tick(node);
             _link__WEBPACK_IMPORTED_MODULE_4__.Link.tick(link, path, label);
             _group__WEBPACK_IMPORTED_MODULE_3__.Group.tick(group);
         });
@@ -3716,7 +3855,7 @@ class DiagramBase {
 const Pluggable = (Base) => {
     class Diagram extends Base {
         static plugin(cls, options = {}) {
-            cls.load(_group__WEBPACK_IMPORTED_MODULE_3__.Group, _node__WEBPACK_IMPORTED_MODULE_5__.Node, _link__WEBPACK_IMPORTED_MODULE_4__.Link, options);
+            cls.load(_group__WEBPACK_IMPORTED_MODULE_3__.Group, _node__WEBPACK_IMPORTED_MODULE_6__.Node, _link__WEBPACK_IMPORTED_MODULE_4__.Link, options);
         }
     }
     return Diagram;
