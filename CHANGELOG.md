@@ -1,3 +1,11 @@
+## [1.4.0] - 2023-08-16
+
+### Added
+
+- "bundle" option of link to show bundle "tie" marks over bundled links
+- "positionConstraints" option of Diagram
+- Link tooltip
+
 ## [1.3.1] - 2023-06-10
 
 ### Fixed
