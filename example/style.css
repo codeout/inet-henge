@@ -49,19 +49,28 @@
 .tooltip {
   font-size: 12px;
   font-weight: bold;
+  --label-color: #8d7966;
+  --hovered-link-color: #58a6ff;
 }
 
-.tooltip path {
+.tooltip > path {
   stroke: #e2ddd9;
   stroke-width: 3px;
 }
 
 .tooltip .name {
-  fill: #8d7966;
+  fill: var(--label-color);
+}
+
+.tooltip .icon {
+  stroke: var(--label-color);
+}
+.tooltip .icon:hover {
+  stroke: var(--hovered-link-color);
 }
 
 .tooltip a:hover {
-  fill: #58a6ff;
+  fill: var(--hovered-link-color);
 }
 
 .loopback,

@@ -425,14 +425,32 @@ You can show `<a href="...">...</a>` in node metadata tooltips.
 <script>
   const diagram = new Diagram("#diagram", "index.json", {
     pop: /^([^\s-]+)-/,
+    bundle: true,
     tooltip: "click",
-    href: (t) => `https://example.com/${t.node.name}`,
+    href: (t, type) => {
+      switch (type) {
+        case "node":
+          // {
+          //   "name": "POP01-bb01",
+          //   "meta": { "description": "This is a router", "type": "Backbone" },
+          //   "icon": "./images/router.png"
+          // }
+          return `https://example.com/node/${tooltip.node.meta?.type}/${tooltip.node.name}`;
+        case "link":
+          // {
+          //   "source": "POP03-bb01",
+          //   "target": "POP03-bb02",
+          //   "meta": { "interface": { "source": "ge-0/0/0", "target": "Te0/0/0/0" } }
+          // }
+          return `https://example.com/link/${tooltip.link.source.name}-${tooltip.link.target.name}`;
+      }
+    }
   });
-  diagram.init("description", "type");
+  diagram.init("interface", "description", "type");
 </script>
 ```
 
-This example above will generate `<a href="https://example.com/POP01-bb02">POP01-bb02</a>`. Metadata are also available like `` href: (t) => `https://example.com/${t.node.meta?.type}/${t.node.name}`, ``.
+This example above will generate `<a href="https://example.com/node/Backbone/POP01-bb02">...</a>`.
 
 :bulb: Use `tooltip: "click"` to make tooltips sticky.
 

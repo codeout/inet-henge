@@ -15,9 +15,26 @@
     pop: /^([^\s-]+)-/,
     bundle: true,
     tooltip: "click",
-    href: (t) => `https://example.com/${t.node.meta?.type}/${t.node.name}`
+    href: (tooltip, type) => {
+      switch (type) {
+        case "node":
+          // {
+          //   "name": "POP01-bb01",
+          //   "meta": { "description": "This is a router", "type": "Backbone" },
+          //   "icon": "./images/router.png"
+          // }
+          return `https://example.com/node/${tooltip.node.meta?.type}/${tooltip.node.name}`;
+        case "link":
+          // {
+          //   "source": "POP03-bb01",
+          //   "target": "POP03-bb02",
+          //   "meta": { "interface": { "source": "ge-0/0/0", "target": "Te0/0/0/0" } }
+          // }
+          return `https://example.com/link/${tooltip.link.source.name}-${tooltip.link.target.name}`;
+      }
+    }
   });
-  diagram.init("loopback", "interface", "description", "type");
+  diagram.init("interface", "description", "type");
 </script>
 </body>
 </html>

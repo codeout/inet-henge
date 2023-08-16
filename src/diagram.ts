@@ -6,14 +6,15 @@ import { WebColaConstraint } from "../types/WebCola";
 import { Bundle } from "./bundle";
 import { Group, GroupOptions } from "./group";
 import { Link, LinkDataType } from "./link";
+import { LinkTooltip } from "./link_tooltip";
 import { Node, NodeDataType, NodeOptions } from "./node";
+import { NodeTooltip } from "./node_tooltip";
 import { NodePosition, PositionCache } from "./position_cache";
-import { Tooltip } from "./tooltip";
 
 const cola = require("cola"); // eslint-disable-line @typescript-eslint/no-var-requires
 
 type LinkWidthFunction = (object) => number;
-export type HrefFunction = (object) => string;
+export type HrefFunction = (object, type?: "node" | "link") => string;
 export type InetHengeDataType = { nodes: NodeDataType[]; links: LinkDataType[] };
 // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
 export type Color = d3.scale.Ordinal<string, string>;
@@ -87,7 +88,8 @@ class DiagramBase {
     this.options.tooltip = options.tooltip;
 
     this.setDistance = this.linkDistance(options.distance || 150);
-    Tooltip.setHref(options.href);
+    NodeTooltip.setHref(options.href);
+    LinkTooltip.setHref(options.href);
   }
 
   init(...meta: string[]) {
@@ -154,18 +156,25 @@ class DiagramBase {
                 height: this.options.nodeHeight,
                 metaKeys: this.options.meta,
                 color: this.options.color,
-                tooltip: this.options.tooltip !== undefined,
+                tooltip: !!this.options.tooltip,
               } as NodeOptions),
           )
         : [];
       const links = data.links
-        ? Bundle.sortByBundle(data.links).map((l, i) => new Link(l, i, this.options.meta, this.getLinkWidth))
+        ? Bundle.sortByBundle(data.links).map(
+            (l, i) =>
+              new Link(l, i, {
+                metaKeys: this.options.meta,
+                linkWidth: this.getLinkWidth,
+              }),
+          )
         : [];
       const groups = Group.divide(nodes, this.options.groupPattern, {
         color: this.options.color,
         padding: this.options.groupPadding,
       } as GroupOptions);
-      const tooltips = nodes.map((n) => new Tooltip(n, this.options.tooltip));
+      const nodeTooltips = nodes.map((n) => new NodeTooltip(n, this.options.tooltip));
+      const linkTooltips = links.map((l) => new LinkTooltip(l, this.options.tooltip));
       const bundles = Bundle.divide(links);
 
       this.cola.nodes(nodes).links(links).groups(groups);
@@ -205,7 +214,8 @@ class DiagramBase {
               Link.shiftBundle(link, path, label, bundle);
             }
 
-            Tooltip.followNode(tooltip);
+            NodeTooltip.followObject(nodeTooltip);
+            LinkTooltip.followObject(linkTooltip);
           }),
       );
 
@@ -246,7 +256,8 @@ class DiagramBase {
       path.attr("d", (d) => d.d()); // make sure path calculation is done
       DiagramBase.freeze(node);
 
-      const tooltip = Tooltip.render(tooltipLayer, tooltips);
+      const nodeTooltip = NodeTooltip.render<NodeTooltip>(tooltipLayer, nodeTooltips);
+      const linkTooltip = LinkTooltip.render<LinkTooltip>(tooltipLayer, linkTooltips);
 
       // NOTE: This is an experimental option
       if (this.options.positionCache === "fixed") {

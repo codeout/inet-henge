@@ -16,16 +16,21 @@ export type LinkDataType = {
   class: string;
 };
 
+export type LinkOptions = {
+  metaKeys: string[];
+  linkWidth: (object) => number;
+};
+
 export class LinkBase {
   private static groups: Record<string, number[]>;
 
   public readonly bundle?: number | string;
   public readonly source: number | Node;
   public readonly target: number | Node;
+  public readonly metaList: MetaDataType[];
+  public readonly sourceMeta: MetaDataType[];
+  public readonly targetMeta: MetaDataType[];
 
-  private readonly metaList: MetaDataType[];
-  private readonly sourceMeta: MetaDataType[];
-  private readonly targetMeta: MetaDataType[];
   private readonly extraClass: string;
   private width: number;
   private readonly defaultMargin: number;
@@ -35,17 +40,17 @@ export class LinkBase {
   private _margin: number;
   private _shiftMultiplier: number;
 
-  constructor(data: LinkDataType, public id: number, metaKeys: string[], linkWidth: (object) => number) {
+  constructor(data: LinkDataType, public id: number, private options: LinkOptions) {
     this.source = Node.idByName(data.source);
     this.target = Node.idByName(data.target);
     this.bundle = data.bundle;
-    this.metaList = new MetaData(data.meta).get(metaKeys);
-    this.sourceMeta = new MetaData(data.meta, "source").get(metaKeys);
-    this.targetMeta = new MetaData(data.meta, "target").get(metaKeys);
+    this.metaList = new MetaData(data.meta).get(options.metaKeys);
+    this.sourceMeta = new MetaData(data.meta, "source").get(options.metaKeys);
+    this.targetMeta = new MetaData(data.meta, "target").get(options.metaKeys);
     this.extraClass = data.class || "";
 
-    if (typeof linkWidth === "function") this.width = linkWidth(data.meta) || 3;
-    else this.width = linkWidth || 3;
+    if (typeof options.linkWidth === "function") this.width = options.linkWidth(data.meta) || 3;
+    else this.width = options.linkWidth || 3;
 
     this.defaultMargin = 15;
     this.labelXOffset = 20;
@@ -63,7 +68,7 @@ export class LinkBase {
     (Link.groups[key] || (Link.groups[key] = [])).push(id);
   }
 
-  private isNamedPath() {
+  private isLabelledPath() {
     return this.metaList.length > 0;
   }
 
@@ -81,7 +86,7 @@ export class LinkBase {
     return `path${this.id}`;
   }
 
-  private linkId() {
+  public linkId() {
     return `link${this.id}`;
   }
 
@@ -107,13 +112,18 @@ export class LinkBase {
 
   // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
   private tspanXOffset() {
-    if (this.isNamedPath()) return 0;
-    else if (this.isReversePath()) return -this.labelXOffset;
-    else return this.labelXOffset;
+    switch (true) {
+      case this.isLabelledPath():
+        return 0;
+      case this.isReversePath():
+        return -this.labelXOffset;
+      default:
+        return this.labelXOffset;
+    }
   }
 
   private tspanYOffset() {
-    if (this.isNamedPath()) return `${-this.labelYOffset + 0.7}em`;
+    if (this.isLabelledPath()) return `${-this.labelYOffset + 0.7}em`;
     else return `${this.labelYOffset}em`;
   }
 
@@ -217,11 +227,11 @@ export class LinkBase {
     const textPath = text.append("textPath").attr("xlink:href", (d: Link) => `#${d.pathId()}`);
 
     textPath.each(function (d: Link) {
-      Link.appendTspans(this, d.metaList);
-      Link.appendTspans(this, d.sourceMeta);
-      Link.appendTspans(this, d.targetMeta);
+      Link.appendMetaText(this, d.metaList);
+      Link.appendMetaText(this, d.sourceMeta);
+      Link.appendMetaText(this, d.targetMeta);
 
-      if (d.isNamedPath()) Link.center(this);
+      if (d.isLabelledPath()) Link.center(this);
 
       if (d.isReversePath()) Link.theOtherEnd(this);
     });
@@ -238,7 +248,7 @@ export class LinkBase {
     d3.select(container).attr("class", "center").attr("text-anchor", "middle").attr("startOffset", "50%");
   }
 
-  private static appendTspans(container: SVGGElement, meta: MetaDataType[]) {
+  private static appendMetaText(container: SVGGElement, meta: MetaDataType[]) {
     meta.forEach((m) => {
       d3.select(container)
         .append("tspan")
@@ -322,8 +332,8 @@ const Eventable = (Base: typeof LinkBase) => {
   class EventableLink extends Base {
     private dispatch: d3.Dispatch;
 
-    constructor(data: LinkDataType, id: number, metaKeys: string[], linkWidth: (object) => number) {
-      super(data, id, metaKeys, linkWidth);
+    constructor(data: LinkDataType, id: number, options: LinkOptions) {
+      super(data, id, options);
 
       this.dispatch = d3.dispatch("rendered");
     }
@@ -352,12 +362,12 @@ const Pluggable = (Base: typeof LinkBase) => {
   class Link extends Base {
     private static pluginConstructors: Constructor[] = [];
 
-    constructor(data: LinkDataType, id: number, metaKeys: string[], linkWidth: (object) => number) {
-      super(data, id, metaKeys, linkWidth);
+    constructor(data: LinkDataType, id: number, options: LinkOptions) {
+      super(data, id, options);
 
       for (const constructor of Link.pluginConstructors) {
         // Call Pluggable at last as constructor may call methods defined in other classes
-        constructor.bind(this)(data, id, metaKeys, linkWidth);
+        constructor.bind(this)(data, id, options);
       }
     }
 

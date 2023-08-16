@@ -119,6 +119,9 @@ class NodeBase {
             throw `Unknown node "${name}"`;
         return Node.all[name];
     }
+    nodeId() {
+        return (0,_util__WEBPACK_IMPORTED_MODULE_2__.classify)(this.name);
+    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer, nodes) {
         const node = layer
@@ -126,7 +129,7 @@ class NodeBase {
             .data(nodes)
             .enter()
             .append("g")
-            .attr("id", (d) => (0,_util__WEBPACK_IMPORTED_MODULE_2__.classify)(d.name))
+            .attr("id", (d) => d.nodeId())
             .attr("name", (d) => d.name)
             .attr("transform", (d) => d.transform());
         node.each(function (d) {
@@ -151,11 +154,11 @@ class NodeBase {
         text.each((d) => {
             // Show meta only when "tooltip" option is not configured
             if (!d.options.tooltip) {
-                Node.appendTspans(text, d.metaList);
+                Node.appendMetaText(text, d.metaList);
             }
         });
     }
-    static appendTspans(container, meta) {
+    static appendMetaText(container, meta) {
         meta.forEach((m) => {
             container
                 .append("tspan")
