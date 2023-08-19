@@ -1,3 +1,9 @@
+## [1.4.1] - 2023-08-20
+
+### Fix
+
+- Tooltips not following dragged group
+
 ## [1.4.0] - 2023-08-16
 
 ### Added
