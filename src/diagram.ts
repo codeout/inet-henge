@@ -202,6 +202,9 @@ class DiagramBase {
             if (this.options.bundle) {
               Link.shiftBundle(link, path, label, bundle);
             }
+
+            NodeTooltip.followObject(nodeTooltip);
+            LinkTooltip.followObject(linkTooltip);
           }),
       );
 
