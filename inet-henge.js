@@ -3695,6 +3695,8 @@ class DiagramBase {
                 if (this.options.bundle) {
                     _link__WEBPACK_IMPORTED_MODULE_4__.Link.shiftBundle(link, path, label, bundle);
                 }
+                _node_tooltip__WEBPACK_IMPORTED_MODULE_7__.NodeTooltip.followObject(nodeTooltip);
+                _link_tooltip__WEBPACK_IMPORTED_MODULE_5__.LinkTooltip.followObject(linkTooltip);
             }));
             const node = _node__WEBPACK_IMPORTED_MODULE_6__.Node.render(nodeLayer, nodes).call(this.cola
                 .drag()
