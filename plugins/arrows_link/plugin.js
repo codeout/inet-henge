@@ -255,7 +255,10 @@ class LinkBase {
         const link = d3__WEBPACK_IMPORTED_MODULE_0__.select(`.link #${this.linkId()}`).node();
         const bbox = link.getBBox();
         const transform = link.transform.baseVal.consolidate();
-        return [bbox.x + bbox.width / 2 + (transform === null || transform === void 0 ? void 0 : transform.matrix.e) || 0, bbox.y + bbox.height / 2 + (transform === null || transform === void 0 ? void 0 : transform.matrix.f) || 0];
+        return [
+            bbox.x + bbox.width / 2 + ((transform === null || transform === void 0 ? void 0 : transform.matrix.e) || 0),
+            bbox.y + bbox.height / 2 + ((transform === null || transform === void 0 ? void 0 : transform.matrix.f) || 0),
+        ];
     }
     angle() {
         const link = d3__WEBPACK_IMPORTED_MODULE_0__.select(`.link #${this.linkId()}`).node();
