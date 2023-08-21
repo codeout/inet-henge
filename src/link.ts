@@ -167,7 +167,10 @@ export class LinkBase {
     const bbox = link.getBBox();
     const transform = link.transform.baseVal.consolidate();
 
-    return [bbox.x + bbox.width / 2 + transform?.matrix.e || 0, bbox.y + bbox.height / 2 + transform?.matrix.f || 0];
+    return [
+      bbox.x + bbox.width / 2 + (transform?.matrix.e || 0),
+      bbox.y + bbox.height / 2 + (transform?.matrix.f || 0),
+    ];
   }
 
   angle() {
