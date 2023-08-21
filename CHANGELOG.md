@@ -1,3 +1,9 @@
+## [1.4.2] - 2023-08-21
+
+### Fix
+
+- Link tooltips not following
+
 ## [1.4.1] - 2023-08-20
 
 ### Fix
