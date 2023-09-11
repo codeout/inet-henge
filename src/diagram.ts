@@ -54,6 +54,8 @@ type DiagramOptionType = {
 };
 
 class DiagramBase {
+  public tickCallback: () => void;
+
   private options: DiagramOptionType;
   private readonly setDistance: (object) => number;
   private getLinkWidth: LinkWidthFunction;
@@ -327,11 +329,15 @@ class DiagramBase {
     path?: d3.Selection<Link>,
     label?: d3.Selection<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
   ) {
-    this.cola.on("tick", () => {
+    // this.cola.on() overrides existing listener, not additionally register it.
+    // May need to call it manually.
+    this.tickCallback = () => {
       Node.tick(node);
       Link.tick(link, path, label);
       Group.tick(group);
-    });
+    };
+
+    this.cola.on("tick", this.tickCallback);
   }
 
   private ticksForward(count?: number) {
