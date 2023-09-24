@@ -2517,7 +2517,10 @@ class LinkBase {
         const link = d3__WEBPACK_IMPORTED_MODULE_0__.select(`.link #${this.linkId()}`).node();
         const bbox = link.getBBox();
         const transform = link.transform.baseVal.consolidate();
-        return [bbox.x + bbox.width / 2 + (transform === null || transform === void 0 ? void 0 : transform.matrix.e) || 0, bbox.y + bbox.height / 2 + (transform === null || transform === void 0 ? void 0 : transform.matrix.f) || 0];
+        return [
+            bbox.x + bbox.width / 2 + ((transform === null || transform === void 0 ? void 0 : transform.matrix.e) || 0),
+            bbox.y + bbox.height / 2 + ((transform === null || transform === void 0 ? void 0 : transform.matrix.f) || 0),
+        ];
     }
     angle() {
         const link = d3__WEBPACK_IMPORTED_MODULE_0__.select(`.link #${this.linkId()}`).node();
@@ -3695,6 +3698,8 @@ class DiagramBase {
                 if (this.options.bundle) {
                     _link__WEBPACK_IMPORTED_MODULE_4__.Link.shiftBundle(link, path, label, bundle);
                 }
+                _node_tooltip__WEBPACK_IMPORTED_MODULE_7__.NodeTooltip.followObject(nodeTooltip);
+                _link_tooltip__WEBPACK_IMPORTED_MODULE_5__.LinkTooltip.followObject(linkTooltip);
             }));
             const node = _node__WEBPACK_IMPORTED_MODULE_6__.Node.render(nodeLayer, nodes).call(this.cola
                 .drag()
@@ -3787,11 +3792,14 @@ class DiagramBase {
         return this.uniqueUrl;
     }
     configureTick(group, node, link, path, label) {
-        this.cola.on("tick", () => {
+        // this.cola.on() overrides existing listener, not additionally register it.
+        // May need to call it manually.
+        this.tickCallback = () => {
             _node__WEBPACK_IMPORTED_MODULE_6__.Node.tick(node);
             _link__WEBPACK_IMPORTED_MODULE_4__.Link.tick(link, path, label);
             _group__WEBPACK_IMPORTED_MODULE_3__.Group.tick(group);
-        });
+        };
+        this.cola.on("tick", this.tickCallback);
     }
     ticksForward(count) {
         count = count || this.options.maxTicks;
