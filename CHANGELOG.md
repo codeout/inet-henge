@@ -1,3 +1,9 @@
+## [1.4.3] - 2023-09-24
+
+### Fix
+
+- Define Diagram.tickCallback to call in custom "tick" event listener
+
 ## [1.4.2] - 2023-08-21
 
 ### Fix
