@@ -3792,11 +3792,14 @@ class DiagramBase {
         return this.uniqueUrl;
     }
     configureTick(group, node, link, path, label) {
-        this.cola.on("tick", () => {
+        // this.cola.on() overrides existing listener, not additionally register it.
+        // May need to call it manually.
+        this.tickCallback = () => {
             _node__WEBPACK_IMPORTED_MODULE_6__.Node.tick(node);
             _link__WEBPACK_IMPORTED_MODULE_4__.Link.tick(link, path, label);
             _group__WEBPACK_IMPORTED_MODULE_3__.Group.tick(group);
-        });
+        };
+        this.cola.on("tick", this.tickCallback);
     }
     ticksForward(count) {
         count = count || this.options.maxTicks;
