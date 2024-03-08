@@ -2129,7 +2129,7 @@ module.exports = cloneDeep;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Bundle": () => (/* binding */ Bundle)
+/* harmony export */   Bundle: () => (/* binding */ Bundle)
 /* harmony export */ });
 class Bundle {
     constructor(links, id) {
@@ -2243,8 +2243,8 @@ class Bundle {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Group": () => (/* binding */ Group),
-/* harmony export */   "GroupBase": () => (/* binding */ GroupBase)
+/* harmony export */   Group: () => (/* binding */ Group),
+/* harmony export */   GroupBase: () => (/* binding */ GroupBase)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
@@ -2395,8 +2395,8 @@ class Group extends Pluggable(EventableGroup) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Link": () => (/* binding */ Link),
-/* harmony export */   "LinkBase": () => (/* binding */ LinkBase)
+/* harmony export */   Link: () => (/* binding */ Link),
+/* harmony export */   LinkBase: () => (/* binding */ LinkBase)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
@@ -2704,7 +2704,7 @@ class Link extends Pluggable(EventableLink) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "LinkTooltip": () => (/* binding */ LinkTooltip)
+/* harmony export */   LinkTooltip: () => (/* binding */ LinkTooltip)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
@@ -2738,7 +2738,7 @@ class LinkTooltip extends _tooltip__WEBPACK_IMPORTED_MODULE_1__.Tooltip {
                 LinkTooltip.appendNameValue(text, m.class, m.value, false);
             });
         });
-        LinkTooltip.appendNameValue(text, "target", (d) => d.link.source.name, true);
+        LinkTooltip.appendNameValue(text, "target", (d) => d.link.target.name, true);
         text.each(function (d) {
             d.link.targetMeta.forEach((m, i) => {
                 LinkTooltip.appendNameValue(text, m.class, m.value, false);
@@ -2761,7 +2761,6 @@ class LinkTooltip extends _tooltip__WEBPACK_IMPORTED_MODULE_1__.Tooltip {
 LinkTooltip.type = "link";
 
 
-
 /***/ }),
 
 /***/ "./src/meta_data.ts":
@@ -2773,7 +2772,7 @@ LinkTooltip.type = "link";
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "MetaData": () => (/* binding */ MetaData)
+/* harmony export */   MetaData: () => (/* binding */ MetaData)
 /* harmony export */ });
 class MetaData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2822,7 +2821,7 @@ class MetaData {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Node": () => (/* binding */ Node)
+/* harmony export */   Node: () => (/* binding */ Node)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
@@ -3015,7 +3014,7 @@ class Node extends Pluggable(EventableNode) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "NodeTooltip": () => (/* binding */ NodeTooltip)
+/* harmony export */   NodeTooltip: () => (/* binding */ NodeTooltip)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
@@ -3058,7 +3057,6 @@ class NodeTooltip extends _tooltip__WEBPACK_IMPORTED_MODULE_1__.Tooltip {
 NodeTooltip.type = "node";
 
 
-
 /***/ }),
 
 /***/ "./src/position_cache.ts":
@@ -3070,7 +3068,7 @@ NodeTooltip.type = "node";
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "PositionCache": () => (/* binding */ PositionCache)
+/* harmony export */   PositionCache: () => (/* binding */ PositionCache)
 /* harmony export */ });
 const cloneDeep = __webpack_require__(/*! lodash.clonedeep */ "./node_modules/lodash.clonedeep/index.js"); // eslint-disable-line @typescript-eslint/no-var-requires
 const md5 = __webpack_require__(/*! md5 */ "./node_modules/md5/md5.js"); // eslint-disable-line @typescript-eslint/no-var-requires
@@ -3181,7 +3179,7 @@ class PositionCache {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Tooltip": () => (/* binding */ Tooltip)
+/* harmony export */   Tooltip: () => (/* binding */ Tooltip)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
@@ -3350,7 +3348,7 @@ class Tooltip {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "classify": () => (/* binding */ classify)
+/* harmony export */   classify: () => (/* binding */ classify)
 /* harmony export */ });
 function classify(string) {
     return string.replace(" ", "-").toLowerCase();
@@ -3562,7 +3560,7 @@ var __webpack_exports__ = {};
   \************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Diagram": () => (/* binding */ Diagram)
+/* harmony export */   Diagram: () => (/* binding */ Diagram)
 /* harmony export */ });
 /* harmony import */ var _hack_cola__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hack_cola */ "./src/hack_cola.js");
 /* harmony import */ var _hack_cola__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_hack_cola__WEBPACK_IMPORTED_MODULE_0__);

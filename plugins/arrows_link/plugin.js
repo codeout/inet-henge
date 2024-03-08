@@ -20,7 +20,7 @@ return /******/ (() => { // webpackBootstrap
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Bundle": () => (/* binding */ Bundle)
+/* harmony export */   Bundle: () => (/* binding */ Bundle)
 /* harmony export */ });
 class Bundle {
     constructor(links, id) {
@@ -133,8 +133,8 @@ class Bundle {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Link": () => (/* binding */ Link),
-/* harmony export */   "LinkBase": () => (/* binding */ LinkBase)
+/* harmony export */   Link: () => (/* binding */ Link),
+/* harmony export */   LinkBase: () => (/* binding */ LinkBase)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
@@ -441,7 +441,7 @@ class Link extends Pluggable(EventableLink) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "MetaData": () => (/* binding */ MetaData)
+/* harmony export */   MetaData: () => (/* binding */ MetaData)
 /* harmony export */ });
 class MetaData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -489,7 +489,7 @@ class MetaData {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Node": () => (/* binding */ Node)
+/* harmony export */   Node: () => (/* binding */ Node)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
@@ -681,7 +681,7 @@ class Node extends Pluggable(EventableNode) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "classify": () => (/* binding */ classify)
+/* harmony export */   classify: () => (/* binding */ classify)
 /* harmony export */ });
 function classify(string) {
     return string.replace(" ", "-").toLowerCase();
@@ -776,7 +776,7 @@ var __webpack_exports__ = {};
   \*******************************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "ArrowsLinkPlugin": () => (/* binding */ ArrowsLinkPlugin),
+/* harmony export */   ArrowsLinkPlugin: () => (/* binding */ ArrowsLinkPlugin),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
@@ -810,9 +810,9 @@ const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
             data, id, metaKeys, linkWidth) {
                 this.selected = false;
                 this.on("rendered", (element) => {
-                    ArrowsLinkPlugin.appendMarker(element);
-                    if (!ArrowsLinkPlugin.isMarkerDefined) {
-                        ArrowsLinkPlugin.defineMarkers();
+                    _a.appendMarker(element);
+                    if (!_a.isMarkerDefined) {
+                        _a.defineMarkers();
                     }
                 });
             });
@@ -838,7 +838,7 @@ const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
             };
             define("marker-odd");
             define("marker-even");
-            ArrowsLinkPlugin.isMarkerDefined = true;
+            _a.isMarkerDefined = true;
         }
         static appendMarker(element) {
             d3__WEBPACK_IMPORTED_MODULE_0__.select(element).attr("marker-end", 

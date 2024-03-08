@@ -20,7 +20,7 @@ return /******/ (() => { // webpackBootstrap
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "MetaData": () => (/* binding */ MetaData)
+/* harmony export */   MetaData: () => (/* binding */ MetaData)
 /* harmony export */ });
 class MetaData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,7 +68,7 @@ class MetaData {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Node": () => (/* binding */ Node)
+/* harmony export */   Node: () => (/* binding */ Node)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_0__);
@@ -260,7 +260,7 @@ class Node extends Pluggable(EventableNode) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "classify": () => (/* binding */ classify)
+/* harmony export */   classify: () => (/* binding */ classify)
 /* harmony export */ });
 function classify(string) {
     return string.replace(" ", "-").toLowerCase();
@@ -355,7 +355,7 @@ var __webpack_exports__ = {};
   \**********************************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "RemovableNodePlugin": () => (/* binding */ RemovableNodePlugin),
+/* harmony export */   RemovableNodePlugin: () => (/* binding */ RemovableNodePlugin),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "d3");
@@ -380,19 +380,19 @@ class RemovableNode extends _src_node__WEBPACK_IMPORTED_MODULE_1__.Node {
 const RemovableNodePlugin = (_a = class RemovableNodePlugin {
         static load(Group, Node, Link, options = {}) {
             if (options.showKey) {
-                RemovableNodePlugin.showKey = options.showKey;
+                _a.showKey = options.showKey;
             }
             if (options.hideKey) {
-                RemovableNodePlugin.hideKey = options.hideKey;
+                _a.hideKey = options.hideKey;
             }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             Node.registerConstructor(function (data, id, options) {
                 this.selected = false;
                 this.on("rendered", (element) => {
-                    RemovableNodePlugin.configureRemovableNode(element);
+                    _a.configureRemovableNode(element);
                 });
             });
-            RemovableNodePlugin.configureRemovableNodes();
+            _a.configureRemovableNodes();
             // Copy methods
             Node.prototype.toggleSelected = RemovableNode.prototype.toggleSelected;
             Node.prototype.reset = RemovableNode.prototype.reset;
@@ -404,11 +404,11 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
         static configureRemovableNodes() {
             d3__WEBPACK_IMPORTED_MODULE_0__.select("body").on("keydown", () => {
                 switch (d3__WEBPACK_IMPORTED_MODULE_0__.event.key) {
-                    case RemovableNodePlugin.showKey:
-                        RemovableNodePlugin.show();
+                    case _a.showKey:
+                        _a.show();
                         break;
-                    case RemovableNodePlugin.hideKey:
-                        RemovableNodePlugin.hide();
+                    case _a.hideKey:
+                        _a.hide();
                 }
             });
         }
@@ -423,7 +423,7 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
                     return;
                 }
                 d.toggleSelected();
-                RemovableNodePlugin.applyColor(this);
+                _a.applyColor(this);
             });
         }
         static applyColor(element) {
@@ -436,16 +436,16 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
                 .style("display", "inline")
                 .each(function (d) {
                 d.reset();
-                RemovableNodePlugin.applyColor(this);
+                _a.applyColor(this);
             });
-            RemovableNodePlugin.showLinks();
+            _a.showLinks();
         }
         static hide() {
             d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".node").style("display", (d) => {
                 if (d.selected) {
                     // Hide connected elements
-                    RemovableNodePlugin.hideLinks(d.name);
-                    RemovableNodePlugin.hideToolTips(d.name);
+                    _a.hideLinks(d.name);
+                    _a.hideToolTips(d.name);
                     return "none";
                 }
                 return "inline";
