@@ -1,3 +1,9 @@
+## [1.4.4] - 2024-03-09
+
+### Fix
+
+- Source node was shown in "target" field of LinkTooltip
+
 ## [1.4.3] - 2023-09-24
 
 ### Fix
