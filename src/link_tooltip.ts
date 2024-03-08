@@ -38,7 +38,7 @@ export class LinkTooltip extends Tooltip {
       });
     });
 
-    LinkTooltip.appendNameValue(text, "target", (d) => (d.link.source as Node).name, true);
+    LinkTooltip.appendNameValue(text, "target", (d) => (d.link.target as Node).name, true);
     text.each(function (d) {
       d.link.targetMeta.forEach((m, i) => {
         LinkTooltip.appendNameValue(text, m.class, m.value, false);
