@@ -566,4 +566,4 @@ Or send a pull request to fix.
 
 ## Copyright and License
 
-Copyright (c) 2016-2023 Shintaro Kojima. Code released under the [MIT license](LICENSE).
+Copyright (c) 2016-2024 Shintaro Kojima. Code released under the [MIT license](LICENSE).
