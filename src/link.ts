@@ -23,6 +23,7 @@ export type LinkOptions = {
 
 export class LinkBase {
   private static groups: Record<string, number[]>;
+  private static scale?: number;
 
   public readonly bundle?: number | string;
   public readonly source: number | Node;
@@ -108,6 +109,15 @@ export class LinkBase {
     }
 
     return this._margin;
+  }
+
+  private isLabelVisible() {
+    // Link.scale is initially undefined
+    if (!Link.scale || Link.scale <= 1.5) {
+      return false;
+    }
+
+    return true;
   }
 
   group(): number[] {
@@ -282,8 +292,9 @@ export class LinkBase {
   }
 
   static zoom(scale?: number) {
-    const visibility = scale && scale > 1.5 ? "visible" : "hidden";
-    d3.selectAll(".link text").style("visibility", visibility);
+    Link.scale = scale;
+
+    d3.selectAll(".link text").style("visibility", (d: Link) => (d.isLabelVisible() ? "visible" : "hidden"));
   }
 
   static setPosition(link: d3.Selection<Link>, position: LinkPosition[]) {
