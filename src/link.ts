@@ -278,9 +278,7 @@ export class LinkBase {
   }
 
   static zoom(scale?: number) {
-    let visibility = "hidden";
-    if (scale && scale > 1.5) visibility = "visible";
-
+    const visibility = scale && scale > 1.5 ? "visible" : "hidden";
     d3.selectAll(".link text").style("visibility", visibility);
   }
 
