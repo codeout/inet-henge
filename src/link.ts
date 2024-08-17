@@ -40,7 +40,11 @@ export class LinkBase {
   private _margin: number;
   private _shiftMultiplier: number;
 
-  constructor(data: LinkDataType, public id: number, private options: LinkOptions) {
+  constructor(
+    data: LinkDataType,
+    public id: number,
+    private options: LinkOptions,
+  ) {
     this.source = Node.idByName(data.source);
     this.target = Node.idByName(data.target);
     this.bundle = data.bundle;
