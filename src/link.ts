@@ -112,12 +112,23 @@ export class LinkBase {
   }
 
   private isLabelVisible() {
-    // Link.scale is initially undefined
-    if (!Link.scale || Link.scale <= 1.5) {
-      return false;
-    }
+    const pathLength = (document.getElementById(this.pathId()) as unknown as SVGPathElement).getTotalLength();
 
-    return true;
+    const isShort = Array.from(document.getElementsByClassName(this.pathId())).some((p) => {
+      // <text /> has only one <textPath />
+      const tp = p.firstChild as SVGTextPathElement;
+      // center label
+      if (tp.classList.contains("center")) {
+        return tp.getComputedTextLength() > pathLength;
+      } else {
+        return tp.getComputedTextLength() + this.labelXOffset > pathLength;
+      }
+    });
+
+    d3.selectAll(`text.${this.pathId()}`).classed("short", isShort);
+
+    // Link.scale is initially undefined
+    return Link.scale > 1.5 && !isShort;
   }
 
   group(): number[] {
@@ -284,11 +295,14 @@ export class LinkBase {
       .attr("x2", (d) => (d.target as Node).x)
       .attr("y2", (d) => (d.target as Node).y);
 
-    if (path) path.attr("d", (d) => d.d());
-    if (label)
-      label.attr("transform", function (d: Link) {
-        return d.rotate(this.getBBox());
-      });
+    path.attr("d", (d) => d.d());
+
+    label.attr("transform", function (d: Link) {
+      return d.rotate(this.getBBox());
+    });
+
+    // hide labels when the path is too short
+    d3.selectAll(".link text").style("visibility", (d: Link) => (d.isLabelVisible() ? "visible" : "hidden"));
   }
 
   static zoom(scale?: number) {
