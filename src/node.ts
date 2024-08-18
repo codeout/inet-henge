@@ -5,7 +5,6 @@ import { MetaData, MetaDataType } from "./meta_data";
 import { NodePosition } from "./position_cache";
 import { classify } from "./util";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Constructor = (data: NodeDataType, id: number, options: NodeOptions) => void;
 
 export type NodeDataType = {
@@ -41,7 +40,11 @@ class NodeBase {
   private padding: number;
   private tspanOffset: string;
 
-  constructor(data: NodeDataType, public id: number, private options: NodeOptions) {
+  constructor(
+    data: NodeDataType,
+    public id: number,
+    private options: NodeOptions,
+  ) {
     this.name = data.name;
     this.group = typeof data.group === "string" ? [data.group] : data.group || [];
     this.icon = data.icon;

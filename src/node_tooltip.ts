@@ -6,7 +6,10 @@ import { Tooltip } from "./tooltip";
 export class NodeTooltip extends Tooltip {
   protected static type = "node" as const;
 
-  constructor(private node: Node, eventType: string) {
+  constructor(
+    private node: Node,
+    eventType: string,
+  ) {
     super(eventType);
   }
 

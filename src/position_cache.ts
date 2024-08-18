@@ -1,12 +1,10 @@
+import * as md5 from "crypto-js/md5";
 import * as d3 from "d3";
 
 import { InetHengeDataType } from "./diagram";
 import { Group } from "./group";
 import { Link } from "./link";
 import { Node } from "./node";
-
-const cloneDeep = require("lodash.clonedeep"); // eslint-disable-line @typescript-eslint/no-var-requires
-const md5 = require("md5"); // eslint-disable-line @typescript-eslint/no-var-requires
 
 export type GroupPosition = { x: number; y: number; width: number; height: number };
 export type NodePosition = { x: number; y: number };
@@ -25,7 +23,11 @@ export class PositionCache {
   public node: NodePosition[];
   public link: LinkPosition[];
 
-  constructor(public data: InetHengeDataType, public pop?: RegExp, md5?: string) {
+  constructor(
+    public data: InetHengeDataType,
+    public pop?: RegExp,
+    md5?: string,
+  ) {
     // NOTE: properties below can be undefined
     this.cachedMd5 = md5;
   }
@@ -51,23 +53,25 @@ export class PositionCache {
   }
 
   private md5(data?: ExtendedInetHengeDataType, pop?: RegExp) {
-    data = cloneDeep(data || this.data) as ExtendedInetHengeDataType;
+    data = structuredClone(data || this.data) as ExtendedInetHengeDataType;
     data.pop = String(pop || this.pop);
     if (data.pop === "undefined") {
       data.pop = "null"; // NOTE: unify undefined with null
     }
 
-    data.nodes &&
+    if (data.nodes) {
       data.nodes.forEach((i) => {
         delete i.icon;
         delete i.meta;
       });
-    data.links &&
+    }
+    if (data.links) {
       data.links.forEach((i) => {
         delete i.meta;
       });
+    }
 
-    return md5(JSON.stringify(data)) as string;
+    return md5(JSON.stringify(data)).toString();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

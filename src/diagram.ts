@@ -11,7 +11,7 @@ import { Node, NodeDataType, NodeOptions } from "./node";
 import { NodeTooltip } from "./node_tooltip";
 import { NodePosition, PositionCache } from "./position_cache";
 
-const cola = require("cola"); // eslint-disable-line @typescript-eslint/no-var-requires
+const cola = require("cola"); // eslint-disable-line @typescript-eslint/no-require-imports
 
 type LinkWidthFunction = (object) => number;
 export type HrefFunction = (object, type?: "node" | "link") => string;
