@@ -8,7 +8,10 @@ import { classify } from "./util";
 export class LinkTooltip extends Tooltip {
   protected static type = "link" as const;
 
-  constructor(private link: Link, eventType: string) {
+  constructor(
+    private link: Link,
+    eventType: string,
+  ) {
     super(eventType, { offsetX: 10 });
   }
 

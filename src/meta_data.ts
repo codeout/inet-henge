@@ -2,7 +2,10 @@ export type MetaDataType = { class: string; value: any }; // eslint-disable-line
 
 export class MetaData {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(private data: Record<string, any>, private extraKey?: string) {}
+  constructor(
+    private data: Record<string, any>,
+    private extraKey?: string,
+  ) {}
 
   get(keys: string[]) {
     return this.slice(keys).filter((k) => typeof k.value === "string");

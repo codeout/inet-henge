@@ -17,7 +17,10 @@ export class Bundle {
   private space: number;
   private _shiftMultiplier: number;
 
-  constructor(links: Link[], public id: number) {
+  constructor(
+    links: Link[],
+    public id: number,
+  ) {
     this.links = links;
     this.color = "#7a4e4e";
     this.width = 2;

@@ -25,7 +25,11 @@ export class PositionCache {
   public node: NodePosition[];
   public link: LinkPosition[];
 
-  constructor(public data: InetHengeDataType, public pop?: RegExp, md5?: string) {
+  constructor(
+    public data: InetHengeDataType,
+    public pop?: RegExp,
+    md5?: string,
+  ) {
     // NOTE: properties below can be undefined
     this.cachedMd5 = md5;
   }

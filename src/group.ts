@@ -18,7 +18,10 @@ export class GroupBase {
   // Not appropriately defined in @types/d3/index.d.ts
   private bounds: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  constructor(private name: string, private options: GroupOptions) {
+  constructor(
+    private name: string,
+    private options: GroupOptions,
+  ) {
     this.padding = options.padding;
   }
 

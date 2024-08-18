@@ -13,7 +13,10 @@ export abstract class Tooltip {
   protected offsetX: number;
   private visibility: string;
 
-  constructor(private eventType: string, options: TooltipOptions = {}) {
+  constructor(
+    private eventType: string,
+    options: TooltipOptions = {},
+  ) {
     this.offsetX = options.offsetX !== undefined ? options.offsetX : 30;
     this.visibility = "hidden";
   }
