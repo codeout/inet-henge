@@ -138,6 +138,7 @@ export abstract class Tooltip {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected static appendText(container: SVGGElement) {
     throw new Error("not implemented");
   }
