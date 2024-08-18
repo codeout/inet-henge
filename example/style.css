@@ -31,8 +31,7 @@
   font-size: 7px;
 }
 
-.link text:hover tspan,
-.link text.hover tspan {
+.link text.hover:not(.short) tspan {
   fill: #00b0e8;
   font-weight: bold;
   visibility: visible !important;

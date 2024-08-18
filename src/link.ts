@@ -23,6 +23,7 @@ export type LinkOptions = {
 
 export class LinkBase {
   private static groups: Record<string, number[]>;
+  private static scale?: number;
 
   public readonly bundle?: number | string;
   public readonly source: number | Node;
@@ -40,7 +41,11 @@ export class LinkBase {
   private _margin: number;
   private _shiftMultiplier: number;
 
-  constructor(data: LinkDataType, public id: number, private options: LinkOptions) {
+  constructor(
+    data: LinkDataType,
+    public id: number,
+    private options: LinkOptions,
+  ) {
     this.source = Node.idByName(data.source);
     this.target = Node.idByName(data.target);
     this.bundle = data.bundle;
@@ -104,6 +109,26 @@ export class LinkBase {
     }
 
     return this._margin;
+  }
+
+  private isLabelVisible() {
+    const pathLength = (document.getElementById(this.pathId()) as unknown as SVGPathElement).getTotalLength();
+
+    const isShort = Array.from(document.getElementsByClassName(this.pathId())).some((p) => {
+      // <text /> has only one <textPath />
+      const tp = p.firstChild as SVGTextPathElement;
+      // center label
+      if (tp.classList.contains("center")) {
+        return tp.getComputedTextLength() > pathLength;
+      } else {
+        return tp.getComputedTextLength() + this.labelXOffset > pathLength;
+      }
+    });
+
+    d3.selectAll(`text.${this.pathId()}`).classed("short", isShort);
+
+    // Link.scale is initially undefined
+    return Link.scale > 1.5 && !isShort;
   }
 
   group(): number[] {
@@ -270,18 +295,20 @@ export class LinkBase {
       .attr("x2", (d) => (d.target as Node).x)
       .attr("y2", (d) => (d.target as Node).y);
 
-    if (path) path.attr("d", (d) => d.d());
-    if (label)
-      label.attr("transform", function (d: Link) {
-        return d.rotate(this.getBBox());
-      });
+    path.attr("d", (d) => d.d());
+
+    label.attr("transform", function (d: Link) {
+      return d.rotate(this.getBBox());
+    });
+
+    // hide labels when the path is too short
+    d3.selectAll(".link text").style("visibility", (d: Link) => (d.isLabelVisible() ? "visible" : "hidden"));
   }
 
   static zoom(scale?: number) {
-    let visibility = "hidden";
-    if (scale && scale > 1.5) visibility = "visible";
+    Link.scale = scale;
 
-    d3.selectAll(".link text").style("visibility", visibility);
+    d3.selectAll(".link text").style("visibility", (d: Link) => (d.isLabelVisible() ? "visible" : "hidden"));
   }
 
   static setPosition(link: d3.Selection<Link>, position: LinkPosition[]) {
