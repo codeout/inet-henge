@@ -5,7 +5,6 @@ import { Group } from "./group";
 import { Link } from "./link";
 import { Node } from "./node";
 
-const cloneDeep = require("lodash.clonedeep"); // eslint-disable-line @typescript-eslint/no-var-requires
 const md5 = require("md5"); // eslint-disable-line @typescript-eslint/no-var-requires
 
 export type GroupPosition = { x: number; y: number; width: number; height: number };
@@ -55,7 +54,7 @@ export class PositionCache {
   }
 
   private md5(data?: ExtendedInetHengeDataType, pop?: RegExp) {
-    data = cloneDeep(data || this.data) as ExtendedInetHengeDataType;
+    data = structuredClone(data || this.data) as ExtendedInetHengeDataType;
     data.pop = String(pop || this.pop);
     if (data.pop === "undefined") {
       data.pop = "null"; // NOTE: unify undefined with null
