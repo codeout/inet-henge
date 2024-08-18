@@ -1,3 +1,9 @@
+/*!
+ * inet-henge  v1.4.6
+ * @author Shintaro Kojima
+ * @license MIT
+ * Copyright (c) 2016-2024 Shintaro Kojima
+ */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(require("d3"), require("cola"));
