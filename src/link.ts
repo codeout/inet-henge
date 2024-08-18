@@ -180,7 +180,6 @@ export class LinkBase {
   }
 
   class() {
-    // eslint-disable-next-line max-len
     return `link ${classify((this.source as Node).name)} ${classify((this.target as Node).name)} ${classify(
       (this.source as Node).name,
     )}-${classify((this.target as Node).name)} ${this.extraClass}`;

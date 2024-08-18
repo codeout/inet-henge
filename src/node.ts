@@ -5,7 +5,6 @@ import { MetaData, MetaDataType } from "./meta_data";
 import { NodePosition } from "./position_cache";
 import { classify } from "./util";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Constructor = (data: NodeDataType, id: number, options: NodeOptions) => void;
 
 export type NodeDataType = {

@@ -59,15 +59,17 @@ export class PositionCache {
       data.pop = "null"; // NOTE: unify undefined with null
     }
 
-    data.nodes &&
+    if (data.nodes) {
       data.nodes.forEach((i) => {
         delete i.icon;
         delete i.meta;
       });
-    data.links &&
+    }
+    if (data.links) {
       data.links.forEach((i) => {
         delete i.meta;
       });
+    }
 
     return md5(JSON.stringify(data)).toString();
   }

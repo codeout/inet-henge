@@ -1,8 +1,8 @@
 export type MetaDataType = { class: string; value: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 export class MetaData {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private data: Record<string, any>,
     private extraKey?: string,
   ) {}
