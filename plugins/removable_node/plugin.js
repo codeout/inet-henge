@@ -23,8 +23,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   MetaData: () => (/* binding */ MetaData)
 /* harmony export */ });
 class MetaData {
+    constructor(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(data, extraKey) {
+    data, extraKey) {
         this.data = data;
         this.extraKey = extraKey;
     }
@@ -348,8 +349,6 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_d3__;
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
 /*!**********************************************!*\
   !*** ./plugins/removable_node/src/plugin.ts ***!
   \**********************************************/
@@ -465,8 +464,6 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
     _a.hideKey = "d",
     _a);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RemovableNodePlugin);
-
-})();
 
 /******/ 	return __webpack_exports__;
 /******/ })()

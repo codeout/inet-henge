@@ -203,6 +203,23 @@ class LinkBase {
         }
         return this._margin;
     }
+    isLabelVisible() {
+        const pathLength = document.getElementById(this.pathId()).getTotalLength();
+        const isShort = Array.from(document.getElementsByClassName(this.pathId())).some((p) => {
+            // <text /> has only one <textPath />
+            const tp = p.firstChild;
+            // center label
+            if (tp.classList.contains("center")) {
+                return tp.getComputedTextLength() > pathLength;
+            }
+            else {
+                return tp.getComputedTextLength() + this.labelXOffset > pathLength;
+            }
+        });
+        d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(`text.${this.pathId()}`).classed("short", isShort);
+        // Link.scale is initially undefined
+        return Link.scale > 1.5 && !isShort;
+    }
     group() {
         return Link.groups[[this.source.id, this.target.id].sort().toString()];
     }
@@ -247,7 +264,6 @@ class LinkBase {
         return this.metaList.length > 0 || this.sourceMeta.length > 0 || this.targetMeta.length > 0;
     }
     class() {
-        // eslint-disable-next-line max-len
         return `link ${(0,_util__WEBPACK_IMPORTED_MODULE_4__.classify)(this.source.name)} ${(0,_util__WEBPACK_IMPORTED_MODULE_4__.classify)(this.target.name)} ${(0,_util__WEBPACK_IMPORTED_MODULE_4__.classify)(this.source.name)}-${(0,_util__WEBPACK_IMPORTED_MODULE_4__.classify)(this.target.name)} ${this.extraClass}`;
     }
     // after transform is applied
@@ -339,18 +355,16 @@ class LinkBase {
             .attr("y1", (d) => d.source.y)
             .attr("x2", (d) => d.target.x)
             .attr("y2", (d) => d.target.y);
-        if (path)
-            path.attr("d", (d) => d.d());
-        if (label)
-            label.attr("transform", function (d) {
-                return d.rotate(this.getBBox());
-            });
+        path.attr("d", (d) => d.d());
+        label.attr("transform", function (d) {
+            return d.rotate(this.getBBox());
+        });
+        // hide labels when the path is too short
+        d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".link text").style("visibility", (d) => (d.isLabelVisible() ? "visible" : "hidden"));
     }
     static zoom(scale) {
-        let visibility = "hidden";
-        if (scale && scale > 1.5)
-            visibility = "visible";
-        d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".link text").style("visibility", visibility);
+        Link.scale = scale;
+        d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".link text").style("visibility", (d) => (d.isLabelVisible() ? "visible" : "hidden"));
     }
     static setPosition(link, position) {
         link
@@ -444,8 +458,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   MetaData: () => (/* binding */ MetaData)
 /* harmony export */ });
 class MetaData {
+    constructor(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(data, extraKey) {
+    data, extraKey) {
         this.data = data;
         this.extraKey = extraKey;
     }
@@ -769,8 +784,6 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_d3__;
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
 /*!*******************************************!*\
   !*** ./plugins/arrows_link/src/plugin.ts ***!
   \*******************************************/
@@ -849,8 +862,6 @@ const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
     _a.isMarkerDefined = false,
     _a);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ArrowsLinkPlugin);
-
-})();
 
 /******/ 	return __webpack_exports__;
 /******/ })()
