@@ -1,11 +1,10 @@
+import * as md5 from "crypto-js/md5";
 import * as d3 from "d3";
 
 import { InetHengeDataType } from "./diagram";
 import { Group } from "./group";
 import { Link } from "./link";
 import { Node } from "./node";
-
-const md5 = require("md5"); // eslint-disable-line @typescript-eslint/no-var-requires
 
 export type GroupPosition = { x: number; y: number; width: number; height: number };
 export type NodePosition = { x: number; y: number };
@@ -70,7 +69,7 @@ export class PositionCache {
         delete i.meta;
       });
 
-    return md5(JSON.stringify(data)) as string;
+    return md5(JSON.stringify(data)).toString();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
