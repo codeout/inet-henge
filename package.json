@@ -24,7 +24,7 @@
   "main": "inet-henge.js",
   "devDependencies": {
     "@types/d3": "~3",
-    "@types/node": "^20.14.11",
+    "@types/node": "^20.15.0",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@typescript-eslint/parser": "^7.16.1",
     "d3": "~3",
