@@ -1,3 +1,10 @@
+## [1.4.6] - 2024-08-18
+
+### Fix
+
+- Hide link labels when the link having them is too short.
+  Otherwise, Chrome ( and Edge ) show them at unexpected positions.
+
 ## [1.4.4] - 2024-03-09
 
 ### Fix
