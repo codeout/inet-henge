@@ -355,10 +355,14 @@ class LinkBase {
             .attr("y1", (d) => d.source.y)
             .attr("x2", (d) => d.target.x)
             .attr("y2", (d) => d.target.y);
-        path.attr("d", (d) => d.d());
-        label.attr("transform", function (d) {
-            return d.rotate(this.getBBox());
-        });
+        if (path) {
+            path.attr("d", (d) => d.d());
+        }
+        if (label) {
+            label.attr("transform", function (d) {
+                return d.rotate(this.getBBox());
+            });
+        }
         // hide labels when the path is too short
         d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".link text").style("visibility", (d) => (d.isLabelVisible() ? "visible" : "hidden"));
     }
