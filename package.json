@@ -1,6 +1,6 @@
 {
   "name": "inet-henge",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "description": "Generate d3.js based Network Diagram from JSON data.",
   "license": "MIT",
   "keywords": [

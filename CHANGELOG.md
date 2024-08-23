@@ -1,3 +1,9 @@
+## [1.4.7] - 2024-08-23
+
+### Fix
+
+- Link.tick() unexpectedly threw TypeError
+
 ## [1.4.6] - 2024-08-18
 
 ### Fix
