@@ -287,18 +287,22 @@ export class LinkBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static tick(link: d3.Selection<Link>, path: d3.Selection<Link>, label: d3.Selection<any>) {
+  static tick(link: d3.Selection<Link>, path?: d3.Selection<Link>, label?: d3.Selection<any>) {
     link
       .attr("x1", (d) => (d.source as Node).x)
       .attr("y1", (d) => (d.source as Node).y)
       .attr("x2", (d) => (d.target as Node).x)
       .attr("y2", (d) => (d.target as Node).y);
 
-    path.attr("d", (d) => d.d());
+    if(path) {
+      path.attr("d", (d) => d.d());
+    }
 
-    label.attr("transform", function (d: Link) {
-      return d.rotate(this.getBBox());
-    });
+    if(label) {
+      label.attr("transform", function(d: Link) {
+        return d.rotate(this.getBBox());
+      });
+    }
 
     // hide labels when the path is too short
     d3.selectAll(".link text").style("visibility", (d: Link) => (d.isLabelVisible() ? "visible" : "hidden"));
