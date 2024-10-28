@@ -63,7 +63,6 @@ class DiagramBase {
   private cola;
   private uniqueUrl: string;
   private positionCache: PositionCache;
-  private positionHint: PositionHint;
   private indicator: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   private initialTranslate: [number, number];
   private initialScale: number;
