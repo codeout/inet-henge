@@ -80,10 +80,11 @@ class NodeBase {
   }
 
   private xForText() {
-    return this.width / 2;
+    return this.nodeWidth() / 2;
   }
 
   private yForText() {
+    // svg ignores padding for some reason
     return this.height / 2;
   }
 
