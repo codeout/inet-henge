@@ -549,9 +549,10 @@ class NodeBase {
         return this.height - 2 * this.padding;
     }
     xForText() {
-        return this.width / 2;
+        return this.nodeWidth() / 2;
     }
     yForText() {
+        // svg ignores padding for some reason
         return this.height / 2;
     }
     static idByName(name) {
