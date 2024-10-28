@@ -10,14 +10,14 @@ export default tsEslint.config(
   ...tsEslint.configs.recommended,
   prettierPlugin,
   {
-    "plugins": {
+    plugins: {
       "simple-import-sort": simpleImportSortPlugin
     },
-    "rules": {
+    rules: {
       "@typescript-eslint/consistent-type-assertions": [
         "error",
         {
-          "assertionStyle": "as"
+          assertionStyle: "as"
         }
       ],
       "simple-import-sort/imports": "error",
