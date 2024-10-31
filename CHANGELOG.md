@@ -1,37 +1,37 @@
 ## [1.4.7] - 2024-08-23
 
-### Fix
+### Fixed
 
 - Link.tick() unexpectedly threw TypeError
 
 ## [1.4.6] - 2024-08-18
 
-### Fix
+### Fixed
 
 - Hide link labels when the link having them is too short.
   Otherwise, Chrome ( and Edge ) show them at unexpected positions.
 
 ## [1.4.4] - 2024-03-09
 
-### Fix
+### Fixed
 
 - Source node was shown in "target" field of LinkTooltip
 
 ## [1.4.3] - 2023-09-24
 
-### Fix
+### Fixed
 
 - Define Diagram.tickCallback to call in custom "tick" event listener
 
 ## [1.4.2] - 2023-08-21
 
-### Fix
+### Fixed
 
 - Link tooltips not following
 
 ## [1.4.1] - 2023-08-20
 
-### Fix
+### Fixed
 
 - Tooltips not following dragged group
 
