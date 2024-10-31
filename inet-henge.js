@@ -2079,12 +2079,15 @@ class PositionCache {
     static getAll() {
         return JSON.parse(localStorage.getItem("positionCache")) || {};
     }
+    static key() {
+        return `${location.pathname}${location.search}`;
+    }
     static get() {
-        return this.getAll()[location.pathname] || {};
+        return this.getAll()[this.key()] || {};
     }
     save(group, node, link) {
         const cache = PositionCache.getAll();
-        cache[location.pathname] = {
+        cache[PositionCache.key()] = {
             md5: this.md5(),
             group: this.groupPosition(group),
             node: this.nodePosition(node),
