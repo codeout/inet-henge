@@ -36,13 +36,17 @@ export class PositionCache {
     return JSON.parse(localStorage.getItem("positionCache")) || {};
   }
 
+  private static key() {
+    return `${location.pathname}${location.search}`;
+  }
+
   private static get() {
-    return this.getAll()[location.pathname] || ({} as CacheDataType);
+    return this.getAll()[this.key()] || ({} as CacheDataType);
   }
 
   save(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>) {
     const cache = PositionCache.getAll();
-    cache[location.pathname] = {
+    cache[PositionCache.key()] = {
       md5: this.md5(),
       group: this.groupPosition(group),
       node: this.nodePosition(node),
