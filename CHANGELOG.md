@@ -4,6 +4,7 @@
 
 - Link.tick() unexpectedly threw TypeError
 
+
 ## [1.4.6] - 2024-08-18
 
 ### Fixed
@@ -11,11 +12,13 @@
 - Hide link labels when the link having them is too short.
   Otherwise, Chrome ( and Edge ) show them at unexpected positions.
 
+
 ## [1.4.4] - 2024-03-09
 
 ### Fixed
 
 - Source node was shown in "target" field of LinkTooltip
+
 
 ## [1.4.3] - 2023-09-24
 
@@ -23,17 +26,20 @@
 
 - Define Diagram.tickCallback to call in custom "tick" event listener
 
+
 ## [1.4.2] - 2023-08-21
 
 ### Fixed
 
 - Link tooltips not following
 
+
 ## [1.4.1] - 2023-08-20
 
 ### Fixed
 
 - Tooltips not following dragged group
+
 
 ## [1.4.0] - 2023-08-16
 
@@ -43,11 +49,13 @@
 - "positionConstraints" option of Diagram
 - Link tooltip
 
+
 ## [1.3.1] - 2023-06-10
 
 ### Fixed
 
 - Zoom origin when initial translate is specified
+
 
 ## [1.3.0] - 2023-04-12
 
@@ -55,11 +63,13 @@
 
 - Introduce "nodeCallback" option for position hinting
 
+
 ## [1.2.5] - 2022-12-11
 
 ### Added
 
 - Introduce "groupPadding" option to increase the size of groups
+
 
 ## [1.2.4] - 2022-12-01
 
@@ -67,17 +77,20 @@
 
 - Tooltip visibility control along with Bootstrap CSS
 
+
 ## [1.2.2] - 2022-09-26
 
 ### Added
 
 - Introduce "nodeWidth" and "nodeHeight" options of `Diagram`
 
+
 ## [1.2.1] - 2022-03-09
 
 ### Added
 
 - Introduce "href" option to show `<a/>` in tooltips
+
 
 ## [1.2.0] - 2021-09-27
 
@@ -95,17 +108,20 @@
 
 - Remove a deprecated method `Diagram.prototype.link_width`.
 
+
 ## [1.1.1] - 2021-02-01
 
 ### Fixed
 
 - CSS escape to avoid "Uncaught DOMException: Failed to execute 'querySelector' on 'Document'"
 
+
 ## [1.1.0] - 2020-11-09
 
 ### Added
 
 - Introduce "initialTicks" option for unconstrained initial layout iterations.
+
 
 ## [1.0.2] - 2020-06-29
 
@@ -114,6 +130,7 @@
 - Create an npm package of inet-henge so that users can use it in other projects, even customize and rebuild.
 - Rewrote all .js with .ts to reuse in typescript projects.
 - Update the build environment, which was .js + babel + browserify, with .ts + webpack + ts-loader.
+
 
 ## [1.0.0] - 2020-02-25
 
