@@ -3,7 +3,8 @@
     "module": "ES6",
     "target": "ES2017",
     "outDir": "dist",
-    "sourceMap": true
+    "sourceMap": true,
+    "moduleResolution": "node"
   },
   "include": [
     "src/*"
