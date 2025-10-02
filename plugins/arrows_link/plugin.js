@@ -789,6 +789,8 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_d3__;
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+(() => {
 /*!*******************************************!*\
   !*** ./plugins/arrows_link/src/plugin.ts ***!
   \*******************************************/
@@ -867,6 +869,8 @@ const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
     _a.isMarkerDefined = false,
     _a);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ArrowsLinkPlugin);
+
+})();
 
 /******/ 	return __webpack_exports__;
 /******/ })()

@@ -350,6 +350,8 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_d3__;
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+(() => {
 /*!**********************************************!*\
   !*** ./plugins/removable_node/src/plugin.ts ***!
   \**********************************************/
@@ -465,6 +467,8 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
     _a.hideKey = "d",
     _a);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RemovableNodePlugin);
+
+})();
 
 /******/ 	return __webpack_exports__;
 /******/ })()
