@@ -1,34 +1,35 @@
 /*!
- * inet-henge  v1.4.7
+ * inet-henge  v1.4.9
  * @author Shintaro Kojima
  * @license MIT
  * Copyright (c) 2016-2024 Shintaro Kojima
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("d3"), require("cola"));
+		module.exports = factory(require("cola"), require("d3"));
 	else if(typeof define === 'function' && define.amd)
-		define(["d3", "cola"], factory);
+		define(["cola", "d3"], factory);
 	else {
-		var a = typeof exports === 'object' ? factory(require("d3"), require("cola")) : factory(root["d3"], root["cola"]);
+		var a = typeof exports === 'object' ? factory(require("cola"), require("d3")) : factory(root["cola"], root["d3"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(self, (__WEBPACK_EXTERNAL_MODULE_d3__, __WEBPACK_EXTERNAL_MODULE_cola__) => {
+})(self, (__WEBPACK_EXTERNAL_MODULE_cola__, __WEBPACK_EXTERNAL_MODULE_d3__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./node_modules/crypto-js/core.js":
+/***/ "./node_modules/crypto-js/core.js"
 /*!****************************************!*\
   !*** ./node_modules/crypto-js/core.js ***!
   \****************************************/
-/***/ (function(module, exports, __webpack_require__) {
+(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
 	if (true) {
 		// CommonJS
 		module.exports = exports = factory();
 	}
-	else {}
+	else // removed by dead control flow
+{}
 }(this, function () {
 
 	/*globals window, global, require*/
@@ -824,20 +825,21 @@ return /******/ (() => { // webpackBootstrap
 
 }));
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/crypto-js/md5.js":
+/***/ "./node_modules/crypto-js/md5.js"
 /*!***************************************!*\
   !*** ./node_modules/crypto-js/md5.js ***!
   \***************************************/
-/***/ (function(module, exports, __webpack_require__) {
+(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
 	if (true) {
 		// CommonJS
 		module.exports = exports = factory(__webpack_require__(/*! ./core */ "./node_modules/crypto-js/core.js"));
 	}
-	else {}
+	else // removed by dead control flow
+{}
 }(this, function (CryptoJS) {
 
 	(function (Math) {
@@ -1094,13 +1096,13 @@ return /******/ (() => { // webpackBootstrap
 
 }));
 
-/***/ }),
+/***/ },
 
-/***/ "./src/bundle.ts":
+/***/ "./src/bundle.ts"
 /*!***********************!*\
   !*** ./src/bundle.ts ***!
   \***********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
@@ -1153,21 +1155,19 @@ class Bundle {
     // sort by bundle with preserving order
     static sortByBundle(links) {
         return links.sort((a, b) => {
-            switch (true) {
-                case !!a.bundle && !b.bundle:
-                    return -1;
-                case !a.bundle && !!b.bundle:
-                    return 1;
-                case !a.bundle && !b.bundle:
-                    return 0;
-                // !!a.bundle && !!b.bundle === true
-                case a.bundle.toString() < b.bundle.toString():
-                    return -1;
-                case a.bundle.toString() > b.bundle.toString():
-                    return 1;
-                default:
-                    return 0;
-            }
+            if (a.bundle && !b.bundle)
+                return -1;
+            if (!a.bundle && b.bundle)
+                return 1;
+            if (!a.bundle || !b.bundle)
+                return 0;
+            const as = a.bundle.toString();
+            const bs = b.bundle.toString();
+            if (as < bs)
+                return -1;
+            if (as > bs)
+                return 1;
+            return 0;
         });
     }
     d() {
@@ -1208,13 +1208,13 @@ class Bundle {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/group.ts":
+/***/ "./src/group.ts"
 /*!**********************!*\
   !*** ./src/group.ts ***!
   \**********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
@@ -1314,12 +1314,15 @@ const WebColable = (Base) => {
     }
     return Group;
 };
+class WebColableGroup extends WebColable(GroupBase) {
+}
 const Eventable = (Base) => {
     class EventableGroup extends Base {
         constructor(name, options) {
             super(name, options);
             this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         static render(layer, groups) {
             const group = super.render(layer, groups);
             group.each(function (d) {
@@ -1334,6 +1337,8 @@ const Eventable = (Base) => {
     }
     return EventableGroup;
 };
+class EventableGroup extends Eventable(WebColableGroup) {
+}
 const Pluggable = (Base) => {
     class Group extends Base {
         constructor(name, options) {
@@ -1350,23 +1355,19 @@ const Pluggable = (Base) => {
     Group.pluginConstructors = [];
     return Group;
 };
-class WebColableGroup extends WebColable(GroupBase) {
-}
-class EventableGroup extends Eventable(WebColableGroup) {
-}
 // Call Pluggable at last as constructor may call methods defined in other classes
 class Group extends Pluggable(EventableGroup) {
 }
 
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/link.ts":
+/***/ "./src/link.ts"
 /*!*********************!*\
   !*** ./src/link.ts ***!
   \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
@@ -1429,7 +1430,8 @@ class LinkBase {
     }
     margin() {
         if (!this._margin) {
-            const margin = window.getComputedStyle(document.getElementById(this.linkId())).margin;
+            const element = document.getElementById(this.linkId());
+            const margin = element ? window.getComputedStyle(element).margin : "";
             // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
             // or "0px" even when not defined in .css
             if (!margin || margin === "0px") {
@@ -1456,10 +1458,12 @@ class LinkBase {
         });
         d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(`text.${this.pathId()}`).classed("short", isShort);
         // Link.scale is initially undefined
-        return Link.scale > 1.5 && !isShort;
+        return Link.scale !== undefined && Link.scale > 1.5 && !isShort;
     }
     group() {
-        return Link.groups[[this.source.id, this.target.id].sort().toString()];
+        var _a;
+        const groups = (_a = Link.groups) !== null && _a !== void 0 ? _a : {};
+        return groups[[this.source.id, this.target.id].sort().toString()];
     }
     // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
     tspanXOffset() {
@@ -1487,16 +1491,15 @@ class LinkBase {
     split() {
         if (!this.metaList && !this.sourceMeta && !this.targetMeta)
             return [this];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const meta = [];
+        const links = [];
         ["metaList", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
             if (this[key]) {
                 const duped = Object.assign(Object.create(this), this);
                 keys.filter((k) => k !== key).forEach((k) => (duped[k] = []));
-                meta.push(duped);
+                links.push(duped);
             }
         });
-        return meta;
+        return links;
     }
     hasMeta() {
         return this.metaList.length > 0 || this.sourceMeta.length > 0 || this.targetMeta.length > 0;
@@ -1648,8 +1651,11 @@ const Eventable = (Base) => {
             super(data, id, options);
             this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
+        static render(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        static render(linkLayer, labelLayer, links) {
+        linkLayer, 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        labelLayer, links) {
             const [link, path, text] = super.render(linkLayer, labelLayer, links);
             link.each(function (d) {
                 d.dispatch.rendered(this);
@@ -1663,6 +1669,8 @@ const Eventable = (Base) => {
     }
     return EventableLink;
 };
+class EventableLink extends Eventable(LinkBase) {
+}
 const Pluggable = (Base) => {
     class Link extends Base {
         constructor(data, id, options) {
@@ -1679,21 +1687,19 @@ const Pluggable = (Base) => {
     Link.pluginConstructors = [];
     return Link;
 };
-class EventableLink extends Eventable(LinkBase) {
-}
 // Call Pluggable at last as constructor may call methods defined in other classes
 class Link extends Pluggable(EventableLink) {
 }
 
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/link_tooltip.ts":
+/***/ "./src/link_tooltip.ts"
 /*!*****************************!*\
   !*** ./src/link_tooltip.ts ***!
   \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
@@ -1746,8 +1752,10 @@ class LinkTooltip extends _tooltip__WEBPACK_IMPORTED_MODULE_1__.Tooltip {
             const bbox = this.getBBox();
             path
                 .attr("d", (d) => LinkTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20))
-                .style("fill", function () {
-                return LinkTooltip.fill(this);
+                .each(function () {
+                const fill = LinkTooltip.fill(this);
+                if (fill)
+                    d3__WEBPACK_IMPORTED_MODULE_0__.select(this).style("fill", fill);
             });
         });
     }
@@ -1755,13 +1763,13 @@ class LinkTooltip extends _tooltip__WEBPACK_IMPORTED_MODULE_1__.Tooltip {
 LinkTooltip.type = "link";
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/meta_data.ts":
+/***/ "./src/meta_data.ts"
 /*!**************************!*\
   !*** ./src/meta_data.ts ***!
   \**************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
@@ -1788,9 +1796,10 @@ class MetaData {
     }
     sliceWithExtraKey(keys) {
         const data = [];
+        const extraKey = this.extraKey;
         keys.forEach((k) => {
-            if (this.data[k] && this.data[k][this.extraKey])
-                data.push({ class: k, value: this.data[k][this.extraKey] });
+            if (this.data[k] && this.data[k][extraKey])
+                data.push({ class: k, value: this.data[k][extraKey] });
         });
         return data;
     }
@@ -1805,13 +1814,13 @@ class MetaData {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/node.ts":
+/***/ "./src/node.ts"
 /*!*********************!*\
   !*** ./src/node.ts ***!
   \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
@@ -1857,13 +1866,14 @@ class NodeBase {
         return this.height - 2 * this.padding;
     }
     xForText() {
-        return this.width / 2;
+        return this.nodeWidth() / 2;
     }
     yForText() {
+        // svg ignores padding for some reason
         return this.height / 2;
     }
     static idByName(name) {
-        if (Node.all[name] === undefined)
+        if (!Node.all || Node.all[name] === undefined)
             throw `Unknown node "${name}"`;
         return Node.all[name];
     }
@@ -1960,6 +1970,7 @@ const Eventable = (Base) => {
             super(data, id, options);
             this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         static render(layer, nodes) {
             const node = super.render(layer, nodes);
             node.each(function (d) {
@@ -1974,6 +1985,8 @@ const Eventable = (Base) => {
     }
     return EventableNode;
 };
+class EventableNode extends Eventable(NodeBase) {
+}
 const Pluggable = (Base) => {
     class Node extends Base {
         constructor(data, id, options) {
@@ -1990,21 +2003,19 @@ const Pluggable = (Base) => {
     Node.pluginConstructors = [];
     return Node;
 };
-class EventableNode extends Eventable(NodeBase) {
-}
 // Call Pluggable at last as constructor may call methods defined in other classes
 class Node extends Pluggable(EventableNode) {
 }
 
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/node_tooltip.ts":
+/***/ "./src/node_tooltip.ts"
 /*!*****************************!*\
   !*** ./src/node_tooltip.ts ***!
   \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
@@ -2043,8 +2054,10 @@ class NodeTooltip extends _tooltip__WEBPACK_IMPORTED_MODULE_1__.Tooltip {
             const bbox = this.getBBox();
             path
                 .attr("d", (d) => NodeTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20))
-                .style("fill", function () {
-                return NodeTooltip.fill(this);
+                .each(function () {
+                const fill = NodeTooltip.fill(this);
+                if (fill)
+                    d3__WEBPACK_IMPORTED_MODULE_0__.select(this).style("fill", fill);
             });
         });
     }
@@ -2052,13 +2065,13 @@ class NodeTooltip extends _tooltip__WEBPACK_IMPORTED_MODULE_1__.Tooltip {
 NodeTooltip.type = "node";
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/position_cache.ts":
+/***/ "./src/position_cache.ts"
 /*!*******************************!*\
   !*** ./src/position_cache.ts ***!
   \*******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
@@ -2076,14 +2089,18 @@ class PositionCache {
         this.cachedMd5 = md5;
     }
     static getAll() {
-        return JSON.parse(localStorage.getItem("positionCache")) || {};
+        const raw = localStorage.getItem("positionCache");
+        return (raw && JSON.parse(raw)) || {};
+    }
+    static key() {
+        return `${location.pathname}${location.search}`;
     }
     static get() {
-        return this.getAll()[location.pathname] || {};
+        return this.getAll()[this.key()] || {};
     }
     save(group, node, link) {
         const cache = PositionCache.getAll();
-        cache[location.pathname] = {
+        cache[PositionCache.key()] = {
             md5: this.md5(),
             group: this.groupPosition(group),
             node: this.nodePosition(node),
@@ -2099,16 +2116,18 @@ class PositionCache {
         }
         if (data.nodes) {
             data.nodes.forEach((i) => {
-                delete i.icon;
-                delete i.meta;
+                const partial = i;
+                delete partial.icon;
+                delete partial.meta;
             });
         }
         if (data.links) {
             data.links.forEach((i) => {
-                delete i.meta;
+                const partial = i;
+                delete partial.meta;
             });
         }
-        return crypto_js_md5__WEBPACK_IMPORTED_MODULE_0__(JSON.stringify(data)).toString();
+        return crypto_js_md5__WEBPACK_IMPORTED_MODULE_0___default()(JSON.stringify(data)).toString();
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     groupPosition(group) {
@@ -2166,13 +2185,13 @@ class PositionCache {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/tooltip.ts":
+/***/ "./src/tooltip.ts"
 /*!************************!*\
   !*** ./src/tooltip.ts ***!
   \************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
@@ -2218,9 +2237,9 @@ class Tooltip {
                 return d.toggleVisibility();
             })
                 // bootstrap.css unexpectedly sets "opacity: 0". Reset if it's visible.
-                .style("opacity", function (d) {
+                .style("opacity", ((d) => {
                 return d.visibility === "visible" ? 1 : null;
-            });
+            }));
         };
     }
     configureObjectClickCallback(element) {
@@ -2298,12 +2317,11 @@ class Tooltip {
      * @protected
      */
     static appendNameValue(container, name, value, marginTop) {
-        container
-            .append("tspan")
-            .attr("x", (d) => d.offsetX + 40)
-            .attr("dy", (d) => (marginTop === undefined ? undefined : d.tspanOffsetY(marginTop)))
-            .attr("class", "name")
-            .text(`${name}:`);
+        const tspan = container.append("tspan").attr("x", (d) => d.offsetX + 40);
+        if (marginTop !== undefined) {
+            tspan.attr("dy", (d) => d.tspanOffsetY(marginTop));
+        }
+        tspan.attr("class", "name").text(`${name}:`);
         container.append("tspan").attr("dx", 10).attr("class", "value").text(value);
     }
     // modified https://tabler-icons.io/i/external-link
@@ -2336,13 +2354,13 @@ class Tooltip {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/util.ts":
+/***/ "./src/util.ts"
 /*!*********************!*\
   !*** ./src/util.ts ***!
   \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
@@ -2354,13 +2372,13 @@ function classify(string) {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/hack_cola.js":
+/***/ "./src/hack_cola.js"
 /*!**************************!*\
   !*** ./src/hack_cola.js ***!
   \**************************/
-/***/ (() => {
+() {
 
 /* eslint-disable */
 
@@ -2434,39 +2452,39 @@ cola.Layout.prototype.jaccardLinkLengths = function (idealLength, w) {
 };
 
 
-/***/ }),
+/***/ },
 
-/***/ "cola":
+/***/ "cola"
 /*!***********************!*\
   !*** external "cola" ***!
   \***********************/
-/***/ ((module) => {
+(module) {
 
 "use strict";
 module.exports = __WEBPACK_EXTERNAL_MODULE_cola__;
 
-/***/ }),
+/***/ },
 
-/***/ "d3":
+/***/ "d3"
 /*!*********************!*\
   !*** external "d3" ***!
   \*********************/
-/***/ ((module) => {
+(module) {
 
 "use strict";
 module.exports = __WEBPACK_EXTERNAL_MODULE_d3__;
 
-/***/ }),
+/***/ },
 
-/***/ "?9157":
+/***/ "?9157"
 /*!************************!*\
   !*** crypto (ignored) ***!
   \************************/
-/***/ (() => {
+() {
 
 /* (ignored) */
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
@@ -2488,6 +2506,12 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_d3__;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
+/******/ 		if (!(moduleId in __webpack_modules__)) {
+/******/ 			delete __webpack_module_cache__[moduleId];
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
 /******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
@@ -2549,7 +2573,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_d3__;
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 (() => {
 "use strict";
 /*!************************!*\
@@ -2561,15 +2585,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _hack_cola__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hack_cola */ "./src/hack_cola.js");
 /* harmony import */ var _hack_cola__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_hack_cola__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ "d3");
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _bundle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bundle */ "./src/bundle.ts");
-/* harmony import */ var _group__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./group */ "./src/group.ts");
-/* harmony import */ var _link__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./link */ "./src/link.ts");
-/* harmony import */ var _link_tooltip__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./link_tooltip */ "./src/link_tooltip.ts");
-/* harmony import */ var _node__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./node */ "./src/node.ts");
-/* harmony import */ var _node_tooltip__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./node_tooltip */ "./src/node_tooltip.ts");
-/* harmony import */ var _position_cache__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./position_cache */ "./src/position_cache.ts");
+/* harmony import */ var cola__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! cola */ "cola");
+/* harmony import */ var cola__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(cola__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3 */ "d3");
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(d3__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _bundle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./bundle */ "./src/bundle.ts");
+/* harmony import */ var _group__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./group */ "./src/group.ts");
+/* harmony import */ var _link__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./link */ "./src/link.ts");
+/* harmony import */ var _link_tooltip__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./link_tooltip */ "./src/link_tooltip.ts");
+/* harmony import */ var _node__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./node */ "./src/node.ts");
+/* harmony import */ var _node_tooltip__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./node_tooltip */ "./src/node_tooltip.ts");
+/* harmony import */ var _position_cache__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./position_cache */ "./src/position_cache.ts");
 
 
 
@@ -2579,7 +2605,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const diagram_cola = __webpack_require__(/*! cola */ "cola"); // eslint-disable-line @typescript-eslint/no-require-imports
+
 class DiagramBase {
     constructor(container, urlOrData, options) {
         options || (options = {});
@@ -2591,7 +2617,7 @@ class DiagramBase {
         this.options.height = options.height || 600;
         this.options.positionHint = options.positionHint || {};
         this.options.positionConstraints = options.positionConstraints || [];
-        this.options.color = d3__WEBPACK_IMPORTED_MODULE_1__.scale.category20();
+        this.options.color = d3__WEBPACK_IMPORTED_MODULE_2__.scale.category20();
         this.options.initialTicks = options.initialTicks || 0;
         this.options.maxTicks = options.ticks || 1000;
         // NOTE: true or 'fixed' (experimental) affects behavior
@@ -2600,8 +2626,8 @@ class DiagramBase {
         this.options.bundle = "bundle" in options ? options.bundle : false;
         this.options.tooltip = options.tooltip;
         this.setDistance = this.linkDistance(options.distance || 150);
-        _node_tooltip__WEBPACK_IMPORTED_MODULE_7__.NodeTooltip.setHref(options.href);
-        _link_tooltip__WEBPACK_IMPORTED_MODULE_5__.LinkTooltip.setHref(options.href);
+        _node_tooltip__WEBPACK_IMPORTED_MODULE_8__.NodeTooltip.setHref(options.href);
+        _link_tooltip__WEBPACK_IMPORTED_MODULE_6__.LinkTooltip.setHref(options.href);
     }
     init(...meta) {
         this.options.meta = meta;
@@ -2615,7 +2641,7 @@ class DiagramBase {
             });
         }
         else {
-            d3__WEBPACK_IMPORTED_MODULE_1__.json(this.url(), (error, data) => {
+            d3__WEBPACK_IMPORTED_MODULE_2__.json(this.url(), (error, data) => {
                 if (error) {
                     console.error(error);
                     this.showMessage(`Failed to load "${this.url()}"`);
@@ -2625,16 +2651,15 @@ class DiagramBase {
         }
     }
     initCola() {
-        return diagram_cola
-            .d3adaptor()
+        return cola__WEBPACK_IMPORTED_MODULE_1__.d3adaptor()
             .avoidOverlaps(true)
             .handleDisconnected(false)
             .size([this.options.width, this.options.height]);
     }
     initSvg() {
-        this.zoom = d3__WEBPACK_IMPORTED_MODULE_1__.behavior.zoom();
+        this.zoom = d3__WEBPACK_IMPORTED_MODULE_2__.behavior.zoom();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const container = d3__WEBPACK_IMPORTED_MODULE_1__.select(this.options.selector)
+        const container = d3__WEBPACK_IMPORTED_MODULE_2__.select(this.options.selector)
             .append("svg")
             .attr("width", this.options.width)
             .attr("height", this.options.height)
@@ -2652,7 +2677,7 @@ class DiagramBase {
     render(data) {
         try {
             const nodes = data.nodes
-                ? data.nodes.map((n, i) => new _node__WEBPACK_IMPORTED_MODULE_6__.Node(n, i, {
+                ? data.nodes.map((n, i) => new _node__WEBPACK_IMPORTED_MODULE_7__.Node(n, i, {
                     width: this.options.nodeWidth,
                     height: this.options.nodeHeight,
                     metaKeys: this.options.meta,
@@ -2661,18 +2686,18 @@ class DiagramBase {
                 }))
                 : [];
             const links = data.links
-                ? _bundle__WEBPACK_IMPORTED_MODULE_2__.Bundle.sortByBundle(data.links).map((l, i) => new _link__WEBPACK_IMPORTED_MODULE_4__.Link(l, i, {
+                ? _bundle__WEBPACK_IMPORTED_MODULE_3__.Bundle.sortByBundle(data.links).map((l, i) => new _link__WEBPACK_IMPORTED_MODULE_5__.Link(l, i, {
                     metaKeys: this.options.meta,
                     linkWidth: this.getLinkWidth,
                 }))
                 : [];
-            const groups = _group__WEBPACK_IMPORTED_MODULE_3__.Group.divide(nodes, this.options.groupPattern, {
+            const groups = _group__WEBPACK_IMPORTED_MODULE_4__.Group.divide(nodes, this.options.groupPattern, {
                 color: this.options.color,
                 padding: this.options.groupPadding,
             });
-            const nodeTooltips = nodes.map((n) => new _node_tooltip__WEBPACK_IMPORTED_MODULE_7__.NodeTooltip(n, this.options.tooltip));
-            const linkTooltips = links.map((l) => new _link_tooltip__WEBPACK_IMPORTED_MODULE_5__.LinkTooltip(l, this.options.tooltip));
-            const bundles = _bundle__WEBPACK_IMPORTED_MODULE_2__.Bundle.divide(links);
+            const nodeTooltips = nodes.map((n) => new _node_tooltip__WEBPACK_IMPORTED_MODULE_8__.NodeTooltip(n, this.options.tooltip));
+            const linkTooltips = links.map((l) => new _link_tooltip__WEBPACK_IMPORTED_MODULE_6__.LinkTooltip(l, this.options.tooltip));
+            const bundles = _bundle__WEBPACK_IMPORTED_MODULE_3__.Bundle.divide(links);
             this.cola.nodes(nodes).links(links).groups(groups);
             this.applyConstraints(this.options.positionConstraints, nodes);
             this.setDistance(this.cola);
@@ -2684,45 +2709,46 @@ class DiagramBase {
             const nodeLayer = this.svg.append("g").attr("id", "nodes");
             const linkLabelLayer = this.svg.append("g").attr("id", "link-labels");
             const tooltipLayer = this.svg.append("g").attr("id", "tooltips");
-            const [link, path, label] = _link__WEBPACK_IMPORTED_MODULE_4__.Link.render(linkLayer, linkLabelLayer, links);
-            const bundle = _bundle__WEBPACK_IMPORTED_MODULE_2__.Bundle.render(linkLayer, bundles);
-            const group = _group__WEBPACK_IMPORTED_MODULE_3__.Group.render(groupLayer, groups).call(this.cola
+            const [link, path, label] = _link__WEBPACK_IMPORTED_MODULE_5__.Link.render(linkLayer, linkLabelLayer, links);
+            const bundle = _bundle__WEBPACK_IMPORTED_MODULE_3__.Bundle.render(linkLayer, bundles);
+            const group = _group__WEBPACK_IMPORTED_MODULE_4__.Group.render(groupLayer, groups).call(this.cola
                 .drag()
                 .on("dragstart", DiagramBase.dragstartCallback)
                 .on("drag", () => {
                 if (this.options.bundle) {
-                    _link__WEBPACK_IMPORTED_MODULE_4__.Link.shiftBundle(link, path, label, bundle);
+                    _link__WEBPACK_IMPORTED_MODULE_5__.Link.shiftBundle(link, path, label, bundle);
                 }
-                _node_tooltip__WEBPACK_IMPORTED_MODULE_7__.NodeTooltip.followObject(nodeTooltip);
-                _link_tooltip__WEBPACK_IMPORTED_MODULE_5__.LinkTooltip.followObject(linkTooltip);
+                _node_tooltip__WEBPACK_IMPORTED_MODULE_8__.NodeTooltip.followObject(nodeTooltip);
+                _link_tooltip__WEBPACK_IMPORTED_MODULE_6__.LinkTooltip.followObject(linkTooltip);
             }));
-            const node = _node__WEBPACK_IMPORTED_MODULE_6__.Node.render(nodeLayer, nodes).call(this.cola
+            const node = _node__WEBPACK_IMPORTED_MODULE_7__.Node.render(nodeLayer, nodes).call(this.cola
                 .drag()
                 .on("dragstart", DiagramBase.dragstartCallback)
                 .on("drag", () => {
                 if (this.options.bundle) {
-                    _link__WEBPACK_IMPORTED_MODULE_4__.Link.shiftBundle(link, path, label, bundle);
+                    _link__WEBPACK_IMPORTED_MODULE_5__.Link.shiftBundle(link, path, label, bundle);
                 }
-                _node_tooltip__WEBPACK_IMPORTED_MODULE_7__.NodeTooltip.followObject(nodeTooltip);
-                _link_tooltip__WEBPACK_IMPORTED_MODULE_5__.LinkTooltip.followObject(linkTooltip);
+                _node_tooltip__WEBPACK_IMPORTED_MODULE_8__.NodeTooltip.followObject(nodeTooltip);
+                _link_tooltip__WEBPACK_IMPORTED_MODULE_6__.LinkTooltip.followObject(linkTooltip);
             }));
             // without path calculation
             this.configureTick(group, node, link);
-            this.positionCache = _position_cache__WEBPACK_IMPORTED_MODULE_8__.PositionCache.load(data, this.options.groupPattern);
+            this.positionCache = _position_cache__WEBPACK_IMPORTED_MODULE_9__.PositionCache.load(data, this.options.groupPattern);
             if (this.options.positionCache && this.positionCache) {
                 // NOTE: Evaluate only when positionCache: true or 'fixed', and
                 //       when the stored position cache matches a pair of given data and pop
-                _group__WEBPACK_IMPORTED_MODULE_3__.Group.setPosition(group, this.positionCache.group);
-                _node__WEBPACK_IMPORTED_MODULE_6__.Node.setPosition(node, this.positionCache.node);
-                _link__WEBPACK_IMPORTED_MODULE_4__.Link.setPosition(link, this.positionCache.link);
+                _group__WEBPACK_IMPORTED_MODULE_4__.Group.setPosition(group, this.positionCache.group);
+                _node__WEBPACK_IMPORTED_MODULE_7__.Node.setPosition(node, this.positionCache.node);
+                _link__WEBPACK_IMPORTED_MODULE_5__.Link.setPosition(link, this.positionCache.link);
             }
             else {
-                if (this.options.positionHint.nodeCallback) {
-                    _node__WEBPACK_IMPORTED_MODULE_6__.Node.setPosition(node, node.data().map((d) => this.options.positionHint.nodeCallback(d)));
+                const nodeCallback = this.options.positionHint.nodeCallback;
+                if (nodeCallback) {
+                    _node__WEBPACK_IMPORTED_MODULE_7__.Node.setPosition(node, node.data().map((d) => nodeCallback(d)));
                     this.cola.start(); // update internal positions of objects before ticks forward
                 }
                 this.ticksForward();
-                this.positionCache = new _position_cache__WEBPACK_IMPORTED_MODULE_8__.PositionCache(data, this.options.groupPattern);
+                this.positionCache = new _position_cache__WEBPACK_IMPORTED_MODULE_9__.PositionCache(data, this.options.groupPattern);
                 this.savePosition(group, node, link);
             }
             this.hideLoadMessage();
@@ -2730,12 +2756,12 @@ class DiagramBase {
             this.removeConstraints();
             this.cola.start();
             if (this.options.bundle) {
-                _link__WEBPACK_IMPORTED_MODULE_4__.Link.shiftBundle(link, path, label, bundle);
+                _link__WEBPACK_IMPORTED_MODULE_5__.Link.shiftBundle(link, path, label, bundle);
             }
             path.attr("d", (d) => d.d()); // make sure path calculation is done
             DiagramBase.freeze(node);
-            const nodeTooltip = _node_tooltip__WEBPACK_IMPORTED_MODULE_7__.NodeTooltip.render(tooltipLayer, nodeTooltips);
-            const linkTooltip = _link_tooltip__WEBPACK_IMPORTED_MODULE_5__.LinkTooltip.render(tooltipLayer, linkTooltips);
+            const nodeTooltip = _node_tooltip__WEBPACK_IMPORTED_MODULE_8__.NodeTooltip.render(tooltipLayer, nodeTooltips);
+            const linkTooltip = _link_tooltip__WEBPACK_IMPORTED_MODULE_6__.LinkTooltip.render(tooltipLayer, linkTooltips);
             // NOTE: This is an experimental option
             if (this.options.positionCache === "fixed") {
                 this.cola.on("end", () => {
@@ -2744,7 +2770,7 @@ class DiagramBase {
             }
         }
         catch (e) {
-            this.showMessage(e);
+            this.showMessage(e instanceof Error ? e.message : String(e));
             throw e;
         }
     }
@@ -2756,26 +2782,29 @@ class DiagramBase {
             this.saveInitialTranslate();
         }
         this.svg.attr(name, value);
-        const transform = d3__WEBPACK_IMPORTED_MODULE_1__.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
+        const transform = d3__WEBPACK_IMPORTED_MODULE_2__.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
         this.zoom.scale(transform.scale[0]); // NOTE: Assuming ky = kx
         this.zoom.translate(transform.translate);
     }
     destroy() {
-        d3__WEBPACK_IMPORTED_MODULE_1__.select("body svg").remove();
-        _node__WEBPACK_IMPORTED_MODULE_6__.Node.reset();
-        _link__WEBPACK_IMPORTED_MODULE_4__.Link.reset();
-        _bundle__WEBPACK_IMPORTED_MODULE_2__.Bundle.reset();
+        d3__WEBPACK_IMPORTED_MODULE_2__.select("body svg").remove();
+        _node__WEBPACK_IMPORTED_MODULE_7__.Node.reset();
+        _link__WEBPACK_IMPORTED_MODULE_5__.Link.reset();
+        _bundle__WEBPACK_IMPORTED_MODULE_3__.Bundle.reset();
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static freeze(container) {
         container.each((d) => (d.fixed = true));
     }
     static dragstartCallback() {
-        d3__WEBPACK_IMPORTED_MODULE_1__.event.sourceEvent.stopPropagation();
+        var _a;
+        (_a = d3__WEBPACK_IMPORTED_MODULE_2__.event.sourceEvent) === null || _a === void 0 ? void 0 : _a.stopPropagation();
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     linkDistance(distance) {
         if (typeof distance === "function")
             return distance;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         else
             return (cola) => cola.linkDistance(distance);
     }
@@ -2790,9 +2819,9 @@ class DiagramBase {
         // this.cola.on() overrides existing listener, not additionally register it.
         // May need to call it manually.
         this.tickCallback = () => {
-            _node__WEBPACK_IMPORTED_MODULE_6__.Node.tick(node);
-            _link__WEBPACK_IMPORTED_MODULE_4__.Link.tick(link, path, label);
-            _group__WEBPACK_IMPORTED_MODULE_3__.Group.tick(group);
+            _node__WEBPACK_IMPORTED_MODULE_7__.Node.tick(node);
+            _link__WEBPACK_IMPORTED_MODULE_5__.Link.tick(link, path, label);
+            _group__WEBPACK_IMPORTED_MODULE_4__.Group.tick(group);
         };
         this.cola.on("tick", this.tickCallback);
     }
@@ -2806,11 +2835,11 @@ class DiagramBase {
         if (!this.initialTranslate) {
             this.saveInitialTranslate();
         }
-        const event = d3__WEBPACK_IMPORTED_MODULE_1__.event;
+        const event = d3__WEBPACK_IMPORTED_MODULE_2__.event;
         event.scale *= this.initialScale;
         event.translate[0] += this.initialTranslate[0];
         event.translate[1] += this.initialTranslate[1];
-        _link__WEBPACK_IMPORTED_MODULE_4__.Link.zoom(event.scale);
+        _link__WEBPACK_IMPORTED_MODULE_5__.Link.zoom(event.scale);
         container.attr("transform", `translate(${event.translate}) scale(${event.scale})`);
     }
     displayLoadMessage() {
@@ -2831,12 +2860,13 @@ class DiagramBase {
             this.indicator.text(message);
     }
     saveInitialTranslate() {
-        const transform = d3__WEBPACK_IMPORTED_MODULE_1__.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
+        const transform = d3__WEBPACK_IMPORTED_MODULE_2__.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
         this.initialScale = transform.scale[0]; // NOTE: Assuming ky = kx
         this.initialTranslate = transform.translate;
     }
     savePosition(group, node, link) {
-        this.positionCache.save(group, node, link);
+        var _a;
+        (_a = this.positionCache) === null || _a === void 0 ? void 0 : _a.save(group, node, link);
     }
     applyConstraints(constraints, nodes) {
         const colaConstraints = [];
@@ -2857,8 +2887,9 @@ class DiagramBase {
 }
 const Pluggable = (Base) => {
     class Diagram extends Base {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         static plugin(cls, options = {}) {
-            cls.load(_group__WEBPACK_IMPORTED_MODULE_3__.Group, _node__WEBPACK_IMPORTED_MODULE_6__.Node, _link__WEBPACK_IMPORTED_MODULE_4__.Link, options);
+            cls.load(_group__WEBPACK_IMPORTED_MODULE_4__.Group, _node__WEBPACK_IMPORTED_MODULE_7__.Node, _link__WEBPACK_IMPORTED_MODULE_5__.Link, options);
         }
     }
     return Diagram;
@@ -2867,7 +2898,7 @@ const Eventable = (Base) => {
     class Diagram extends Base {
         constructor(container, urlOrData, options) {
             super(container, urlOrData, options);
-            this.dispatch = d3__WEBPACK_IMPORTED_MODULE_1__.dispatch("rendered");
+            this.dispatch = d3__WEBPACK_IMPORTED_MODULE_2__.dispatch("rendered");
         }
         render(arg) {
             super.render(arg);
