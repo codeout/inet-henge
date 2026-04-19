@@ -12,11 +12,11 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/meta_data.ts":
+/***/ "./src/meta_data.ts"
 /*!**************************!*\
   !*** ./src/meta_data.ts ***!
   \**************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -42,9 +42,10 @@ class MetaData {
     }
     sliceWithExtraKey(keys) {
         const data = [];
+        const extraKey = this.extraKey;
         keys.forEach((k) => {
-            if (this.data[k] && this.data[k][this.extraKey])
-                data.push({ class: k, value: this.data[k][this.extraKey] });
+            if (this.data[k] && this.data[k][extraKey])
+                data.push({ class: k, value: this.data[k][extraKey] });
         });
         return data;
     }
@@ -59,13 +60,13 @@ class MetaData {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/node.ts":
+/***/ "./src/node.ts"
 /*!*********************!*\
   !*** ./src/node.ts ***!
   \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -117,7 +118,7 @@ class NodeBase {
         return this.height / 2;
     }
     static idByName(name) {
-        if (Node.all[name] === undefined)
+        if (!Node.all || Node.all[name] === undefined)
             throw `Unknown node "${name}"`;
         return Node.all[name];
     }
@@ -214,6 +215,7 @@ const Eventable = (Base) => {
             super(data, id, options);
             this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         static render(layer, nodes) {
             const node = super.render(layer, nodes);
             node.each(function (d) {
@@ -228,6 +230,8 @@ const Eventable = (Base) => {
     }
     return EventableNode;
 };
+class EventableNode extends Eventable(NodeBase) {
+}
 const Pluggable = (Base) => {
     class Node extends Base {
         constructor(data, id, options) {
@@ -244,21 +248,19 @@ const Pluggable = (Base) => {
     Node.pluginConstructors = [];
     return Node;
 };
-class EventableNode extends Eventable(NodeBase) {
-}
 // Call Pluggable at last as constructor may call methods defined in other classes
 class Node extends Pluggable(EventableNode) {
 }
 
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/util.ts":
+/***/ "./src/util.ts"
 /*!*********************!*\
   !*** ./src/util.ts ***!
   \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -269,17 +271,17 @@ function classify(string) {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "d3":
+/***/ "d3"
 /*!*********************!*\
   !*** external "d3" ***!
   \*********************/
-/***/ ((module) => {
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE_d3__;
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
@@ -301,6 +303,12 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_d3__;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
+/******/ 		if (!(moduleId in __webpack_modules__)) {
+/******/ 			delete __webpack_module_cache__[moduleId];
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
 /******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
@@ -369,6 +377,10 @@ var _a;
 
 
 class RemovableNode extends _src_node__WEBPACK_IMPORTED_MODULE_1__.Node {
+    constructor() {
+        super(...arguments);
+        this.selected = false;
+    }
     toggleSelected() {
         this.selected = !this.selected;
     }
@@ -380,15 +392,16 @@ class RemovableNode extends _src_node__WEBPACK_IMPORTED_MODULE_1__.Node {
     }
 }
 const RemovableNodePlugin = (_a = class RemovableNodePlugin {
-        static load(Group, Node, Link, options = {}) {
+        static load(_groupClass, nodeClass, _linkClass, options = {}) {
             if (options.showKey) {
                 _a.showKey = options.showKey;
             }
             if (options.hideKey) {
                 _a.hideKey = options.hideKey;
             }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            Node.registerConstructor(function (data, id, options) {
+            nodeClass.registerConstructor(function (
+            /* eslint-disable @typescript-eslint/no-unused-vars */
+            data, id, options) {
                 this.selected = false;
                 this.on("rendered", (element) => {
                     _a.configureRemovableNode(element);
@@ -396,9 +409,10 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
             });
             _a.configureRemovableNodes();
             // Copy methods
-            Node.prototype.toggleSelected = RemovableNode.prototype.toggleSelected;
-            Node.prototype.reset = RemovableNode.prototype.reset;
-            Node.prototype.textColor = RemovableNode.prototype.textColor;
+            const nodeProto = nodeClass.prototype;
+            nodeProto.toggleSelected = RemovableNode.prototype.toggleSelected;
+            nodeProto.reset = RemovableNode.prototype.reset;
+            nodeProto.textColor = RemovableNode.prototype.textColor;
         }
         /**
          * Configure keyboard event listener to show or hide Nodes and Links

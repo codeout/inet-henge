@@ -12,11 +12,11 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/bundle.ts":
+/***/ "./src/bundle.ts"
 /*!***********************!*\
   !*** ./src/bundle.ts ***!
   \***********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -68,21 +68,19 @@ class Bundle {
     // sort by bundle with preserving order
     static sortByBundle(links) {
         return links.sort((a, b) => {
-            switch (true) {
-                case !!a.bundle && !b.bundle:
-                    return -1;
-                case !a.bundle && !!b.bundle:
-                    return 1;
-                case !a.bundle && !b.bundle:
-                    return 0;
-                // !!a.bundle && !!b.bundle === true
-                case a.bundle.toString() < b.bundle.toString():
-                    return -1;
-                case a.bundle.toString() > b.bundle.toString():
-                    return 1;
-                default:
-                    return 0;
-            }
+            if (a.bundle && !b.bundle)
+                return -1;
+            if (!a.bundle && b.bundle)
+                return 1;
+            if (!a.bundle || !b.bundle)
+                return 0;
+            const as = a.bundle.toString();
+            const bs = b.bundle.toString();
+            if (as < bs)
+                return -1;
+            if (as > bs)
+                return 1;
+            return 0;
         });
     }
     d() {
@@ -123,13 +121,13 @@ class Bundle {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/link.ts":
+/***/ "./src/link.ts"
 /*!*********************!*\
   !*** ./src/link.ts ***!
   \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -191,7 +189,8 @@ class LinkBase {
     }
     margin() {
         if (!this._margin) {
-            const margin = window.getComputedStyle(document.getElementById(this.linkId())).margin;
+            const element = document.getElementById(this.linkId());
+            const margin = element ? window.getComputedStyle(element).margin : "";
             // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
             // or "0px" even when not defined in .css
             if (!margin || margin === "0px") {
@@ -218,10 +217,12 @@ class LinkBase {
         });
         d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(`text.${this.pathId()}`).classed("short", isShort);
         // Link.scale is initially undefined
-        return Link.scale > 1.5 && !isShort;
+        return Link.scale !== undefined && Link.scale > 1.5 && !isShort;
     }
     group() {
-        return Link.groups[[this.source.id, this.target.id].sort().toString()];
+        var _a;
+        const groups = (_a = Link.groups) !== null && _a !== void 0 ? _a : {};
+        return groups[[this.source.id, this.target.id].sort().toString()];
     }
     // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
     tspanXOffset() {
@@ -249,16 +250,15 @@ class LinkBase {
     split() {
         if (!this.metaList && !this.sourceMeta && !this.targetMeta)
             return [this];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const meta = [];
+        const links = [];
         ["metaList", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
             if (this[key]) {
                 const duped = Object.assign(Object.create(this), this);
                 keys.filter((k) => k !== key).forEach((k) => (duped[k] = []));
-                meta.push(duped);
+                links.push(duped);
             }
         });
-        return meta;
+        return links;
     }
     hasMeta() {
         return this.metaList.length > 0 || this.sourceMeta.length > 0 || this.targetMeta.length > 0;
@@ -410,8 +410,11 @@ const Eventable = (Base) => {
             super(data, id, options);
             this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
+        static render(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        static render(linkLayer, labelLayer, links) {
+        linkLayer, 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        labelLayer, links) {
             const [link, path, text] = super.render(linkLayer, labelLayer, links);
             link.each(function (d) {
                 d.dispatch.rendered(this);
@@ -425,6 +428,8 @@ const Eventable = (Base) => {
     }
     return EventableLink;
 };
+class EventableLink extends Eventable(LinkBase) {
+}
 const Pluggable = (Base) => {
     class Link extends Base {
         constructor(data, id, options) {
@@ -441,21 +446,19 @@ const Pluggable = (Base) => {
     Link.pluginConstructors = [];
     return Link;
 };
-class EventableLink extends Eventable(LinkBase) {
-}
 // Call Pluggable at last as constructor may call methods defined in other classes
 class Link extends Pluggable(EventableLink) {
 }
 
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/meta_data.ts":
+/***/ "./src/meta_data.ts"
 /*!**************************!*\
   !*** ./src/meta_data.ts ***!
   \**************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -481,9 +484,10 @@ class MetaData {
     }
     sliceWithExtraKey(keys) {
         const data = [];
+        const extraKey = this.extraKey;
         keys.forEach((k) => {
-            if (this.data[k] && this.data[k][this.extraKey])
-                data.push({ class: k, value: this.data[k][this.extraKey] });
+            if (this.data[k] && this.data[k][extraKey])
+                data.push({ class: k, value: this.data[k][extraKey] });
         });
         return data;
     }
@@ -498,13 +502,13 @@ class MetaData {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/node.ts":
+/***/ "./src/node.ts"
 /*!*********************!*\
   !*** ./src/node.ts ***!
   \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -556,7 +560,7 @@ class NodeBase {
         return this.height / 2;
     }
     static idByName(name) {
-        if (Node.all[name] === undefined)
+        if (!Node.all || Node.all[name] === undefined)
             throw `Unknown node "${name}"`;
         return Node.all[name];
     }
@@ -653,6 +657,7 @@ const Eventable = (Base) => {
             super(data, id, options);
             this.dispatch = d3__WEBPACK_IMPORTED_MODULE_0__.dispatch("rendered");
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         static render(layer, nodes) {
             const node = super.render(layer, nodes);
             node.each(function (d) {
@@ -667,6 +672,8 @@ const Eventable = (Base) => {
     }
     return EventableNode;
 };
+class EventableNode extends Eventable(NodeBase) {
+}
 const Pluggable = (Base) => {
     class Node extends Base {
         constructor(data, id, options) {
@@ -683,21 +690,19 @@ const Pluggable = (Base) => {
     Node.pluginConstructors = [];
     return Node;
 };
-class EventableNode extends Eventable(NodeBase) {
-}
 // Call Pluggable at last as constructor may call methods defined in other classes
 class Node extends Pluggable(EventableNode) {
 }
 
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/util.ts":
+/***/ "./src/util.ts"
 /*!*********************!*\
   !*** ./src/util.ts ***!
   \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -708,17 +713,17 @@ function classify(string) {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "d3":
+/***/ "d3"
 /*!*********************!*\
   !*** external "d3" ***!
   \*********************/
-/***/ ((module) => {
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE_d3__;
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
@@ -740,6 +745,12 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_d3__;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
+/******/ 		if (!(moduleId in __webpack_modules__)) {
+/******/ 			delete __webpack_module_cache__[moduleId];
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
 /******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
@@ -824,11 +835,10 @@ class ArrowsLink extends _src_link__WEBPACK_IMPORTED_MODULE_1__.Link {
     }
 }
 const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
-        static load(Group, Node, Link) {
-            Link.registerConstructor(function (
+        static load(_groupClass, _nodeClass, linkClass) {
+            linkClass.registerConstructor(function (
             /* eslint-disable @typescript-eslint/no-unused-vars */
-            data, id, metaKeys, linkWidth) {
-                this.selected = false;
+            data, id, options) {
                 this.on("rendered", (element) => {
                     _a.appendMarker(element);
                     if (!_a.isMarkerDefined) {
@@ -837,10 +847,10 @@ const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
                 });
             });
             // Copy methods
-            Link.tick = ArrowsLink.tick;
-            Link.prototype.length = ArrowsLink.prototype.length;
-            Link.prototype.x2 = ArrowsLink.prototype.x2;
-            Link.prototype.y2 = ArrowsLink.prototype.y2;
+            linkClass.tick = ArrowsLink.tick;
+            linkClass.prototype.length = ArrowsLink.prototype.length;
+            linkClass.prototype.x2 = ArrowsLink.prototype.x2;
+            linkClass.prototype.y2 = ArrowsLink.prototype.y2;
         }
         static defineMarkers() {
             const defs = d3__WEBPACK_IMPORTED_MODULE_0__.select("svg").append("defs");
