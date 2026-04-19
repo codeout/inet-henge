@@ -1,0 +1,6 @@
+{
+  "cooldown": "7d",
+  "dep": "prod,dev,peer",
+  "target": "greatest",
+  "pre": 0
+}
