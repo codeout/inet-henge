@@ -1,19 +1,20 @@
 import * as d3 from "d3";
 
-import { Constructor as LinkConstructor, Link, LinkDataType } from "../../../src/link";
+import { Group } from "../../../src/group";
+import { Constructor as LinkConstructor, Link, LinkDataType, LinkOptions } from "../../../src/link";
 import { Node } from "../../../src/node";
 import { PluginClass } from "../../../src/plugin";
 
 class ArrowsLink extends Link {
-  public readonly source: number | Node;
-  public readonly target: number | Node;
+  public readonly source!: number | Node;
+  public readonly target!: number | Node;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static tick(link: d3.Selection<ArrowsLink>, path: d3.Selection<ArrowsLink>, label: d3.Selection<any>) {
+  static tick(link: d3.Selection<Link>, path?: d3.Selection<Link>, label?: d3.Selection<any>) {
     super.tick(link, path, label);
 
-    link.attr("x2", (d) => d.x2());
-    link.attr("y2", (d) => d.y2());
+    link.attr("x2", (d) => (d as ArrowsLink).x2());
+    link.attr("y2", (d) => (d as ArrowsLink).y2());
   }
 
   length() {
@@ -35,17 +36,15 @@ class ArrowsLink extends Link {
 export const ArrowsLinkPlugin: PluginClass = class ArrowsLinkPlugin {
   private static isMarkerDefined = false;
 
-  static load(Group, Node, Link) {
-    Link.registerConstructor(function (
+  static load(_groupClass: typeof Group, _nodeClass: typeof Node, linkClass: typeof Link) {
+    linkClass.registerConstructor(function (
+      this: Link,
       /* eslint-disable @typescript-eslint/no-unused-vars */
       data: LinkDataType,
       id: number,
-      metaKeys: string[],
-      linkWidth: (object) => number,
+      options: LinkOptions,
       /* eslint-enable @typescript-eslint/no-unused-vars */
     ) {
-      this.selected = false;
-
       this.on("rendered", (element: SVGLineElement) => {
         ArrowsLinkPlugin.appendMarker(element);
         if (!ArrowsLinkPlugin.isMarkerDefined) {
@@ -55,10 +54,10 @@ export const ArrowsLinkPlugin: PluginClass = class ArrowsLinkPlugin {
     } as LinkConstructor);
 
     // Copy methods
-    Link.tick = ArrowsLink.tick;
-    Link.prototype.length = ArrowsLink.prototype.length;
-    Link.prototype.x2 = ArrowsLink.prototype.x2;
-    Link.prototype.y2 = ArrowsLink.prototype.y2;
+    linkClass.tick = ArrowsLink.tick;
+    (linkClass.prototype as unknown as ArrowsLink).length = ArrowsLink.prototype.length;
+    (linkClass.prototype as unknown as ArrowsLink).x2 = ArrowsLink.prototype.x2;
+    (linkClass.prototype as unknown as ArrowsLink).y2 = ArrowsLink.prototype.y2;
   }
 
   private static defineMarkers() {

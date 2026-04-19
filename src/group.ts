@@ -5,12 +5,12 @@ import { Node } from "./node";
 import { GroupPosition } from "./position_cache";
 import { classify } from "./util";
 
-export type Constructor = (name: string, color: Color) => void;
-
 export type GroupOptions = {
   color: Color;
   padding: number;
 };
+
+export type Constructor = (name: string, options: GroupOptions) => void;
 
 export class GroupBase {
   private padding: number;
@@ -37,8 +37,8 @@ export class GroupBase {
     return this.bounds.height();
   }
 
-  static divide(nodes: Node[], pattern: RegExp, options: GroupOptions) {
-    const groups = {};
+  static divide(nodes: Node[], pattern: RegExp | undefined, options: GroupOptions) {
+    const groups: Record<string, Group> = {};
     const register = (name: string, node: Node, parent?: string) => {
       const key = `${parent}:${name}`;
       groups[key] = groups[key] || new Group(name, options);
@@ -60,7 +60,7 @@ export class GroupBase {
       node.group.forEach((name) => register(name, node, String(result)));
     });
 
-    return Object.values(groups as Record<string, Group>);
+    return Object.values(groups);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -126,7 +126,9 @@ const WebColable = (Base: typeof GroupBase) => {
   return Group;
 };
 
-const Eventable = (Base: typeof GroupBase) => {
+class WebColableGroup extends WebColable(GroupBase) {}
+
+const Eventable = (Base: typeof WebColableGroup) => {
   class EventableGroup extends Base {
     private dispatch: d3.Dispatch;
 
@@ -136,10 +138,11 @@ const Eventable = (Base: typeof GroupBase) => {
       this.dispatch = d3.dispatch("rendered");
     }
 
-    static render(layer, groups) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    static render(layer: d3.Selection<any>, groups: Group[]) {
       const group = super.render(layer, groups);
 
-      group.each(function (this: SVGGElement, d: Group & EventableGroup) {
+      (group as unknown as d3.Selection<EventableGroup>).each(function (this: SVGGElement, d) {
         d.dispatch.rendered(this);
       });
 
@@ -155,7 +158,9 @@ const Eventable = (Base: typeof GroupBase) => {
   return EventableGroup;
 };
 
-const Pluggable = (Base: typeof GroupBase) => {
+class EventableGroup extends Eventable(WebColableGroup) {}
+
+const Pluggable = (Base: typeof EventableGroup) => {
   class Group extends Base {
     private static pluginConstructors: Constructor[] = [];
 
@@ -175,10 +180,6 @@ const Pluggable = (Base: typeof GroupBase) => {
 
   return Group;
 };
-
-class WebColableGroup extends WebColable(GroupBase) {}
-
-class EventableGroup extends Eventable(WebColableGroup) {}
 
 // Call Pluggable at last as constructor may call methods defined in other classes
 class Group extends Pluggable(EventableGroup) {}

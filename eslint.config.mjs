@@ -1,6 +1,6 @@
+import eslint from "@eslint/js";
 import prettierPlugin from "eslint-config-prettier";
 import simpleImportSortPlugin from "eslint-plugin-simple-import-sort";
-import eslint from "@eslint/js";
 import tsEslint from "typescript-eslint";
 
 

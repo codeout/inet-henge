@@ -20,9 +20,10 @@ export class MetaData {
 
   private sliceWithExtraKey(keys: string[]) {
     const data: MetaDataType[] = [];
+    const extraKey = this.extraKey as string;
 
     keys.forEach((k) => {
-      if (this.data[k] && this.data[k][this.extraKey]) data.push({ class: k, value: this.data[k][this.extraKey] });
+      if (this.data[k] && this.data[k][extraKey]) data.push({ class: k, value: this.data[k][extraKey] });
     });
 
     return data;

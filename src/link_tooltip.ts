@@ -48,7 +48,7 @@ export class LinkTooltip extends Tooltip {
       });
     });
 
-    text.each(function (d) {
+    text.each(function (this: SVGTextElement, d: LinkTooltip) {
       d.link.metaList.forEach((m, i) => {
         LinkTooltip.appendNameValue(text, m.class, m.value, i === 0);
       });
@@ -57,8 +57,9 @@ export class LinkTooltip extends Tooltip {
       const bbox = this.getBBox();
       path
         .attr("d", (d) => LinkTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20))
-        .style("fill", function () {
-          return LinkTooltip.fill(this);
+        .each(function (this: SVGPathElement) {
+          const fill = LinkTooltip.fill(this);
+          if (fill) d3.select(this).style("fill", fill);
         });
     });
   }

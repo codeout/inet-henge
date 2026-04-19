@@ -34,7 +34,7 @@ export abstract class Tooltip {
   }
 
   // Object id which has this tooltip
-  protected abstract objectId(boolean?): string;
+  protected abstract objectId(escape?: boolean): string;
 
   private setVisibility(visibility: string | null) {
     this.visibility = visibility === "visible" ? "visible" : "hidden";
@@ -53,16 +53,16 @@ export abstract class Tooltip {
         return;
       }
 
-      d3.select(element)
-        .attr("visibility", function (d) {
+      (d3.select(element) as d3.Selection<Tooltip>)
+        .attr("visibility", function (this: SVGGElement, d) {
           // Sync visibility before toggling. External script may change the visibility.
           d.setVisibility(this.getAttribute("visibility"));
           return d.toggleVisibility();
         })
         // bootstrap.css unexpectedly sets "opacity: 0". Reset if it's visible.
-        .style("opacity", function (d) {
+        .style("opacity", ((d: Tooltip) => {
           return d.visibility === "visible" ? 1 : null;
-        });
+        }) as (datum: Tooltip, index: number, outerIndex: number) => d3.Primitive);
     };
   }
 
@@ -99,7 +99,7 @@ export abstract class Tooltip {
       .attr("class", (d) => d.class())
       .attr("transform", (d) => d.transform());
 
-    tooltip.each(function (d) {
+    tooltip.each(function (this: SVGGElement, d: T) {
       cls.appendText(this);
 
       if (typeof (d.constructor as typeof Tooltip).href === "function") {
@@ -160,12 +160,13 @@ export abstract class Tooltip {
     value: (d: T) => string,
     marginTop?: boolean,
   ) {
-    container
-      .append("tspan")
-      .attr("x", (d) => d.offsetX + 40)
-      .attr("dy", (d) => (marginTop === undefined ? undefined : d.tspanOffsetY(marginTop)))
-      .attr("class", "name")
-      .text(`${name}:`);
+    const tspan = container.append("tspan").attr("x", (d) => d.offsetX + 40);
+
+    if (marginTop !== undefined) {
+      tspan.attr("dy", (d) => d.tspanOffsetY(marginTop));
+    }
+
+    tspan.attr("class", "name").text(`${name}:`);
 
     container.append("tspan").attr("dx", 10).attr("class", "value").text(value);
   }
@@ -196,7 +197,7 @@ export abstract class Tooltip {
     svg.append("path").attr("d", "M15 4h5v5");
   }
 
-  static followObject(tooltip: d3.Selection<Tooltip>) {
+  static followObject<T extends Tooltip>(tooltip: d3.Selection<T>) {
     tooltip.attr("transform", (d) => d.transform());
   }
 }
