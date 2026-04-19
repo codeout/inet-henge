@@ -33,7 +33,7 @@ export class NodeTooltip extends Tooltip {
 
     NodeTooltip.appendNameValue(text, "node", (d) => d.node.name);
 
-    text.each(function (d) {
+    text.each(function (this: SVGTextElement, d: NodeTooltip) {
       d.node.metaList.forEach((m, i) => {
         NodeTooltip.appendNameValue(text, m.class, m.value, i === 0);
       });
@@ -42,8 +42,9 @@ export class NodeTooltip extends Tooltip {
       const bbox = this.getBBox();
       path
         .attr("d", (d) => NodeTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20))
-        .style("fill", function () {
-          return NodeTooltip.fill(this);
+        .each(function (this: SVGPathElement) {
+          const fill = NodeTooltip.fill(this);
+          if (fill) d3.select(this).style("fill", fill);
         });
     });
   }

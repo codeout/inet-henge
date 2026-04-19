@@ -24,14 +24,14 @@ export type NodeOptions = {
 };
 
 class NodeBase {
-  private static all: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  private static all: Record<string, any> | null; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   public name: string;
   public group: string[];
   public metaList: MetaDataType[];
   public meta: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-  public x: number;
-  public y: number;
+  public x!: number;
+  public y!: number;
 
   private icon: string;
   private extraClass: string;
@@ -89,7 +89,7 @@ class NodeBase {
   }
 
   static idByName(name: string) {
-    if (Node.all[name] === undefined) throw `Unknown node "${name}"`;
+    if (!Node.all || Node.all[name] === undefined) throw `Unknown node "${name}"`;
     return Node.all[name];
   }
 
@@ -165,7 +165,7 @@ class NodeBase {
       .attr("height", (d) => d.nodeHeight())
       .attr("rx", 5)
       .attr("ry", 5)
-      .style("fill", (d) => d.options.color(undefined));
+      .style("fill", (d) => d.options.color(undefined as unknown as string));
   }
 
   static tick(node: d3.Selection<Node>) {
@@ -202,10 +202,11 @@ const Eventable = (Base: typeof NodeBase) => {
       this.dispatch = d3.dispatch("rendered");
     }
 
-    static render(layer, nodes) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    static render(layer: d3.Selection<any>, nodes: Node[]) {
       const node = super.render(layer, nodes);
 
-      node.each(function (this: SVGGElement, d: Node & EventableNode) {
+      (node as unknown as d3.Selection<EventableNode>).each(function (this: SVGGElement, d) {
         d.dispatch.rendered(this);
       });
 
@@ -221,7 +222,9 @@ const Eventable = (Base: typeof NodeBase) => {
   return EventableNode;
 };
 
-const Pluggable = (Base: typeof NodeBase) => {
+class EventableNode extends Eventable(NodeBase) {}
+
+const Pluggable = (Base: typeof EventableNode) => {
   class Node extends Base {
     private static pluginConstructors: Constructor[] = [];
 
@@ -241,8 +244,6 @@ const Pluggable = (Base: typeof NodeBase) => {
 
   return Node;
 };
-
-class EventableNode extends Eventable(NodeBase) {}
 
 // Call Pluggable at last as constructor may call methods defined in other classes
 class Node extends Pluggable(EventableNode) {}

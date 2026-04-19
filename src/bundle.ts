@@ -7,7 +7,7 @@ export class Bundle {
   // {
   //   "[<source node id>, <target node id>, \"<bundle id>\"]": [<link id>, ...],
   // }
-  private static groups: Record<string, number[]>;
+  private static groups: Record<string, number[]> | null;
 
   // member Links of this Bundle
   protected readonly links: Link[];
@@ -15,7 +15,7 @@ export class Bundle {
   private color: string;
   private width: number;
   private space: number;
-  private _shiftMultiplier: number;
+  private _shiftMultiplier: number | undefined;
 
   constructor(
     links: Link[],
@@ -78,23 +78,15 @@ export class Bundle {
   // sort by bundle with preserving order
   static sortByBundle(links: LinkDataType[]) {
     return links.sort((a, b) => {
-      switch (true) {
-        case !!a.bundle && !b.bundle:
-          return -1;
-        case !a.bundle && !!b.bundle:
-          return 1;
-        case !a.bundle && !b.bundle:
-          return 0;
+      if (a.bundle && !b.bundle) return -1;
+      if (!a.bundle && b.bundle) return 1;
+      if (!a.bundle || !b.bundle) return 0;
 
-        // !!a.bundle && !!b.bundle === true
-        case a.bundle.toString() < b.bundle.toString():
-          return -1;
-        case a.bundle.toString() > b.bundle.toString():
-          return 1;
-
-        default:
-          return 0;
-      }
+      const as = a.bundle.toString();
+      const bs = b.bundle.toString();
+      if (as < bs) return -1;
+      if (as > bs) return 1;
+      return 0;
     });
   }
 

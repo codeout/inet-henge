@@ -1,4 +1,4 @@
-import * as md5 from "crypto-js/md5";
+import md5 from "crypto-js/md5";
 import * as d3 from "d3";
 
 import { InetHengeDataType } from "./diagram";
@@ -18,10 +18,10 @@ type CacheDataType = {
 };
 
 export class PositionCache {
-  private readonly cachedMd5: string;
-  public group: GroupPosition[];
-  public node: NodePosition[];
-  public link: LinkPosition[];
+  private readonly cachedMd5: string | undefined;
+  public group!: GroupPosition[];
+  public node!: NodePosition[];
+  public link!: LinkPosition[];
 
   constructor(
     public data: InetHengeDataType,
@@ -33,7 +33,8 @@ export class PositionCache {
   }
 
   private static getAll(): Record<string, CacheDataType> {
-    return JSON.parse(localStorage.getItem("positionCache")) || {};
+    const raw = localStorage.getItem("positionCache");
+    return (raw && JSON.parse(raw)) || {};
   }
 
   private static key() {
@@ -65,13 +66,15 @@ export class PositionCache {
 
     if (data.nodes) {
       data.nodes.forEach((i) => {
-        delete i.icon;
-        delete i.meta;
+        const partial = i as Partial<typeof i>;
+        delete partial.icon;
+        delete partial.meta;
       });
     }
     if (data.links) {
       data.links.forEach((i) => {
-        delete i.meta;
+        const partial = i as Partial<typeof i>;
+        delete partial.meta;
       });
     }
 
@@ -124,11 +127,11 @@ export class PositionCache {
     return position;
   }
 
-  private match(data: InetHengeDataType, pop: RegExp) {
+  private match(data: InetHengeDataType, pop: RegExp | undefined) {
     return this.cachedMd5 === this.md5(data as ExtendedInetHengeDataType, pop);
   }
 
-  static load(data: InetHengeDataType, pop: RegExp) {
+  static load(data: InetHengeDataType, pop: RegExp | undefined) {
     const cache = this.get();
     if (cache) {
       const position = new PositionCache(data, pop, cache.md5);

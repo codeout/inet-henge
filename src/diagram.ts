@@ -1,20 +1,20 @@
 import "./hack_cola";
 
+import * as cola from "cola";
 import * as d3 from "d3";
 
 import { WebColaConstraint } from "../types/WebCola";
 import { Bundle } from "./bundle";
 import { Group, GroupOptions } from "./group";
-import { Link, LinkDataType } from "./link";
+import { Link, LinkDataType, LinkWidthFunction } from "./link";
 import { LinkTooltip } from "./link_tooltip";
 import { Node, NodeDataType, NodeOptions } from "./node";
 import { NodeTooltip } from "./node_tooltip";
+import { PluginClass } from "./plugin";
 import { NodePosition, PositionCache } from "./position_cache";
 
-const cola = require("cola"); // eslint-disable-line @typescript-eslint/no-require-imports
-
-type LinkWidthFunction = (object) => number;
-export type HrefFunction = (object, type?: "node" | "link") => string;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type HrefFunction = (object: any, type?: "node" | "link") => string;
 export type InetHengeDataType = { nodes: NodeDataType[]; links: LinkDataType[] };
 // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
 export type Color = d3.scale.Ordinal<string, string>;
@@ -54,19 +54,21 @@ type DiagramOptionType = {
 };
 
 class DiagramBase {
-  public tickCallback: () => void;
+  public tickCallback!: () => void;
 
   private options: DiagramOptionType;
-  private readonly setDistance: (object) => number;
-  private getLinkWidth: LinkWidthFunction;
-  private zoom: d3.behavior.Zoom<unknown>;
-  private cola;
-  private uniqueUrl: string;
-  private positionCache: PositionCache;
-  private indicator: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-  private initialTranslate: [number, number];
-  private initialScale: number;
-  private svg: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private readonly setDistance: (cola: any) => number;
+  private getLinkWidth!: LinkWidthFunction;
+  private zoom!: d3.behavior.Zoom<unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private cola: any;
+  private uniqueUrl!: string;
+  private positionCache: PositionCache | undefined;
+  private indicator!: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  private initialTranslate!: [number, number];
+  private initialScale!: number;
+  private svg!: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   constructor(container: string, urlOrData: string | InetHengeDataType, options: DiagramOptionType) {
     options ||= {} as DiagramOptionType;
@@ -234,10 +236,11 @@ class DiagramBase {
         Node.setPosition(node, this.positionCache.node);
         Link.setPosition(link, this.positionCache.link);
       } else {
-        if (this.options.positionHint.nodeCallback) {
+        const nodeCallback = this.options.positionHint.nodeCallback;
+        if (nodeCallback) {
           Node.setPosition(
             node,
-            node.data().map((d) => this.options.positionHint.nodeCallback(d)),
+            node.data().map((d) => nodeCallback(d)),
           );
           this.cola.start(); // update internal positions of objects before ticks forward
         }
@@ -270,7 +273,7 @@ class DiagramBase {
         });
       }
     } catch (e) {
-      this.showMessage(e);
+      this.showMessage(e instanceof Error ? e.message : String(e));
       throw e;
     }
   }
@@ -304,12 +307,14 @@ class DiagramBase {
   }
 
   private static dragstartCallback() {
-    (d3.event as d3.ZoomEvent).sourceEvent.stopPropagation();
+    (d3.event as d3.ZoomEvent).sourceEvent?.stopPropagation();
   }
 
-  private linkDistance(distance: number | ((any) => number)) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private linkDistance(distance: number | ((cola: any) => number)) {
     if (typeof distance === "function") return distance;
-    else return (cola) => cola.linkDistance(distance);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    else return (cola: any) => cola.linkDistance(distance);
   }
 
   private url() {
@@ -386,7 +391,7 @@ class DiagramBase {
   }
 
   private savePosition(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>) {
-    this.positionCache.save(group, node, link);
+    this.positionCache?.save(group, node, link);
   }
 
   private applyConstraints(constraints: PositionConstraint[], nodes: Node[]) {
@@ -412,7 +417,8 @@ class DiagramBase {
 
 const Pluggable = (Base: typeof DiagramBase) => {
   class Diagram extends Base {
-    static plugin(cls, options = {}) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    static plugin(cls: PluginClass, options: Record<string, any> = {}) {
       cls.load(Group, Node, Link, options);
     }
   }
@@ -430,7 +436,7 @@ const Eventable = (Base: typeof DiagramBase) => {
       this.dispatch = d3.dispatch("rendered");
     }
 
-    render(arg) {
+    render(arg: InetHengeDataType) {
       super.render(arg);
       this.dispatch.rendered();
     }

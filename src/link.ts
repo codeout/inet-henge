@@ -6,8 +6,6 @@ import { Node } from "./node";
 import { LinkPosition } from "./position_cache";
 import { classify } from "./util";
 
-export type Constructor = (data: LinkDataType, id: number, metaKeys: string[], linkWidth: (object) => number) => void;
-
 export type LinkDataType = {
   source: string;
   target: string;
@@ -16,13 +14,18 @@ export type LinkDataType = {
   class: string;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type LinkWidthFunction = (meta: Record<string, any>) => number;
+
 export type LinkOptions = {
   metaKeys: string[];
-  linkWidth: (object) => number;
+  linkWidth: LinkWidthFunction;
 };
 
+export type Constructor = (data: LinkDataType, id: number, options: LinkOptions) => void;
+
 export class LinkBase {
-  private static groups: Record<string, number[]>;
+  private static groups: Record<string, number[]> | null;
   private static scale?: number;
 
   public readonly bundle?: number | string;
@@ -38,8 +41,8 @@ export class LinkBase {
   private readonly labelXOffset: number;
   private readonly labelYOffset: number;
   private color: string;
-  private _margin: number;
-  private _shiftMultiplier: number;
+  private _margin: number | undefined;
+  private _shiftMultiplier: number | undefined;
 
   constructor(
     data: LinkDataType,
@@ -97,7 +100,8 @@ export class LinkBase {
 
   private margin() {
     if (!this._margin) {
-      const margin = window.getComputedStyle(document.getElementById(this.linkId())).margin;
+      const element = document.getElementById(this.linkId());
+      const margin = element ? window.getComputedStyle(element).margin : "";
 
       // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
       // or "0px" even when not defined in .css
@@ -128,11 +132,12 @@ export class LinkBase {
     d3.selectAll(`text.${this.pathId()}`).classed("short", isShort);
 
     // Link.scale is initially undefined
-    return Link.scale > 1.5 && !isShort;
+    return Link.scale !== undefined && Link.scale > 1.5 && !isShort;
   }
 
   group(): number[] {
-    return Link.groups[[(this.source as Node).id, (this.target as Node).id].sort().toString()];
+    const groups = Link.groups ?? {};
+    return groups[[(this.source as Node).id, (this.target as Node).id].sort().toString()];
   }
 
   // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
@@ -158,21 +163,20 @@ export class LinkBase {
     else return "rotate(0)";
   }
 
-  private split() {
-    if (!this.metaList && !this.sourceMeta && !this.targetMeta) return [this];
+  private split(): Link[] {
+    if (!this.metaList && !this.sourceMeta && !this.targetMeta) return [this as unknown as Link];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const meta: Record<string, any>[] = [];
-    ["metaList", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
+    const links: Link[] = [];
+    (["metaList", "sourceMeta", "targetMeta"] as const).forEach((key, i, keys) => {
       if (this[key]) {
         const duped = Object.assign(Object.create(this), this);
 
         keys.filter((k) => k !== key).forEach((k) => (duped[k] = []));
-        meta.push(duped);
+        links.push(duped);
       }
     });
 
-    return meta;
+    return links;
   }
 
   private hasMeta() {
@@ -253,7 +257,7 @@ export class LinkBase {
 
     const textPath = text.append("textPath").attr("xlink:href", (d: Link) => `#${d.pathId()}`);
 
-    textPath.each(function (d: Link) {
+    textPath.each(function (this: SVGGElement, d: Link) {
       Link.appendMetaText(this, d.metaList);
       Link.appendMetaText(this, d.sourceMeta);
       Link.appendMetaText(this, d.targetMeta);
@@ -299,7 +303,7 @@ export class LinkBase {
     }
 
     if(label) {
-      label.attr("transform", function(d: Link) {
+      label.attr("transform", function(this: SVGGraphicsElement, d: Link) {
         return d.rotate(this.getBBox());
       });
     }
@@ -371,11 +375,17 @@ const Eventable = (Base: typeof LinkBase) => {
       this.dispatch = d3.dispatch("rendered");
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    static render(linkLayer, labelLayer, links): [d3.Selection<Link>, d3.Selection<Link>, d3.Selection<any>] {
+    static render(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      linkLayer: d3.Selection<any>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      labelLayer: d3.Selection<any>,
+      links: Link[],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ): [d3.Selection<Link>, d3.Selection<Link>, d3.Selection<any>] {
       const [link, path, text] = super.render(linkLayer, labelLayer, links);
 
-      link.each(function (this: SVGLineElement, d: Link & EventableLink) {
+      (link as unknown as d3.Selection<EventableLink>).each(function (this: SVGLineElement, d) {
         d.dispatch.rendered(this);
       });
 
@@ -383,7 +393,7 @@ const Eventable = (Base: typeof LinkBase) => {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    on(name: string, callback: (element: SVGGElement) => any) {
+    on(name: string, callback: (element: SVGLineElement) => any) {
       this.dispatch.on(name, callback);
     }
   }
@@ -391,7 +401,9 @@ const Eventable = (Base: typeof LinkBase) => {
   return EventableLink;
 };
 
-const Pluggable = (Base: typeof LinkBase) => {
+class EventableLink extends Eventable(LinkBase) {}
+
+const Pluggable = (Base: typeof EventableLink) => {
   class Link extends Base {
     private static pluginConstructors: Constructor[] = [];
 
@@ -411,8 +423,6 @@ const Pluggable = (Base: typeof LinkBase) => {
 
   return Link;
 };
-
-class EventableLink extends Eventable(LinkBase) {}
 
 // Call Pluggable at last as constructor may call methods defined in other classes
 class Link extends Pluggable(EventableLink) {}

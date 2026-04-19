@@ -1,5 +1,7 @@
 import * as d3 from "d3";
 
+import { Group } from "../../../src/group";
+import { Link } from "../../../src/link";
 import { Constructor as NodeConstructor, Node, NodeDataType, NodeOptions } from "../../../src/node";
 import { PluginClass } from "../../../src/plugin";
 import { classify } from "../../../src/util";
@@ -10,7 +12,7 @@ type Options = {
 };
 
 class RemovableNode extends Node {
-  public selected;
+  public selected = false;
 
   public toggleSelected() {
     this.selected = !this.selected;
@@ -29,7 +31,7 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
   private static showKey = "Escape";
   private static hideKey = "d";
 
-  static load(Group, Node, Link, options: Options = {}) {
+  static load(_groupClass: typeof Group, nodeClass: typeof Node, _linkClass: typeof Link, options: Options = {}) {
     if (options.showKey) {
       RemovableNodePlugin.showKey = options.showKey;
     }
@@ -37,9 +39,15 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
       RemovableNodePlugin.hideKey = options.hideKey;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    Node.registerConstructor(function (data: NodeDataType, id: number, options: NodeOptions) {
-      this.selected = false;
+    nodeClass.registerConstructor(function (
+      this: Node,
+      /* eslint-disable @typescript-eslint/no-unused-vars */
+      data: NodeDataType,
+      id: number,
+      options: NodeOptions,
+      /* eslint-enable @typescript-eslint/no-unused-vars */
+    ) {
+      (this as RemovableNode).selected = false;
 
       this.on("rendered", (element: SVGGElement) => {
         RemovableNodePlugin.configureRemovableNode(element);
@@ -49,9 +57,10 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
     RemovableNodePlugin.configureRemovableNodes();
 
     // Copy methods
-    Node.prototype.toggleSelected = RemovableNode.prototype.toggleSelected;
-    Node.prototype.reset = RemovableNode.prototype.reset;
-    Node.prototype.textColor = RemovableNode.prototype.textColor;
+    const nodeProto = nodeClass.prototype as unknown as RemovableNode;
+    nodeProto.toggleSelected = RemovableNode.prototype.toggleSelected;
+    nodeProto.reset = RemovableNode.prototype.reset;
+    nodeProto.textColor = RemovableNode.prototype.textColor;
   }
 
   /**

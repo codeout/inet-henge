@@ -1,4 +1,13 @@
+import { Group } from "./group";
+import { Link } from "./link";
+import { Node } from "./node";
+
 export interface PluginClass {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  load(groupClass, nodeClass, linkClass, options: Record<string, any>): void;
+  load(
+    groupClass: typeof Group,
+    nodeClass: typeof Node,
+    linkClass: typeof Link,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    options: Record<string, any>,
+  ): void;
 }
