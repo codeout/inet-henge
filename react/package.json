@@ -1,0 +1,54 @@
+{
+  "name": "inet-henge-react",
+  "version": "1.4.10",
+  "description": "React component for inet-henge network diagrams.",
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "network",
+    "diagram",
+    "d3.js",
+    "cola.js",
+    "react",
+    "inet-henge"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/codeout/inet-henge.git",
+    "directory": "react"
+  },
+  "bugs": {
+    "url": "https://github.com/codeout/inet-henge/issues"
+  },
+  "author": {
+    "name": "Shintaro Kojima",
+    "email": "goodies@codeout.net",
+    "url": "http://github.com/codeout"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "lint": "npx eslint src",
+    "type-check": "npx tsc --noEmit",
+    "check": "npm run lint && npm run type-check",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && npx tsc",
+    "watch": "npx tsc --watch"
+  },
+  "dependencies": {
+    "cola": "npm:webcola@^3.4.0",
+    "d3": "~3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "react": "^19.2.5"
+  },
+  "peerDependencies": {
+    "inet-henge": "^1.4.9",
+    "react": ">=18"
+  }
+}
