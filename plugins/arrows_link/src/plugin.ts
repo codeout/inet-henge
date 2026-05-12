@@ -1,9 +1,10 @@
 import * as d3 from "d3";
 
-import { Group } from "../../../src/group";
-import { Constructor as LinkConstructor, Link, LinkDataType, LinkOptions } from "../../../src/link";
-import { Node } from "../../../src/node";
-import { PluginClass } from "../../../src/plugin";
+import type { Group } from "../../../src/group";
+import type { Constructor as LinkConstructor, LinkDataType, LinkOptions } from "../../../src/link";
+import { Link } from "../../../src/link";
+import type { Node } from "../../../src/node";
+import type { PluginClass } from "../../../src/plugin";
 
 class ArrowsLink extends Link {
   public readonly source!: number | Node;
@@ -18,9 +19,9 @@ class ArrowsLink extends Link {
   }
 
   length() {
-    return Math.sqrt(
-      ((this.source as Node).x - (this.target as Node).x) ** 2 +
-        ((this.source as Node).y - (this.target as Node).y) ** 2,
+    return Math.hypot(
+      (this.source as Node).x - (this.target as Node).x,
+      (this.source as Node).y - (this.target as Node).y,
     );
   }
 

@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-import { HrefFunction } from "./diagram";
+import type { HrefFunction } from "./diagram";
 
 type TooltipOptions = {
   offsetX?: number;
@@ -17,7 +17,7 @@ export abstract class Tooltip {
     private eventType: string,
     options: TooltipOptions = {},
   ) {
-    this.offsetX = options.offsetX !== undefined ? options.offsetX : 30;
+    this.offsetX = options.offsetX === undefined ? 30 : options.offsetX;
     this.visibility = "hidden";
   }
 
@@ -88,7 +88,7 @@ export abstract class Tooltip {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static render<T extends Tooltip>(layer: d3.Selection<any>, tooltips: T[]) {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    // eslint-disable-next-line @typescript-eslint/no-this-alias,unicorn/no-this-assignment
     const cls = this;
     const tooltip = layer
       .selectAll(`.tooltip.${cls.type}-tooltip`)
@@ -120,7 +120,7 @@ export abstract class Tooltip {
 
   protected static fill(element: SVGPathElement) {
     // If no "fill" style is defined
-    if (getComputedStyle(element).fill.match(/\(0,\s*0,\s*0\)/)) {
+    if (/\(0,\s*0,\s*0\)/.test(getComputedStyle(element).fill)) {
       return "#f8f1e9";
     }
   }

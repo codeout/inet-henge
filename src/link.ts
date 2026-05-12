@@ -1,9 +1,10 @@
 import * as d3 from "d3";
 
 import { Bundle } from "./bundle";
-import { MetaData, MetaDataType } from "./meta_data";
+import type { MetaDataType } from "./meta_data";
+import { MetaData } from "./meta_data";
 import { Node } from "./node";
-import { LinkPosition } from "./position_cache";
+import type { LinkPosition } from "./position_cache";
 import { classify } from "./util";
 
 export type LinkDataType = {
@@ -57,8 +58,7 @@ export class LinkBase {
     this.targetMeta = new MetaData(data.meta, "target").get(options.metaKeys);
     this.extraClass = data.class || "";
 
-    if (typeof options.linkWidth === "function") this.width = options.linkWidth(data.meta) || 3;
-    else this.width = options.linkWidth || 3;
+    this.width = typeof options.linkWidth === "function" ? options.linkWidth(data.meta) || 3 : options.linkWidth || 3;
 
     this.defaultMargin = 15;
     this.labelXOffset = 20;
@@ -72,7 +72,7 @@ export class LinkBase {
     Link.groups = Link.groups || {};
 
     // source and target
-    const key = [this.source, this.target].sort().toString();
+    const key = [this.source, this.target].toSorted().toString();
     (Link.groups[key] || (Link.groups[key] = [])).push(id);
   }
 
@@ -100,33 +100,27 @@ export class LinkBase {
 
   private margin() {
     if (!this._margin) {
-      const element = document.getElementById(this.linkId());
-      const margin = element ? window.getComputedStyle(element).margin : "";
+      const element = document.querySelector(`#${this.linkId()}`);
+      const margin = element ? globalThis.getComputedStyle(element).margin : "";
 
       // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
       // or "0px" even when not defined in .css
-      if (!margin || margin === "0px") {
-        this._margin = this.defaultMargin;
-      } else {
-        this._margin = parseInt(margin);
-      }
+      this._margin = !margin || margin === "0px" ? this.defaultMargin : Number.parseInt(margin);
     }
 
     return this._margin;
   }
 
   private isLabelVisible() {
-    const pathLength = (document.getElementById(this.pathId()) as unknown as SVGPathElement).getTotalLength();
+    const pathLength = (document.querySelector(`#${this.pathId()}`) as unknown as SVGPathElement).getTotalLength();
 
-    const isShort = Array.from(document.getElementsByClassName(this.pathId())).some((p) => {
+    const isShort = [...document.querySelectorAll(`.${this.pathId()}`)].some((p) => {
       // <text /> has only one <textPath />
       const tp = p.firstChild as SVGTextPathElement;
       // center label
-      if (tp.classList.contains("center")) {
-        return tp.getComputedTextLength() > pathLength;
-      } else {
-        return tp.getComputedTextLength() + this.labelXOffset > pathLength;
-      }
+      return tp.classList.contains("center")
+        ? tp.getComputedTextLength() > pathLength
+        : tp.getComputedTextLength() + this.labelXOffset > pathLength;
     });
 
     d3.selectAll(`text.${this.pathId()}`).classed("short", isShort);
@@ -137,44 +131,47 @@ export class LinkBase {
 
   group(): number[] {
     const groups = Link.groups ?? {};
-    return groups[[(this.source as Node).id, (this.target as Node).id].sort().toString()];
+    return groups[[(this.source as Node).id, (this.target as Node).id].toSorted().toString()];
   }
 
   // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
   private tspanXOffset() {
     switch (true) {
-      case this.isLabelledPath():
+      case this.isLabelledPath(): {
         return 0;
-      case this.isReversePath():
+      }
+      case this.isReversePath(): {
         return -this.labelXOffset;
-      default:
+      }
+      default: {
         return this.labelXOffset;
+      }
     }
   }
 
   private tspanYOffset() {
-    if (this.isLabelledPath()) return `${-this.labelYOffset + 0.7}em`;
-    else return `${this.labelYOffset}em`;
+    return this.isLabelledPath() ? `${-this.labelYOffset + 0.7}em` : `${this.labelYOffset}em`;
   }
 
   private rotate(bbox: SVGRect) {
-    if ((this.source as Node).x > (this.target as Node).x)
-      return `rotate(180 ${bbox.x + bbox.width / 2} ${bbox.y + bbox.height / 2})`;
-    else return "rotate(0)";
+    return (this.source as Node).x > (this.target as Node).x
+      ? `rotate(180 ${bbox.x + bbox.width / 2} ${bbox.y + bbox.height / 2})`
+      : "rotate(0)";
   }
 
   private split(): Link[] {
     if (!this.metaList && !this.sourceMeta && !this.targetMeta) return [this as unknown as Link];
 
     const links: Link[] = [];
-    (["metaList", "sourceMeta", "targetMeta"] as const).forEach((key, i, keys) => {
+    const keys = ["metaList", "sourceMeta", "targetMeta"] as const;
+    for (const key of keys) {
       if (this[key]) {
         const duped = Object.assign(Object.create(this), this);
 
-        keys.filter((k) => k !== key).forEach((k) => (duped[k] = []));
+        for (const k of keys.filter((k) => k !== key)) duped[k] = [];
         links.push(duped);
       }
-    });
+    }
 
     return links;
   }
@@ -280,14 +277,14 @@ export class LinkBase {
   }
 
   private static appendMetaText(container: SVGGElement, meta: MetaDataType[]) {
-    meta.forEach((m) => {
+    for (const m of meta) {
       d3.select(container)
         .append("tspan")
         .attr("x", (d: Link) => d.tspanXOffset())
         .attr("dy", (d: Link) => d.tspanYOffset())
         .attr("class", m.class)
         .text(m.value);
-    });
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -298,12 +295,12 @@ export class LinkBase {
       .attr("x2", (d) => (d.target as Node).x)
       .attr("y2", (d) => (d.target as Node).y);
 
-    if(path) {
+    if (path) {
       path.attr("d", (d) => d.d());
     }
 
-    if(label) {
-      label.attr("transform", function(this: SVGGraphicsElement, d: Link) {
+    if (label) {
+      label.attr("transform", function (this: SVGGraphicsElement, d: Link) {
         return d.rotate(this.getBBox());
       });
     }

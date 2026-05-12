@@ -1,6 +1,6 @@
-import * as d3 from "d3";
+import type * as d3 from "d3";
 
-import { Link, LinkDataType } from "./link";
+import type { Link, LinkDataType } from "./link";
 
 export class Bundle {
   // Bundle group in the whole graph
@@ -77,7 +77,7 @@ export class Bundle {
 
   // sort by bundle with preserving order
   static sortByBundle(links: LinkDataType[]) {
-    return links.sort((a, b) => {
+    return links.toSorted((a, b) => {
       if (a.bundle && !b.bundle) return -1;
       if (!a.bundle && b.bundle) return 1;
       if (!a.bundle || !b.bundle) return 0;
@@ -92,7 +92,7 @@ export class Bundle {
 
   d() {
     const first = this.links[0].centerCoordinates();
-    const last = this.links[this.links.length - 1].centerCoordinates();
+    const last = this.links.at(-1)!.centerCoordinates();
     const gap = Math.sqrt(Math.pow(first[0] - last[0], 2) + Math.pow(first[1] - last[1], 2));
 
     if (gap === 0) {

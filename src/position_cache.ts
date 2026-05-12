@@ -1,10 +1,10 @@
 import md5 from "crypto-js/md5";
-import * as d3 from "d3";
+import type * as d3 from "d3";
 
-import { InetHengeDataType } from "./diagram";
-import { Group } from "./group";
-import { Link } from "./link";
-import { Node } from "./node";
+import type { InetHengeDataType } from "./diagram";
+import type { Group } from "./group";
+import type { Link } from "./link";
+import type { Node } from "./node";
 
 export type GroupPosition = { x: number; y: number; width: number; height: number };
 export type NodePosition = { x: number; y: number };
@@ -65,17 +65,17 @@ export class PositionCache {
     }
 
     if (data.nodes) {
-      data.nodes.forEach((i) => {
+      for (const i of data.nodes) {
         const partial = i as Partial<typeof i>;
         delete partial.icon;
         delete partial.meta;
-      });
+      }
     }
     if (data.links) {
-      data.links.forEach((i) => {
+      for (const i of data.links) {
         const partial = i as Partial<typeof i>;
         delete partial.meta;
-      });
+      }
     }
 
     return md5(JSON.stringify(data)).toString();

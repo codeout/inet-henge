@@ -3,15 +3,19 @@ import "./hack_cola";
 import * as cola from "cola";
 import * as d3 from "d3";
 
-import { WebColaConstraint } from "../types/WebCola";
+import type { WebColaConstraint } from "../types/WebCola";
 import { Bundle } from "./bundle";
-import { Group, GroupOptions } from "./group";
-import { Link, LinkDataType, LinkWidthFunction } from "./link";
+import type { GroupOptions } from "./group";
+import { Group } from "./group";
+import type { LinkDataType, LinkWidthFunction } from "./link";
+import { Link } from "./link";
 import { LinkTooltip } from "./link_tooltip";
-import { Node, NodeDataType, NodeOptions } from "./node";
+import type { NodeDataType, NodeOptions } from "./node";
+import { Node } from "./node";
 import { NodeTooltip } from "./node_tooltip";
-import { PluginClass } from "./plugin";
-import { NodePosition, PositionCache } from "./position_cache";
+import type { PluginClass } from "./plugin";
+import type { NodePosition } from "./position_cache";
+import { PositionCache } from "./position_cache";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HrefFunction = (object: any, type?: "node" | "link") => string;
@@ -272,9 +276,9 @@ class DiagramBase {
           this.savePosition(group, node, link);
         });
       }
-    } catch (e) {
-      this.showMessage(e instanceof Error ? e.message : String(e));
-      throw e;
+    } catch (error) {
+      this.showMessage(error instanceof Error ? error.message : String(error));
+      throw error;
     }
   }
 
@@ -312,9 +316,8 @@ class DiagramBase {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private linkDistance(distance: number | ((cola: any) => number)) {
-    if (typeof distance === "function") return distance;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    else return (cola: any) => cola.linkDistance(distance);
+    return typeof distance === "function" ? distance : (cola: any) => cola.linkDistance(distance);
   }
 
   private url() {
@@ -322,7 +325,7 @@ class DiagramBase {
       return this.uniqueUrl;
     }
 
-    this.uniqueUrl = `${this.options.urlOrData}?${new Date().getTime()}`;
+    this.uniqueUrl = `${this.options.urlOrData}?${Date.now()}`;
     return this.uniqueUrl;
   }
 

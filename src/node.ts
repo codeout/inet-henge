@@ -1,8 +1,9 @@
 import * as d3 from "d3";
 
-import { Color } from "./diagram";
-import { MetaData, MetaDataType } from "./meta_data";
-import { NodePosition } from "./position_cache";
+import type { Color } from "./diagram";
+import type { MetaDataType } from "./meta_data";
+import { MetaData } from "./meta_data";
+import type { NodePosition } from "./position_cache";
 import { classify } from "./util";
 
 export type Constructor = (data: NodeDataType, id: number, options: NodeOptions) => void;
@@ -138,14 +139,14 @@ class NodeBase {
   }
 
   private static appendMetaText(container: d3.Selection<Node>, meta: MetaDataType[]) {
-    meta.forEach((m) => {
+    for (const m of meta) {
       container
         .append("tspan")
         .attr("x", (d) => d.xForText())
         .attr("dy", (d) => d.tspanOffset)
         .attr("class", m.class)
         .text(m.value);
-    });
+    }
   }
 
   private static appendImage(container: SVGGElement) {

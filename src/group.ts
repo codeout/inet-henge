@@ -1,8 +1,8 @@
 import * as d3 from "d3";
 
-import { Color } from "./diagram";
-import { Node } from "./node";
-import { GroupPosition } from "./position_cache";
+import type { Color } from "./diagram";
+import type { Node } from "./node";
+import type { GroupPosition } from "./position_cache";
 import { classify } from "./util";
 
 export type GroupOptions = {
@@ -46,7 +46,7 @@ export class GroupBase {
       groups[key].push(node);
     };
 
-    nodes.forEach((node) => {
+    for (const node of nodes) {
       let result = null;
 
       if (pattern) {
@@ -57,8 +57,8 @@ export class GroupBase {
       }
 
       // Node type based group
-      node.group.forEach((name) => register(name, node, String(result)));
-    });
+      for (const name of node.group) register(name, node, String(result));
+    }
 
     return Object.values(groups);
   }

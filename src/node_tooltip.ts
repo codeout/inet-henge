@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-import { Node } from "./node";
+import type { Node } from "./node";
 import { Tooltip } from "./tooltip";
 
 export class NodeTooltip extends Tooltip {
@@ -34,9 +34,9 @@ export class NodeTooltip extends Tooltip {
     NodeTooltip.appendNameValue(text, "node", (d) => d.node.name);
 
     text.each(function (this: SVGTextElement, d: NodeTooltip) {
-      d.node.metaList.forEach((m, i) => {
+      for (const [i, m] of d.node.metaList.entries()) {
         NodeTooltip.appendNameValue(text, m.class, m.value, i === 0);
-      });
+      }
 
       // Add "d" after bbox calculation
       const bbox = this.getBBox();

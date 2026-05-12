@@ -1,5 +1,6 @@
 import { Diagram } from "inet-henge";
-import { CSSProperties, useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
+import { useEffect, useRef } from "react";
 
 export type NodeDataType = {
   name: string;
@@ -76,14 +77,7 @@ export type InetHengeProps = {
 
 let idCounter = 0;
 
-export function InetHenge({
-  data,
-  meta,
-  onRendered,
-  className,
-  style,
-  ...options
-}: InetHengeProps) {
+export function InetHenge({ data, meta, onRendered, className, style, ...options }: InetHengeProps) {
   const idRef = useRef<string | null>(null);
   if (idRef.current === null) {
     idRef.current = `inet-henge-${++idCounter}`;
@@ -102,5 +96,5 @@ export function InetHenge({
     };
   }, [data]);
 
-  return <div id={idRef.current} className={className} style={style} />;
+  return <div className={className} id={idRef.current} style={style} />;
 }
