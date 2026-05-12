@@ -1,17 +1,12 @@
 {
   "compilerOptions": {
-    "module": "esnext",
     "target": "es2017",
-    "sourceMap": true,
-    "moduleResolution": "bundler",
+    "lib": ["es2017"],
     "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "sourceMap": true,
     "rootDir": "."
   },
-  "include": [
-    "src/*",
-    "types/*"
-  ],
-  "lib": [
-    "es2017"
-  ]
+  "include": ["src/*", "types/*"]
 }

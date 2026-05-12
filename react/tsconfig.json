@@ -1,20 +1,15 @@
 {
   "compilerOptions": {
-    "module": "esnext",
     "target": "es2020",
+    "lib": ["dom", "es2020"],
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
     "sourceMap": true,
     "declaration": true,
-    "moduleResolution": "bundler",
-    "esModuleInterop": true,
-    "jsx": "react-jsx",
     "rootDir": "src",
     "outDir": "dist"
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "lib": [
-    "es2020",
-    "dom"
-  ]
+  "include": ["src/**/*.ts"]
 }
