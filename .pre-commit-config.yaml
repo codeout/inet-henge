@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v9.13.0
+    rev: 1d7031e6d0bbfce76e5a625b0cec24fb22e517a0  # frozen: v9.25.0
     hooks:
       - id: commitlint
         stages: [commit-msg]
