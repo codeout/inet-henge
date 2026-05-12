@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "lib": ["dom", "es2017"],
+    "lib": ["dom", "es2023"],
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
