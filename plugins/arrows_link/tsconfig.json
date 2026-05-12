@@ -2,7 +2,6 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "es2017",
-    "outDir": "dist",
     "sourceMap": true,
     "moduleResolution": "bundler",
     "esModuleInterop": true,
