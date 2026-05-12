@@ -35,26 +35,23 @@ class MetaData {
     slice(keys) {
         if (!this.data)
             return [];
-        if (this.extraKey)
-            return this.sliceWithExtraKey(keys);
-        else
-            return this.sliceWithoutExtraKey(keys);
+        return this.extraKey ? this.sliceWithExtraKey(keys) : this.sliceWithoutExtraKey(keys);
     }
     sliceWithExtraKey(keys) {
         const data = [];
         const extraKey = this.extraKey;
-        keys.forEach((k) => {
+        for (const k of keys) {
             if (this.data[k] && this.data[k][extraKey])
                 data.push({ class: k, value: this.data[k][extraKey] });
-        });
+        }
         return data;
     }
     sliceWithoutExtraKey(keys) {
         const data = [];
-        keys.forEach((k) => {
+        for (const k of keys) {
             if (this.data[k])
                 data.push({ class: k, value: this.data[k] });
-        });
+        }
         return data;
     }
 }
@@ -155,21 +152,21 @@ class NodeBase {
             .text((d) => d.name)
             .attr("x", (d) => d.xForText());
         text.each((d) => {
-            // Show meta only when "tooltip" option is not configured
+            // show meta only when "tooltip" option is not configured
             if (!d.options.tooltip) {
                 Node.appendMetaText(text, d.metaList);
             }
         });
     }
     static appendMetaText(container, meta) {
-        meta.forEach((m) => {
+        for (const m of meta) {
             container
                 .append("tspan")
                 .attr("x", (d) => d.xForText())
                 .attr("dy", (d) => d.tspanOffset)
                 .attr("class", m.class)
                 .text(m.value);
-        });
+        }
     }
     static appendImage(container) {
         d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
@@ -237,7 +234,7 @@ const Pluggable = (Base) => {
         constructor(data, id, options) {
             super(data, id, options);
             for (const constructor of Node.pluginConstructors) {
-                // Call Pluggable at last as constructor may call methods defined in other classes
+                // call Pluggable at last as constructor may call methods defined in other classes
                 constructor.bind(this)(data, id, options);
             }
         }
@@ -398,7 +395,7 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
                 });
             });
             _a.configureRemovableNodes();
-            // Copy methods
+            // copy methods
             const nodeProto = nodeClass.prototype;
             nodeProto.toggleSelected = RemovableNode.prototype.toggleSelected;
             nodeProto.reset = RemovableNode.prototype.reset;
@@ -410,11 +407,13 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
         static configureRemovableNodes() {
             d3__WEBPACK_IMPORTED_MODULE_0__.select("body").on("keydown", () => {
                 switch (d3__WEBPACK_IMPORTED_MODULE_0__.event.key) {
-                    case _a.showKey:
+                    case _a.showKey: {
                         _a.show();
                         break;
-                    case _a.hideKey:
+                    }
+                    case _a.hideKey: {
                         _a.hide();
+                    }
                 }
             });
         }
@@ -424,7 +423,7 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
         static configureRemovableNode(element) {
             const d3Element = d3__WEBPACK_IMPORTED_MODULE_0__.select(element);
             d3Element.on("click.removableNode", function (d) {
-                // Do nothing for dragging
+                // do nothing for dragging
                 if (d3__WEBPACK_IMPORTED_MODULE_0__.event.defaultPrevented) {
                     return;
                 }
@@ -449,7 +448,7 @@ const RemovableNodePlugin = (_a = class RemovableNodePlugin {
         static hide() {
             d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".node").style("display", (d) => {
                 if (d.selected) {
-                    // Hide connected elements
+                    // hide connected elements
                     _a.hideLinks(d.name);
                     _a.hideToolTips(d.name);
                     return "none";

@@ -1154,7 +1154,7 @@ class Bundle {
     }
     // sort by bundle with preserving order
     static sortByBundle(links) {
-        return links.sort((a, b) => {
+        return links.toSorted((a, b) => {
             if (a.bundle && !b.bundle)
                 return -1;
             if (!a.bundle && b.bundle)
@@ -1172,7 +1172,7 @@ class Bundle {
     }
     d() {
         const first = this.links[0].centerCoordinates();
-        const last = this.links[this.links.length - 1].centerCoordinates();
+        const last = this.links.at(-1).centerCoordinates();
         const gap = Math.sqrt(Math.pow(first[0] - last[0], 2) + Math.pow(first[1] - last[1], 2));
         if (gap === 0) {
             return "";
@@ -1250,7 +1250,7 @@ class GroupBase {
             // hacky but required due to WebCola implementation
             groups[key].push(node);
         };
-        nodes.forEach((node) => {
+        for (const node of nodes) {
             let result = null;
             if (pattern) {
                 result = node.name.match(pattern);
@@ -1259,8 +1259,9 @@ class GroupBase {
                 }
             }
             // Node type based group
-            node.group.forEach((name) => register(name, node, String(result)));
-        });
+            for (const name of node.group)
+                register(name, node, String(result));
+        }
         return Object.values(groups);
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1278,7 +1279,8 @@ class GroupBase {
             .attr("ry", 8)
             .attr("width", (d) => d.groupWidth())
             .attr("height", (d) => d.groupHeight())
-            // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+            // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>"
+            // somehow.
             .style("fill", (d, i) => d.options.color(i.toString()));
         group.append("text").text((d) => d.name);
         return group;
@@ -1344,7 +1346,7 @@ const Pluggable = (Base) => {
         constructor(name, options) {
             super(name, options);
             for (const constructor of Group.pluginConstructors) {
-                // Call Pluggable at last as constructor may call methods defined in other classes
+                // call Pluggable at last as constructor may call methods defined in other classes
                 constructor.bind(this)(name, options);
             }
         }
@@ -1397,10 +1399,7 @@ class LinkBase {
         this.sourceMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "source").get(options.metaKeys);
         this.targetMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "target").get(options.metaKeys);
         this.extraClass = data.class || "";
-        if (typeof options.linkWidth === "function")
-            this.width = options.linkWidth(data.meta) || 3;
-        else
-            this.width = options.linkWidth || 3;
+        this.width = typeof options.linkWidth === "function" ? options.linkWidth(data.meta) || 3 : options.linkWidth || 3;
         this.defaultMargin = 15;
         this.labelXOffset = 20;
         this.labelYOffset = 1.5; // em
@@ -1410,7 +1409,7 @@ class LinkBase {
     register(id) {
         Link.groups = Link.groups || {};
         // source and target
-        const key = [this.source, this.target].sort().toString();
+        const key = [this.source, this.target].toSorted().toString();
         (Link.groups[key] || (Link.groups[key] = [])).push(id);
     }
     isLabelledPath() {
@@ -1430,31 +1429,22 @@ class LinkBase {
     }
     margin() {
         if (!this._margin) {
-            const element = document.getElementById(this.linkId());
-            const margin = element ? window.getComputedStyle(element).margin : "";
-            // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
-            // or "0px" even when not defined in .css
-            if (!margin || margin === "0px") {
-                this._margin = this.defaultMargin;
-            }
-            else {
-                this._margin = parseInt(margin);
-            }
+            const element = document.querySelector(`#${this.linkId()}`);
+            const margin = element ? globalThis.getComputedStyle(element).margin : "";
+            // assuming that window.getComputedStyle() returns some value link "10px" or "0px" even when not defined in .css
+            this._margin = !margin || margin === "0px" ? this.defaultMargin : Number.parseInt(margin);
         }
         return this._margin;
     }
     isLabelVisible() {
-        const pathLength = document.getElementById(this.pathId()).getTotalLength();
-        const isShort = Array.from(document.getElementsByClassName(this.pathId())).some((p) => {
+        const pathLength = document.querySelector(`#${this.pathId()}`).getTotalLength();
+        const isShort = [...document.querySelectorAll(`.${this.pathId()}`)].some((p) => {
             // <text /> has only one <textPath />
             const tp = p.firstChild;
             // center label
-            if (tp.classList.contains("center")) {
-                return tp.getComputedTextLength() > pathLength;
-            }
-            else {
-                return tp.getComputedTextLength() + this.labelXOffset > pathLength;
-            }
+            return tp.classList.contains("center")
+                ? tp.getComputedTextLength() > pathLength
+                : tp.getComputedTextLength() + this.labelXOffset > pathLength;
         });
         d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(`text.${this.pathId()}`).classed("short", isShort);
         // Link.scale is initially undefined
@@ -1463,42 +1453,43 @@ class LinkBase {
     group() {
         var _a;
         const groups = (_a = Link.groups) !== null && _a !== void 0 ? _a : {};
-        return groups[[this.source.id, this.target.id].sort().toString()];
+        return groups[[this.source.id, this.target.id].toSorted().toString()];
     }
-    // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
+    // OPTIMIZE: implement better right-alignment of the path, especially for multi tspans
     tspanXOffset() {
         switch (true) {
-            case this.isLabelledPath():
+            case this.isLabelledPath(): {
                 return 0;
-            case this.isReversePath():
+            }
+            case this.isReversePath(): {
                 return -this.labelXOffset;
-            default:
+            }
+            default: {
                 return this.labelXOffset;
+            }
         }
     }
     tspanYOffset() {
-        if (this.isLabelledPath())
-            return `${-this.labelYOffset + 0.7}em`;
-        else
-            return `${this.labelYOffset}em`;
+        return this.isLabelledPath() ? `${-this.labelYOffset + 0.7}em` : `${this.labelYOffset}em`;
     }
     rotate(bbox) {
-        if (this.source.x > this.target.x)
-            return `rotate(180 ${bbox.x + bbox.width / 2} ${bbox.y + bbox.height / 2})`;
-        else
-            return "rotate(0)";
+        return this.source.x > this.target.x
+            ? `rotate(180 ${bbox.x + bbox.width / 2} ${bbox.y + bbox.height / 2})`
+            : "rotate(0)";
     }
     split() {
         if (!this.metaList && !this.sourceMeta && !this.targetMeta)
             return [this];
         const links = [];
-        ["metaList", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
+        const keys = ["metaList", "sourceMeta", "targetMeta"];
+        for (const key of keys) {
             if (this[key]) {
                 const duped = Object.assign(Object.create(this), this);
-                keys.filter((k) => k !== key).forEach((k) => (duped[k] = []));
+                for (const k of keys.filter((k) => k !== key))
+                    duped[k] = [];
                 links.push(duped);
             }
-        });
+        }
         return links;
     }
     hasMeta() {
@@ -1525,7 +1516,7 @@ class LinkBase {
     static render(linkLayer, // eslint-disable-line @typescript-eslint/no-explicit-any
     labelLayer, // eslint-disable-line @typescript-eslint/no-explicit-any
     links) {
-        // Render lines
+        // render lines
         const pathGroup = linkLayer
             .selectAll(".link")
             .data(links)
@@ -1547,7 +1538,7 @@ class LinkBase {
             .append("path")
             .attr("d", (d) => d.d())
             .attr("id", (d) => d.pathId());
-        // Render texts
+        // render texts
         const textGroup = labelLayer
             .selectAll(".link")
             .data(links)
@@ -1559,7 +1550,7 @@ class LinkBase {
             .data((d) => d.split().filter((l) => l.hasMeta()))
             .enter()
             .append("text")
-            .attr("class", (d) => d.pathId()); // Bind text with pathId as class
+            .attr("class", (d) => d.pathId()); // bind text with pathId as class
         const textPath = text.append("textPath").attr("xlink:href", (d) => `#${d.pathId()}`);
         textPath.each(function (d) {
             Link.appendMetaText(this, d.metaList);
@@ -1570,7 +1561,7 @@ class LinkBase {
             if (d.isReversePath())
                 Link.theOtherEnd(this);
         });
-        Link.zoom(); // Initialize
+        Link.zoom(); // initialize
         return [link, path, text];
     }
     static theOtherEnd(container) {
@@ -1580,14 +1571,14 @@ class LinkBase {
         d3__WEBPACK_IMPORTED_MODULE_0__.select(container).attr("class", "center").attr("text-anchor", "middle").attr("startOffset", "50%");
     }
     static appendMetaText(container, meta) {
-        meta.forEach((m) => {
+        for (const m of meta) {
             d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
                 .append("tspan")
                 .attr("x", (d) => d.tspanXOffset())
                 .attr("dy", (d) => d.tspanYOffset())
                 .attr("class", m.class)
                 .text(m.value);
-        });
+        }
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static tick(link, path, label) {
@@ -1676,7 +1667,7 @@ const Pluggable = (Base) => {
         constructor(data, id, options) {
             super(data, id, options);
             for (const constructor of Link.pluginConstructors) {
-                // Call Pluggable at last as constructor may call methods defined in other classes
+                // call Pluggable at last as constructor may call methods defined in other classes
                 constructor.bind(this)(data, id, options);
             }
         }
@@ -1734,21 +1725,21 @@ class LinkTooltip extends _tooltip__WEBPACK_IMPORTED_MODULE_1__.Tooltip {
         const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("text");
         LinkTooltip.appendNameValue(text, "source", (d) => d.link.source.name);
         text.each(function (d) {
-            d.link.sourceMeta.forEach((m) => {
+            for (const m of d.link.sourceMeta) {
                 LinkTooltip.appendNameValue(text, m.class, m.value, false);
-            });
+            }
         });
         LinkTooltip.appendNameValue(text, "target", (d) => d.link.target.name, true);
         text.each(function (d) {
-            d.link.targetMeta.forEach((m) => {
+            for (const m of d.link.targetMeta) {
                 LinkTooltip.appendNameValue(text, m.class, m.value, false);
-            });
+            }
         });
         text.each(function (d) {
-            d.link.metaList.forEach((m, i) => {
+            for (const [i, m] of d.link.metaList.entries()) {
                 LinkTooltip.appendNameValue(text, m.class, m.value, i === 0);
-            });
-            // Add "d" after bbox calculation
+            }
+            // add "d" after bbox calculation
             const bbox = this.getBBox();
             path
                 .attr("d", (d) => LinkTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20))
@@ -1789,26 +1780,23 @@ class MetaData {
     slice(keys) {
         if (!this.data)
             return [];
-        if (this.extraKey)
-            return this.sliceWithExtraKey(keys);
-        else
-            return this.sliceWithoutExtraKey(keys);
+        return this.extraKey ? this.sliceWithExtraKey(keys) : this.sliceWithoutExtraKey(keys);
     }
     sliceWithExtraKey(keys) {
         const data = [];
         const extraKey = this.extraKey;
-        keys.forEach((k) => {
+        for (const k of keys) {
             if (this.data[k] && this.data[k][extraKey])
                 data.push({ class: k, value: this.data[k][extraKey] });
-        });
+        }
         return data;
     }
     sliceWithoutExtraKey(keys) {
         const data = [];
-        keys.forEach((k) => {
+        for (const k of keys) {
             if (this.data[k])
                 data.push({ class: k, value: this.data[k] });
-        });
+        }
         return data;
     }
 }
@@ -1910,21 +1898,21 @@ class NodeBase {
             .text((d) => d.name)
             .attr("x", (d) => d.xForText());
         text.each((d) => {
-            // Show meta only when "tooltip" option is not configured
+            // show meta only when "tooltip" option is not configured
             if (!d.options.tooltip) {
                 Node.appendMetaText(text, d.metaList);
             }
         });
     }
     static appendMetaText(container, meta) {
-        meta.forEach((m) => {
+        for (const m of meta) {
             container
                 .append("tspan")
                 .attr("x", (d) => d.xForText())
                 .attr("dy", (d) => d.tspanOffset)
                 .attr("class", m.class)
                 .text(m.value);
-        });
+        }
     }
     static appendImage(container) {
         d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
@@ -1992,7 +1980,7 @@ const Pluggable = (Base) => {
         constructor(data, id, options) {
             super(data, id, options);
             for (const constructor of Node.pluginConstructors) {
-                // Call Pluggable at last as constructor may call methods defined in other classes
+                // call Pluggable at last as constructor may call methods defined in other classes
                 constructor.bind(this)(data, id, options);
             }
         }
@@ -2047,10 +2035,10 @@ class NodeTooltip extends _tooltip__WEBPACK_IMPORTED_MODULE_1__.Tooltip {
         const text = d3__WEBPACK_IMPORTED_MODULE_0__.select(container).append("text");
         NodeTooltip.appendNameValue(text, "node", (d) => d.node.name);
         text.each(function (d) {
-            d.node.metaList.forEach((m, i) => {
+            for (const [i, m] of d.node.metaList.entries()) {
                 NodeTooltip.appendNameValue(text, m.class, m.value, i === 0);
-            });
-            // Add "d" after bbox calculation
+            }
+            // add "d" after bbox calculation
             const bbox = this.getBBox();
             path
                 .attr("d", (d) => NodeTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20))
@@ -2085,7 +2073,7 @@ class PositionCache {
     constructor(data, pop, md5) {
         this.data = data;
         this.pop = pop;
-        // NOTE: properties below can be undefined
+        // properties below can be undefined
         this.cachedMd5 = md5;
     }
     static getAll() {
@@ -2112,20 +2100,20 @@ class PositionCache {
         data = structuredClone(data || this.data);
         data.pop = String(pop || this.pop);
         if (data.pop === "undefined") {
-            data.pop = "null"; // NOTE: unify undefined with null
+            data.pop = "null"; // unify undefined with null
         }
         if (data.nodes) {
-            data.nodes.forEach((i) => {
+            for (const i of data.nodes) {
                 const partial = i;
                 delete partial.icon;
                 delete partial.meta;
-            });
+            }
         }
         if (data.links) {
-            data.links.forEach((i) => {
+            for (const i of data.links) {
                 const partial = i;
                 delete partial.meta;
-            });
+            }
         }
         return crypto_js_md5__WEBPACK_IMPORTED_MODULE_0___default()(JSON.stringify(data)).toString();
     }
@@ -2166,6 +2154,11 @@ class PositionCache {
         });
         return position;
     }
+    // True when the cache holds one position for every element in these selections
+    fits(group, node, link) {
+        var _a, _b, _c;
+        return (((_a = this.group) === null || _a === void 0 ? void 0 : _a.length) === group.size() && ((_b = this.node) === null || _b === void 0 ? void 0 : _b.length) === node.size() && ((_c = this.link) === null || _c === void 0 ? void 0 : _c.length) === link.size());
+    }
     match(data, pop) {
         return this.cachedMd5 === this.md5(data, pop);
     }
@@ -2204,7 +2197,7 @@ __webpack_require__.r(__webpack_exports__);
 class Tooltip {
     constructor(eventType, options = {}) {
         this.eventType = eventType;
-        this.offsetX = options.offsetX !== undefined ? options.offsetX : 30;
+        this.offsetX = options.offsetX === undefined ? 30 : options.offsetX;
         this.visibility = "hidden";
     }
     tspanOffsetY(marginTop) {
@@ -2219,14 +2212,14 @@ class Tooltip {
     setVisibility(visibility) {
         this.visibility = visibility === "visible" ? "visible" : "hidden";
     }
-    // This doesn't actually toggle visibility, but returns string for toggled visibility
+    // this doesn't actually toggle visibility, but returns string for toggled visibility
     toggleVisibility() {
         this.visibility = this.visibility === "hidden" ? "visible" : "hidden";
         return this.visibility;
     }
     toggleVisibilityCallback(element) {
         return () => {
-            // Do nothing for dragging
+            // do nothing for dragging
             if (d3__WEBPACK_IMPORTED_MODULE_0__.event.defaultPrevented) {
                 return;
             }
@@ -2249,7 +2242,7 @@ class Tooltip {
         d3__WEBPACK_IMPORTED_MODULE_0__.select(`#${this.objectId(true)}`).on("mouseenter.tooltip", this.toggleVisibilityCallback(element));
         d3__WEBPACK_IMPORTED_MODULE_0__.select(`#${this.objectId(true)}`).on("mouseleave.tooltip", this.toggleVisibilityCallback(element));
     }
-    // Make tooltip selectable
+    // make tooltip selectable
     disableZoom(element) {
         d3__WEBPACK_IMPORTED_MODULE_0__.select(element).on("mousedown.tooltip", () => {
             d3__WEBPACK_IMPORTED_MODULE_0__.event.stopPropagation();
@@ -2261,7 +2254,7 @@ class Tooltip {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static render(layer, tooltips) {
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        // eslint-disable-next-line @typescript-eslint/no-this-alias,unicorn/no-this-assignment
         const cls = this;
         const tooltip = layer
             .selectAll(`.tooltip.${cls.type}-tooltip`)
@@ -2287,8 +2280,8 @@ class Tooltip {
         return tooltip;
     }
     static fill(element) {
-        // If no "fill" style is defined
-        if (getComputedStyle(element).fill.match(/\(0,\s*0,\s*0\)/)) {
+        // if no "fill" style is defined
+        if (/\(0,\s*0,\s*0\)/.test(getComputedStyle(element).fill)) {
             return "#f8f1e9";
         }
     }
@@ -2380,9 +2373,11 @@ function classify(string) {
   \**************************/
 () {
 
-/* eslint-disable */
+// ported from WebCola/cola.js and overrode jaccardLinkLengths()
 
-// Ported from WebCola/cola.js and overrode jaccardLinkLengths()
+// Keep the upstream code as is. cola comes from the <script> tag, like the rest of the UMD build.
+/* global cola */
+/* eslint-disable no-redeclare, @typescript-eslint/no-this-alias, unicorn/no-array-for-each, unicorn/no-this-assignment, unicorn/no-typeof-undefined */
 
 function unionCount(a, b) {
   var u = {};
@@ -2608,9 +2603,9 @@ class DiagramBase {
         this.options.color = d3__WEBPACK_IMPORTED_MODULE_2__.scale.category20();
         this.options.initialTicks = options.initialTicks || 0;
         this.options.maxTicks = options.ticks || 1000;
-        // NOTE: true or 'fixed' (experimental) affects behavior
+        // true or 'fixed' (experimental) affects behavior
         this.options.positionCache = "positionCache" in options ? options.positionCache : true;
-        // NOTE: This is an experimental option
+        // this is an experimental option
         this.options.bundle = "bundle" in options ? options.bundle : false;
         this.options.tooltip = options.tooltip;
         this.setDistance = this.linkDistance(options.distance || 150);
@@ -2623,13 +2618,15 @@ class DiagramBase {
         this.svg = this.initSvg();
         this.displayLoadMessage();
         if (typeof this.options.urlOrData === "object") {
-            setTimeout(() => {
-                // Run asynchronously
+            // Keep the handle. destroy() has to cancel a render that has not run yet.
+            this.renderTimer = setTimeout(() => {
+                // run asynchronously
                 this.render(this.options.urlOrData);
             });
         }
         else {
-            d3__WEBPACK_IMPORTED_MODULE_2__.json(this.url(), (error, data) => {
+            // Keep the handle. destroy() has to abort a response that has not arrived yet.
+            this.dataRequest = d3__WEBPACK_IMPORTED_MODULE_2__.json(this.url(), (error, data) => {
                 if (error) {
                     console.error(error);
                     this.showMessage(`Failed to load "${this.url()}"`);
@@ -2663,6 +2660,7 @@ class DiagramBase {
         return container;
     }
     render(data) {
+        var _a;
         try {
             const nodes = data.nodes
                 ? data.nodes.map((n, i) => new _node__WEBPACK_IMPORTED_MODULE_7__.Node(n, i, {
@@ -2689,8 +2687,8 @@ class DiagramBase {
             this.cola.nodes(nodes).links(links).groups(groups);
             this.applyConstraints(this.options.positionConstraints, nodes);
             this.setDistance(this.cola);
-            // Start to update Link.source and Link.target with Node object after
-            // initial layout iterations without any constraints.
+            // start to update Link.source and Link.target with Node object after initial layout iterations without any
+            // constraints
             this.cola.start(this.options.initialTicks);
             const groupLayer = this.svg.append("g").attr("id", "groups");
             const linkLayer = this.svg.append("g").attr("id", "links");
@@ -2722,9 +2720,9 @@ class DiagramBase {
             // without path calculation
             this.configureTick(group, node, link);
             this.positionCache = _position_cache__WEBPACK_IMPORTED_MODULE_9__.PositionCache.load(data, this.options.groupPattern);
-            if (this.options.positionCache && this.positionCache) {
-                // NOTE: Evaluate only when positionCache: true or 'fixed', and
-                //       when the stored position cache matches a pair of given data and pop
+            if (this.options.positionCache && ((_a = this.positionCache) === null || _a === void 0 ? void 0 : _a.fits(group, node, link))) {
+                // evaluate only when positionCache: true or 'fixed', and when the stored position cache matches a pair of given
+                // data and pop, and when it holds a position for every rendered element
                 _group__WEBPACK_IMPORTED_MODULE_4__.Group.setPosition(group, this.positionCache.group);
                 _node__WEBPACK_IMPORTED_MODULE_7__.Node.setPosition(node, this.positionCache.node);
                 _link__WEBPACK_IMPORTED_MODULE_5__.Link.setPosition(link, this.positionCache.link);
@@ -2750,16 +2748,16 @@ class DiagramBase {
             DiagramBase.freeze(node);
             const nodeTooltip = _node_tooltip__WEBPACK_IMPORTED_MODULE_8__.NodeTooltip.render(tooltipLayer, nodeTooltips);
             const linkTooltip = _link_tooltip__WEBPACK_IMPORTED_MODULE_6__.LinkTooltip.render(tooltipLayer, linkTooltips);
-            // NOTE: This is an experimental option
+            // this is an experimental option
             if (this.options.positionCache === "fixed") {
                 this.cola.on("end", () => {
                     this.savePosition(group, node, link);
                 });
             }
         }
-        catch (e) {
-            this.showMessage(e instanceof Error ? e.message : String(e));
-            throw e;
+        catch (error) {
+            this.showMessage(error instanceof Error ? error.message : String(error));
+            throw error;
         }
     }
     linkWidth(func) {
@@ -2770,12 +2768,17 @@ class DiagramBase {
             this.saveInitialTranslate();
         }
         this.svg.attr(name, value);
-        const transform = d3__WEBPACK_IMPORTED_MODULE_2__.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
-        this.zoom.scale(transform.scale[0]); // NOTE: Assuming ky = kx
+        const transform = d3__WEBPACK_IMPORTED_MODULE_2__.transform(this.svg.attr("transform")); // FIXME: this is valid only for d3.js v3
+        this.zoom.scale(transform.scale[0]); // assuming ky = kx
         this.zoom.translate(transform.translate);
     }
     destroy() {
-        d3__WEBPACK_IMPORTED_MODULE_2__.select("body svg").remove();
+        var _a;
+        // A render scheduled by init() still runs after the elements it draws into are gone. It then reads properties of
+        // nodes that no longer exist. Drop it.
+        clearTimeout(this.renderTimer);
+        (_a = this.dataRequest) === null || _a === void 0 ? void 0 : _a.abort();
+        d3__WEBPACK_IMPORTED_MODULE_2__.select(this.options.selector).selectAll("svg").remove();
         _node__WEBPACK_IMPORTED_MODULE_7__.Node.reset();
         _link__WEBPACK_IMPORTED_MODULE_5__.Link.reset();
         _bundle__WEBPACK_IMPORTED_MODULE_3__.Bundle.reset();
@@ -2790,22 +2793,18 @@ class DiagramBase {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     linkDistance(distance) {
-        if (typeof distance === "function")
-            return distance;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        else
-            return (cola) => cola.linkDistance(distance);
+        return typeof distance === "function" ? distance : (cola) => cola.linkDistance(distance);
     }
     url() {
         if (this.uniqueUrl) {
             return this.uniqueUrl;
         }
-        this.uniqueUrl = `${this.options.urlOrData}?${new Date().getTime()}`;
+        this.uniqueUrl = `${this.options.urlOrData}?${Date.now()}`;
         return this.uniqueUrl;
     }
     configureTick(group, node, link, path, label) {
-        // this.cola.on() overrides existing listener, not additionally register it.
-        // May need to call it manually.
+        // this.cola.on() overrides existing listener, not additionally register it. May need to call it manually.
         this.tickCallback = () => {
             _node__WEBPACK_IMPORTED_MODULE_7__.Node.tick(node);
             _link__WEBPACK_IMPORTED_MODULE_5__.Link.tick(link, path, label);
@@ -2848,8 +2847,8 @@ class DiagramBase {
             this.indicator.text(message);
     }
     saveInitialTranslate() {
-        const transform = d3__WEBPACK_IMPORTED_MODULE_2__.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
-        this.initialScale = transform.scale[0]; // NOTE: Assuming ky = kx
+        const transform = d3__WEBPACK_IMPORTED_MODULE_2__.transform(this.svg.attr("transform")); // FIXME: this is valid only for d3.js v3
+        this.initialScale = transform.scale[0]; // assuming ky = kx
         this.initialTranslate = transform.translate;
     }
     savePosition(group, node, link) {

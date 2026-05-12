@@ -67,7 +67,7 @@ class Bundle {
     }
     // sort by bundle with preserving order
     static sortByBundle(links) {
-        return links.sort((a, b) => {
+        return links.toSorted((a, b) => {
             if (a.bundle && !b.bundle)
                 return -1;
             if (!a.bundle && b.bundle)
@@ -85,7 +85,7 @@ class Bundle {
     }
     d() {
         const first = this.links[0].centerCoordinates();
-        const last = this.links[this.links.length - 1].centerCoordinates();
+        const last = this.links.at(-1).centerCoordinates();
         const gap = Math.sqrt(Math.pow(first[0] - last[0], 2) + Math.pow(first[1] - last[1], 2));
         if (gap === 0) {
             return "";
@@ -156,10 +156,7 @@ class LinkBase {
         this.sourceMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "source").get(options.metaKeys);
         this.targetMeta = new _meta_data__WEBPACK_IMPORTED_MODULE_2__.MetaData(data.meta, "target").get(options.metaKeys);
         this.extraClass = data.class || "";
-        if (typeof options.linkWidth === "function")
-            this.width = options.linkWidth(data.meta) || 3;
-        else
-            this.width = options.linkWidth || 3;
+        this.width = typeof options.linkWidth === "function" ? options.linkWidth(data.meta) || 3 : options.linkWidth || 3;
         this.defaultMargin = 15;
         this.labelXOffset = 20;
         this.labelYOffset = 1.5; // em
@@ -169,7 +166,7 @@ class LinkBase {
     register(id) {
         Link.groups = Link.groups || {};
         // source and target
-        const key = [this.source, this.target].sort().toString();
+        const key = [this.source, this.target].toSorted().toString();
         (Link.groups[key] || (Link.groups[key] = [])).push(id);
     }
     isLabelledPath() {
@@ -189,31 +186,22 @@ class LinkBase {
     }
     margin() {
         if (!this._margin) {
-            const element = document.getElementById(this.linkId());
-            const margin = element ? window.getComputedStyle(element).margin : "";
-            // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
-            // or "0px" even when not defined in .css
-            if (!margin || margin === "0px") {
-                this._margin = this.defaultMargin;
-            }
-            else {
-                this._margin = parseInt(margin);
-            }
+            const element = document.querySelector(`#${this.linkId()}`);
+            const margin = element ? globalThis.getComputedStyle(element).margin : "";
+            // assuming that window.getComputedStyle() returns some value link "10px" or "0px" even when not defined in .css
+            this._margin = !margin || margin === "0px" ? this.defaultMargin : Number.parseInt(margin);
         }
         return this._margin;
     }
     isLabelVisible() {
-        const pathLength = document.getElementById(this.pathId()).getTotalLength();
-        const isShort = Array.from(document.getElementsByClassName(this.pathId())).some((p) => {
+        const pathLength = document.querySelector(`#${this.pathId()}`).getTotalLength();
+        const isShort = [...document.querySelectorAll(`.${this.pathId()}`)].some((p) => {
             // <text /> has only one <textPath />
             const tp = p.firstChild;
             // center label
-            if (tp.classList.contains("center")) {
-                return tp.getComputedTextLength() > pathLength;
-            }
-            else {
-                return tp.getComputedTextLength() + this.labelXOffset > pathLength;
-            }
+            return tp.classList.contains("center")
+                ? tp.getComputedTextLength() > pathLength
+                : tp.getComputedTextLength() + this.labelXOffset > pathLength;
         });
         d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(`text.${this.pathId()}`).classed("short", isShort);
         // Link.scale is initially undefined
@@ -222,42 +210,43 @@ class LinkBase {
     group() {
         var _a;
         const groups = (_a = Link.groups) !== null && _a !== void 0 ? _a : {};
-        return groups[[this.source.id, this.target.id].sort().toString()];
+        return groups[[this.source.id, this.target.id].toSorted().toString()];
     }
-    // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
+    // OPTIMIZE: implement better right-alignment of the path, especially for multi tspans
     tspanXOffset() {
         switch (true) {
-            case this.isLabelledPath():
+            case this.isLabelledPath(): {
                 return 0;
-            case this.isReversePath():
+            }
+            case this.isReversePath(): {
                 return -this.labelXOffset;
-            default:
+            }
+            default: {
                 return this.labelXOffset;
+            }
         }
     }
     tspanYOffset() {
-        if (this.isLabelledPath())
-            return `${-this.labelYOffset + 0.7}em`;
-        else
-            return `${this.labelYOffset}em`;
+        return this.isLabelledPath() ? `${-this.labelYOffset + 0.7}em` : `${this.labelYOffset}em`;
     }
     rotate(bbox) {
-        if (this.source.x > this.target.x)
-            return `rotate(180 ${bbox.x + bbox.width / 2} ${bbox.y + bbox.height / 2})`;
-        else
-            return "rotate(0)";
+        return this.source.x > this.target.x
+            ? `rotate(180 ${bbox.x + bbox.width / 2} ${bbox.y + bbox.height / 2})`
+            : "rotate(0)";
     }
     split() {
         if (!this.metaList && !this.sourceMeta && !this.targetMeta)
             return [this];
         const links = [];
-        ["metaList", "sourceMeta", "targetMeta"].forEach((key, i, keys) => {
+        const keys = ["metaList", "sourceMeta", "targetMeta"];
+        for (const key of keys) {
             if (this[key]) {
                 const duped = Object.assign(Object.create(this), this);
-                keys.filter((k) => k !== key).forEach((k) => (duped[k] = []));
+                for (const k of keys.filter((k) => k !== key))
+                    duped[k] = [];
                 links.push(duped);
             }
-        });
+        }
         return links;
     }
     hasMeta() {
@@ -284,7 +273,7 @@ class LinkBase {
     static render(linkLayer, // eslint-disable-line @typescript-eslint/no-explicit-any
     labelLayer, // eslint-disable-line @typescript-eslint/no-explicit-any
     links) {
-        // Render lines
+        // render lines
         const pathGroup = linkLayer
             .selectAll(".link")
             .data(links)
@@ -306,7 +295,7 @@ class LinkBase {
             .append("path")
             .attr("d", (d) => d.d())
             .attr("id", (d) => d.pathId());
-        // Render texts
+        // render texts
         const textGroup = labelLayer
             .selectAll(".link")
             .data(links)
@@ -318,7 +307,7 @@ class LinkBase {
             .data((d) => d.split().filter((l) => l.hasMeta()))
             .enter()
             .append("text")
-            .attr("class", (d) => d.pathId()); // Bind text with pathId as class
+            .attr("class", (d) => d.pathId()); // bind text with pathId as class
         const textPath = text.append("textPath").attr("xlink:href", (d) => `#${d.pathId()}`);
         textPath.each(function (d) {
             Link.appendMetaText(this, d.metaList);
@@ -329,7 +318,7 @@ class LinkBase {
             if (d.isReversePath())
                 Link.theOtherEnd(this);
         });
-        Link.zoom(); // Initialize
+        Link.zoom(); // initialize
         return [link, path, text];
     }
     static theOtherEnd(container) {
@@ -339,14 +328,14 @@ class LinkBase {
         d3__WEBPACK_IMPORTED_MODULE_0__.select(container).attr("class", "center").attr("text-anchor", "middle").attr("startOffset", "50%");
     }
     static appendMetaText(container, meta) {
-        meta.forEach((m) => {
+        for (const m of meta) {
             d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
                 .append("tspan")
                 .attr("x", (d) => d.tspanXOffset())
                 .attr("dy", (d) => d.tspanYOffset())
                 .attr("class", m.class)
                 .text(m.value);
-        });
+        }
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static tick(link, path, label) {
@@ -435,7 +424,7 @@ const Pluggable = (Base) => {
         constructor(data, id, options) {
             super(data, id, options);
             for (const constructor of Link.pluginConstructors) {
-                // Call Pluggable at last as constructor may call methods defined in other classes
+                // call Pluggable at last as constructor may call methods defined in other classes
                 constructor.bind(this)(data, id, options);
             }
         }
@@ -477,26 +466,23 @@ class MetaData {
     slice(keys) {
         if (!this.data)
             return [];
-        if (this.extraKey)
-            return this.sliceWithExtraKey(keys);
-        else
-            return this.sliceWithoutExtraKey(keys);
+        return this.extraKey ? this.sliceWithExtraKey(keys) : this.sliceWithoutExtraKey(keys);
     }
     sliceWithExtraKey(keys) {
         const data = [];
         const extraKey = this.extraKey;
-        keys.forEach((k) => {
+        for (const k of keys) {
             if (this.data[k] && this.data[k][extraKey])
                 data.push({ class: k, value: this.data[k][extraKey] });
-        });
+        }
         return data;
     }
     sliceWithoutExtraKey(keys) {
         const data = [];
-        keys.forEach((k) => {
+        for (const k of keys) {
             if (this.data[k])
                 data.push({ class: k, value: this.data[k] });
-        });
+        }
         return data;
     }
 }
@@ -597,21 +583,21 @@ class NodeBase {
             .text((d) => d.name)
             .attr("x", (d) => d.xForText());
         text.each((d) => {
-            // Show meta only when "tooltip" option is not configured
+            // show meta only when "tooltip" option is not configured
             if (!d.options.tooltip) {
                 Node.appendMetaText(text, d.metaList);
             }
         });
     }
     static appendMetaText(container, meta) {
-        meta.forEach((m) => {
+        for (const m of meta) {
             container
                 .append("tspan")
                 .attr("x", (d) => d.xForText())
                 .attr("dy", (d) => d.tspanOffset)
                 .attr("class", m.class)
                 .text(m.value);
-        });
+        }
     }
     static appendImage(container) {
         d3__WEBPACK_IMPORTED_MODULE_0__.select(container)
@@ -679,7 +665,7 @@ const Pluggable = (Base) => {
         constructor(data, id, options) {
             super(data, id, options);
             for (const constructor of Node.pluginConstructors) {
-                // Call Pluggable at last as constructor may call methods defined in other classes
+                // call Pluggable at last as constructor may call methods defined in other classes
                 constructor.bind(this)(data, id, options);
             }
         }
@@ -814,8 +800,7 @@ class ArrowsLink extends _src_link__WEBPACK_IMPORTED_MODULE_1__.Link {
         link.attr("y2", (d) => d.y2());
     }
     length() {
-        return Math.sqrt((this.source.x - this.target.x) ** 2 +
-            (this.source.y - this.target.y) ** 2);
+        return Math.hypot(this.source.x - this.target.x, this.source.y - this.target.y);
     }
     x2() {
         return this.source.x + (0.5 - 5 / this.length()) * (this.target.x - this.source.x);
@@ -836,7 +821,7 @@ const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
                     }
                 });
             });
-            // Copy methods
+            // copy methods
             linkClass.tick = ArrowsLink.tick;
             linkClass.prototype.length = ArrowsLink.prototype.length;
             linkClass.prototype.x2 = ArrowsLink.prototype.x2;
@@ -862,7 +847,7 @@ const ArrowsLinkPlugin = (_a = class ArrowsLinkPlugin {
         }
         static appendMarker(element) {
             d3__WEBPACK_IMPORTED_MODULE_0__.select(element).attr("marker-end", 
-            // For consistency with #links :nth-child(odd), it's one-based
+            // for consistency with #links :nth-child(odd), it's one-based
             (d) => (d.id % 2 === 0 ? "url(#marker-odd)" : "url(#marker-even)"));
         }
     },
