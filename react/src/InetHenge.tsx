@@ -1,3 +1,7 @@
+"use client";
+
+import "./polyfill-self";
+
 import { Diagram } from "inet-henge";
 import type { CSSProperties } from "react";
 import { useEffect, useRef } from "react";
