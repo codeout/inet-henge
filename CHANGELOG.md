@@ -1,3 +1,10 @@
+## [1.4.10] - 2026-09-15
+
+### Fixed
+
+- Update dependencies for security fixes
+
+
 ## [1.4.9] - 2026-04-20
 
 ### Fixed
