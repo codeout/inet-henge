@@ -82,14 +82,14 @@ export type InetHengeProps = {
 };
 
 export function InetHenge({ data, meta, onRendered, className, style, ...options }: InetHengeProps) {
-  // The id has to survive hydration. Diagram looks the container up by selector, and a selector that matches
-  // nothing makes d3 draw nothing at all. useId() returns the same value on the server and on the client.
+  // The id has to survive hydration. Diagram looks the container up by selector, and a selector that matches nothing
+  // makes d3 draw nothing at all. useId() returns the same value on the server and on the client.
   //
   // - "_R_1_" with react 19
   // - ":R1:"  with react 18
   //
-  // React 18 wraps the value in colons, which a CSS selector rejects. React 19 uses underscores instead.
-  // Keep the part that is valid in an id, and both work.
+  // React 18 wraps the value in colons, which a CSS selector rejects. React 19 uses underscores instead. Keep the part
+  // that is valid in an id, and both work.
   const id = `inet-henge-${useId().replaceAll(/[^\w-]/g, "")}`;
 
   useEffect(() => {

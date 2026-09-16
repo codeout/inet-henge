@@ -131,7 +131,7 @@ class NodeBase {
       .attr("x", (d) => d.xForText());
 
     text.each((d) => {
-      // Show meta only when "tooltip" option is not configured
+      // show meta only when "tooltip" option is not configured
       if (!d.options.tooltip) {
         Node.appendMetaText(text, d.metaList);
       }
@@ -233,7 +233,7 @@ const Pluggable = (Base: typeof EventableNode) => {
       super(data, id, options);
 
       for (const constructor of Node.pluginConstructors) {
-        // Call Pluggable at last as constructor may call methods defined in other classes
+        // call Pluggable at last as constructor may call methods defined in other classes
         constructor.bind(this)(data, id, options);
       }
     }

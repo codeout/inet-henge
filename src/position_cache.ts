@@ -28,7 +28,7 @@ export class PositionCache {
     public pop?: RegExp,
     md5?: string,
   ) {
-    // NOTE: properties below can be undefined
+    // properties below can be undefined
     this.cachedMd5 = md5;
   }
 
@@ -61,7 +61,7 @@ export class PositionCache {
     data = structuredClone(data || this.data) as ExtendedInetHengeDataType;
     data.pop = String(pop || this.pop);
     if (data.pop === "undefined") {
-      data.pop = "null"; // NOTE: unify undefined with null
+      data.pop = "null"; // unify undefined with null
     }
 
     if (data.nodes) {

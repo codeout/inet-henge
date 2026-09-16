@@ -53,7 +53,7 @@ export class LinkTooltip extends Tooltip {
         LinkTooltip.appendNameValue(text, m.class, m.value, i === 0);
       }
 
-      // Add "d" after bbox calculation
+      // add "d" after bbox calculation
       const bbox = this.getBBox();
       path
         .attr("d", (d) => LinkTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20))

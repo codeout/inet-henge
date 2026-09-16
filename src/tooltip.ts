@@ -33,14 +33,14 @@ export abstract class Tooltip {
     return `tooltip ${(this.constructor as typeof Tooltip).type}-tooltip ${this.objectId()}`;
   }
 
-  // Object id which has this tooltip
+  // object id which has this tooltip
   protected abstract objectId(escape?: boolean): string;
 
   private setVisibility(visibility: string | null) {
     this.visibility = visibility === "visible" ? "visible" : "hidden";
   }
 
-  // This doesn't actually toggle visibility, but returns string for toggled visibility
+  // this doesn't actually toggle visibility, but returns string for toggled visibility
   private toggleVisibility() {
     this.visibility = this.visibility === "hidden" ? "visible" : "hidden";
     return this.visibility;
@@ -48,7 +48,7 @@ export abstract class Tooltip {
 
   private toggleVisibilityCallback(element: SVGGElement) {
     return () => {
-      // Do nothing for dragging
+      // do nothing for dragging
       if ((d3.event as MouseEvent).defaultPrevented) {
         return;
       }
@@ -75,7 +75,7 @@ export abstract class Tooltip {
     d3.select(`#${this.objectId(true)}`).on("mouseleave.tooltip", this.toggleVisibilityCallback(element));
   }
 
-  // Make tooltip selectable
+  // make tooltip selectable
   private disableZoom(element: SVGGElement) {
     d3.select(element).on("mousedown.tooltip", () => {
       (d3.event as MouseEvent).stopPropagation();
@@ -119,7 +119,7 @@ export abstract class Tooltip {
   }
 
   protected static fill(element: SVGPathElement) {
-    // If no "fill" style is defined
+    // if no "fill" style is defined
     if (/\(0,\s*0,\s*0\)/.test(getComputedStyle(element).fill)) {
       return "#f8f1e9";
     }

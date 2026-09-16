@@ -103,8 +103,7 @@ export class LinkBase {
       const element = document.querySelector(`#${this.linkId()}`);
       const margin = element ? globalThis.getComputedStyle(element).margin : "";
 
-      // NOTE: Assuming that window.getComputedStyle() returns some value link "10px"
-      // or "0px" even when not defined in .css
+      // assuming that window.getComputedStyle() returns some value link "10px" or "0px" even when not defined in .css
       this._margin = !margin || margin === "0px" ? this.defaultMargin : Number.parseInt(margin);
     }
 
@@ -134,7 +133,7 @@ export class LinkBase {
     return groups[[(this.source as Node).id, (this.target as Node).id].toSorted().toString()];
   }
 
-  // OPTIMIZE: Implement better right-alignment of the path, especially for multi tspans
+  // OPTIMIZE: implement better right-alignment of the path, especially for multi tspans
   private tspanXOffset() {
     switch (true) {
       case this.isLabelledPath(): {
@@ -212,7 +211,7 @@ export class LinkBase {
     links: Link[],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): [d3.Selection<Link>, d3.Selection<Link>, d3.Selection<any>] {
-    // Render lines
+    // render lines
     const pathGroup = linkLayer
       .selectAll(".link")
       .data(links)
@@ -237,7 +236,7 @@ export class LinkBase {
       .attr("d", (d) => d.d())
       .attr("id", (d) => d.pathId());
 
-    // Render texts
+    // render texts
     const textGroup = labelLayer
       .selectAll(".link")
       .data(links)
@@ -250,7 +249,7 @@ export class LinkBase {
       .data((d: Link) => d.split().filter((l: Link) => l.hasMeta()))
       .enter()
       .append("text")
-      .attr("class", (d: Link) => d.pathId()); // Bind text with pathId as class
+      .attr("class", (d: Link) => d.pathId()); // bind text with pathId as class
 
     const textPath = text.append("textPath").attr("xlink:href", (d: Link) => `#${d.pathId()}`);
 
@@ -264,7 +263,7 @@ export class LinkBase {
       if (d.isReversePath()) Link.theOtherEnd(this);
     });
 
-    Link.zoom(); // Initialize
+    Link.zoom(); // initialize
     return [link, path, text];
   }
 
@@ -408,7 +407,7 @@ const Pluggable = (Base: typeof EventableLink) => {
       super(data, id, options);
 
       for (const constructor of Link.pluginConstructors) {
-        // Call Pluggable at last as constructor may call methods defined in other classes
+        // call Pluggable at last as constructor may call methods defined in other classes
         constructor.bind(this)(data, id, options);
       }
     }

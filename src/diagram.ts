@@ -20,7 +20,8 @@ import { PositionCache } from "./position_cache";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HrefFunction = (object: any, type?: "node" | "link") => string;
 export type InetHengeDataType = { nodes: NodeDataType[]; links: LinkDataType[] };
-// Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+// Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>"
+// somehow.
 export type Color = d3.scale.Ordinal<string, string>;
 type PositionHint = {
   nodeCallback?: (node: Node) => NodePosition;
@@ -30,7 +31,7 @@ type PositionConstraint = {
   nodesCallback: (nodes: Node[]) => Node[][];
 };
 type DiagramOptionType = {
-  // Options publicly available
+  // options publicly available
   width: number;
   height: number;
   nodeWidth: number;
@@ -47,7 +48,7 @@ type DiagramOptionType = {
   tooltip: string;
   href: HrefFunction;
 
-  // Internal options
+  // internal options
   selector: string;
   urlOrData: string | InetHengeDataType;
   groupPattern: RegExp | undefined;
@@ -90,9 +91,9 @@ class DiagramBase {
     this.options.color = d3.scale.category20();
     this.options.initialTicks = options.initialTicks || 0;
     this.options.maxTicks = options.ticks || 1000;
-    // NOTE: true or 'fixed' (experimental) affects behavior
+    // true or 'fixed' (experimental) affects behavior
     this.options.positionCache = "positionCache" in options ? options.positionCache : true;
-    // NOTE: This is an experimental option
+    // this is an experimental option
     this.options.bundle = "bundle" in options ? options.bundle : false;
     this.options.tooltip = options.tooltip;
 
@@ -111,7 +112,7 @@ class DiagramBase {
     if (typeof this.options.urlOrData === "object") {
       // Keep the handle. destroy() has to cancel a render that has not run yet.
       this.renderTimer = setTimeout(() => {
-        // Run asynchronously
+        // run asynchronously
         this.render(this.options.urlOrData as InetHengeDataType);
       });
     } else {
@@ -192,8 +193,8 @@ class DiagramBase {
       this.applyConstraints(this.options.positionConstraints, nodes);
       this.setDistance(this.cola);
 
-      // Start to update Link.source and Link.target with Node object after
-      // initial layout iterations without any constraints.
+      // start to update Link.source and Link.target with Node object after initial layout iterations without any
+      // constraints
       this.cola.start(this.options.initialTicks);
 
       const groupLayer = this.svg.append("g").attr("id", "groups");
@@ -274,7 +275,7 @@ class DiagramBase {
       const nodeTooltip = NodeTooltip.render<NodeTooltip>(tooltipLayer, nodeTooltips);
       const linkTooltip = LinkTooltip.render<LinkTooltip>(tooltipLayer, linkTooltips);
 
-      // NOTE: This is an experimental option
+      // this is an experimental option
       if (this.options.positionCache === "fixed") {
         this.cola.on("end", () => {
           this.savePosition(group, node, link);
@@ -297,8 +298,8 @@ class DiagramBase {
 
     this.svg.attr(name, value);
 
-    const transform = d3.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
-    this.zoom.scale(transform.scale[0]); // NOTE: Assuming ky = kx
+    const transform = d3.transform(this.svg.attr("transform")); // FIXME: this is valid only for d3.js v3
+    this.zoom.scale(transform.scale[0]); // assuming ky = kx
     this.zoom.translate(transform.translate);
   }
 
@@ -345,8 +346,7 @@ class DiagramBase {
     path?: d3.Selection<Link>,
     label?: d3.Selection<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
   ) {
-    // this.cola.on() overrides existing listener, not additionally register it.
-    // May need to call it manually.
+    // this.cola.on() overrides existing listener, not additionally register it. May need to call it manually.
     this.tickCallback = () => {
       Node.tick(node);
       Link.tick(link, path, label);
@@ -397,8 +397,8 @@ class DiagramBase {
   }
 
   private saveInitialTranslate() {
-    const transform = d3.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
-    this.initialScale = transform.scale[0]; // NOTE: Assuming ky = kx
+    const transform = d3.transform(this.svg.attr("transform")); // FIXME: this is valid only for d3.js v3
+    this.initialScale = transform.scale[0]; // assuming ky = kx
     this.initialTranslate = transform.translate;
   }
 

@@ -15,7 +15,7 @@ export type Constructor = (name: string, options: GroupOptions) => void;
 export class GroupBase {
   private padding: number;
 
-  // Not appropriately defined in @types/d3/index.d.ts
+  // not appropriately defined in @types/d3/index.d.ts
   private bounds: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   constructor(
@@ -79,7 +79,8 @@ export class GroupBase {
       .attr("ry", 8)
       .attr("width", (d) => d.groupWidth())
       .attr("height", (d) => d.groupHeight())
-      // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
+      // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>"
+      // somehow.
       .style("fill", (d, i) => d.options.color(i.toString()));
 
     group.append("text").text((d) => d.name);
@@ -168,7 +169,7 @@ const Pluggable = (Base: typeof EventableGroup) => {
       super(name, options);
 
       for (const constructor of Group.pluginConstructors) {
-        // Call Pluggable at last as constructor may call methods defined in other classes
+        // call Pluggable at last as constructor may call methods defined in other classes
         constructor.bind(this)(name, options);
       }
     }
