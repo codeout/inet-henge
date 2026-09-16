@@ -42,8 +42,8 @@ export class LinkBase {
   private readonly labelXOffset: number;
   private readonly labelYOffset: number;
   private color: string;
-  private _margin: number | undefined;
-  private _shiftMultiplier: number | undefined;
+  private _margin?: number;
+  private _shiftMultiplier?: number;
 
   constructor(
     data: LinkDataType,
