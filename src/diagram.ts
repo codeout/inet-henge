@@ -73,6 +73,9 @@ class DiagramBase {
   private initialTranslate!: [number, number];
   private initialScale!: number;
   private svg!: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  private svgRoot?: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  private renderTimer?: ReturnType<typeof setTimeout>;
+  private dataRequest?: d3.Xhr;
 
   constructor(container: string, urlOrData: string | InetHengeDataType, options: DiagramOptionType) {
     options ||= {} as DiagramOptionType;
@@ -107,12 +110,14 @@ class DiagramBase {
     this.displayLoadMessage();
 
     if (typeof this.options.urlOrData === "object") {
-      setTimeout(() => {
+      // Keep the handle. destroy() has to cancel a render that has not run yet.
+      this.renderTimer = setTimeout(() => {
         // Run asynchronously
         this.render(this.options.urlOrData as InetHengeDataType);
       });
     } else {
-      d3.json(this.url(), (error, data) => {
+      // Keep the handle. destroy() has to abort a response that has not arrived yet.
+      this.dataRequest = d3.json(this.url(), (error, data) => {
         if (error) {
           console.error(error);
           this.showMessage(`Failed to load "${this.url()}"`);
@@ -133,12 +138,15 @@ class DiagramBase {
 
   initSvg() {
     this.zoom = d3.behavior.zoom();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const container: d3.Selection<any> = d3
+    // keep the root. destroy() removes this element, and nothing else the container holds
+    this.svgRoot = d3
       .select(this.options.selector)
       .append("svg")
       .attr("width", this.options.width)
-      .attr("height", this.options.height)
+      .attr("height", this.options.height);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const container: d3.Selection<any> = this.svgRoot
       .append("g")
       .call(this.zoom.on("zoom", () => this.zoomCallback(container)))
       .append("g");
@@ -299,7 +307,12 @@ class DiagramBase {
   }
 
   destroy() {
-    d3.select("body svg").remove();
+    // A render scheduled by init() still runs after the elements it draws into are gone. It then reads properties of
+    // nodes that no longer exist. Drop it.
+    clearTimeout(this.renderTimer);
+    this.dataRequest?.abort();
+
+    this.svgRoot?.remove();
     Node.reset();
     Link.reset();
     Bundle.reset();
