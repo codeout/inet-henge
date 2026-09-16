@@ -1,6 +1,8 @@
-/* eslint-disable */
-
 // Ported from WebCola/cola.js and overrode jaccardLinkLengths()
+
+// Keep the upstream code as is. cola comes from the <script> tag, like the rest of the UMD build.
+/* global cola */
+/* eslint-disable no-redeclare, @typescript-eslint/no-this-alias, unicorn/no-array-for-each, unicorn/no-this-assignment, unicorn/no-typeof-undefined */
 
 function unionCount(a, b) {
   var u = {};
