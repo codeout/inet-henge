@@ -15,7 +15,7 @@ export class Bundle {
   private color: string;
   private width: number;
   private space: number;
-  private _shiftMultiplier: number | undefined;
+  private _shiftMultiplier?: number;
 
   constructor(
     links: Link[],

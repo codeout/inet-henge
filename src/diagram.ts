@@ -69,7 +69,7 @@ class DiagramBase {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cola: any;
   private uniqueUrl!: string;
-  private positionCache: PositionCache | undefined;
+  private positionCache?: PositionCache;
   private indicator!: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   private initialTranslate!: [number, number];
   private initialScale!: number;
