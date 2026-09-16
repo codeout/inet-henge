@@ -54,7 +54,7 @@ export const ArrowsLinkPlugin: PluginClass = class ArrowsLinkPlugin {
       });
     } as LinkConstructor);
 
-    // Copy methods
+    // copy methods
     linkClass.tick = ArrowsLink.tick;
     (linkClass.prototype as unknown as ArrowsLink).length = ArrowsLink.prototype.length;
     (linkClass.prototype as unknown as ArrowsLink).x2 = ArrowsLink.prototype.x2;
@@ -84,7 +84,7 @@ export const ArrowsLinkPlugin: PluginClass = class ArrowsLinkPlugin {
   private static appendMarker(element: SVGLineElement) {
     d3.select(element).attr(
       "marker-end",
-      // For consistency with #links :nth-child(odd), it's one-based
+      // for consistency with #links :nth-child(odd), it's one-based
       (d: ArrowsLink) => (d.id % 2 === 0 ? "url(#marker-odd)" : "url(#marker-even)"),
     );
   }

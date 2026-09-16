@@ -1,4 +1,4 @@
-// Ported from WebCola/cola.js and overrode jaccardLinkLengths()
+// ported from WebCola/cola.js and overrode jaccardLinkLengths()
 
 // Keep the upstream code as is. cola comes from the <script> tag, like the rest of the UMD build.
 /* global cola */

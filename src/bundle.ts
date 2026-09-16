@@ -3,7 +3,7 @@ import type * as d3 from "d3";
 import type { Link, LinkDataType } from "./link";
 
 export class Bundle {
-  // Bundle group in the whole graph
+  // bundle group in the whole graph
   // {
   //   "[<source node id>, <target node id>, \"<bundle id>\"]": [<link id>, ...],
   // }
