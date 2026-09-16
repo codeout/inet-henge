@@ -73,6 +73,8 @@ class DiagramBase {
   private initialTranslate!: [number, number];
   private initialScale!: number;
   private svg!: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  private renderTimer?: ReturnType<typeof setTimeout>;
+  private dataRequest?: d3.Xhr;
 
   constructor(container: string, urlOrData: string | InetHengeDataType, options: DiagramOptionType) {
     options ||= {} as DiagramOptionType;
@@ -107,12 +109,14 @@ class DiagramBase {
     this.displayLoadMessage();
 
     if (typeof this.options.urlOrData === "object") {
-      setTimeout(() => {
+      // Keep the handle. destroy() has to cancel a render that has not run yet.
+      this.renderTimer = setTimeout(() => {
         // Run asynchronously
         this.render(this.options.urlOrData as InetHengeDataType);
       });
     } else {
-      d3.json(this.url(), (error, data) => {
+      // Keep the handle. destroy() has to abort a response that has not arrived yet.
+      this.dataRequest = d3.json(this.url(), (error, data) => {
         if (error) {
           console.error(error);
           this.showMessage(`Failed to load "${this.url()}"`);
@@ -299,7 +303,12 @@ class DiagramBase {
   }
 
   destroy() {
-    d3.select("body svg").remove();
+    // A render scheduled by init() still runs after the elements it draws into are gone. It then reads properties of
+    // nodes that no longer exist. Drop it.
+    clearTimeout(this.renderTimer);
+    this.dataRequest?.abort();
+
+    d3.select(this.options.selector).selectAll("svg").remove();
     Node.reset();
     Link.reset();
     Bundle.reset();
