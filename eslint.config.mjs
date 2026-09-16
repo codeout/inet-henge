@@ -7,6 +7,7 @@ import { defineConfig } from "eslint/config";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import prettierRecommended from "eslint-plugin-prettier/recommended";
 import react from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import unicorn from "eslint-plugin-unicorn";
 import globals from "globals";
@@ -18,7 +19,6 @@ const gitignorePath = fileURLToPath(new URL(".gitignore", import.meta.url));
 const require = createRequire(new URL("react/", import.meta.url));
 const { version: reactVersion } = require("react/package.json");
 
-/** @type {import("eslint").Linter.FlatConfig[]} */
 export default defineConfig(
   includeIgnoreFile(gitignorePath, "Imported .gitignore patterns"),
 
@@ -89,12 +89,9 @@ export default defineConfig(
     },
   },
 
+  reactHooks.configs.flat.recommended,
+
   prettierRecommended,
-  {
-    rules: {
-      "prettier/prettier": ["error", {}, { usePrettierrc: true }],
-    },
-  },
 
   unicorn.configs["flat/recommended"],
   {
