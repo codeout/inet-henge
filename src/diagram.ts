@@ -233,9 +233,9 @@ class DiagramBase {
       this.configureTick(group, node, link);
 
       this.positionCache = PositionCache.load(data, this.options.groupPattern);
-      if (this.options.positionCache && this.positionCache) {
-        // NOTE: Evaluate only when positionCache: true or 'fixed', and
-        //       when the stored position cache matches a pair of given data and pop
+      if (this.options.positionCache && this.positionCache?.fits(group, node, link)) {
+        // evaluate only when positionCache: true or 'fixed', and when the stored position cache matches a pair of given
+        // data and pop, and when it holds a position for every rendered element
         Group.setPosition(group, this.positionCache.group);
         Node.setPosition(node, this.positionCache.node);
         Link.setPosition(link, this.positionCache.link);

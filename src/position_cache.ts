@@ -127,6 +127,13 @@ export class PositionCache {
     return position;
   }
 
+  // True when the cache holds one position for every element in these selections
+  fits(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>) {
+    return (
+      this.group?.length === group.size() && this.node?.length === node.size() && this.link?.length === link.size()
+    );
+  }
+
   private match(data: InetHengeDataType, pop: RegExp | undefined) {
     return this.cachedMd5 === this.md5(data as ExtendedInetHengeDataType, pop);
   }
