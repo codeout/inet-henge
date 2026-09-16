@@ -72,7 +72,7 @@ export class LinkBase {
     Link.groups = Link.groups || {};
 
     // source and target
-    const key = [this.source, this.target].toSorted().toString();
+    const key = [this.source, this.target].sort().toString();
     (Link.groups[key] || (Link.groups[key] = [])).push(id);
   }
 
@@ -130,7 +130,7 @@ export class LinkBase {
 
   group(): number[] {
     const groups = Link.groups ?? {};
-    return groups[[(this.source as Node).id, (this.target as Node).id].toSorted().toString()];
+    return groups[[(this.source as Node).id, (this.target as Node).id].sort().toString()];
   }
 
   // OPTIMIZE: implement better right-alignment of the path, especially for multi tspans

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "lib": ["dom", "es2023"],
+    "lib": ["dom", "es2017"],
     "strict": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -9,5 +9,5 @@
     "sourceMap": true,
     "rootDir": "../.."
   },
-  "include": ["src/*", "../../types/*"],
+  "include": ["src/*", "../../types/*"]
 }

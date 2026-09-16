@@ -102,9 +102,11 @@ export default defineConfig(
       "unicorn/filename-case": "off",
       "unicorn/number-literal-case": "off", // conflicts with prettier
       "unicorn/no-array-reduce": "off",
+      "unicorn/no-array-sort": "off", // toSorted() needs es2023, tsconfig targets es2017
       "unicorn/no-await-expression-member": "off",
       "unicorn/no-nested-ternary": "off",
       "unicorn/no-null": "off",
+      "unicorn/prefer-at": "off", // at() needs es2022, tsconfig targets es2017
       "unicorn/prefer-module": "off",
       "unicorn/prefer-node-protocol": "off",
       "unicorn/prefer-switch": "off",
