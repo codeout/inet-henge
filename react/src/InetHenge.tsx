@@ -6,7 +6,7 @@ import "./polyfill-d3";
 
 import { Diagram } from "inet-henge";
 import type { CSSProperties } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useId } from "react";
 
 export type NodeDataType = {
   name: string;
@@ -81,17 +81,20 @@ export type InetHengeProps = {
   style?: CSSProperties;
 };
 
-let idCounter = 0;
-
 export function InetHenge({ data, meta, onRendered, className, style, ...options }: InetHengeProps) {
-  const idRef = useRef<string | null>(null);
-  if (idRef.current === null) {
-    idRef.current = `inet-henge-${++idCounter}`;
-  }
+  // The id has to survive hydration. Diagram looks the container up by selector, and a selector that matches
+  // nothing makes d3 draw nothing at all. useId() returns the same value on the server and on the client.
+  //
+  // - "_R_1_" with react 19
+  // - ":R1:"  with react 18
+  //
+  // React 18 wraps the value in colons, which a CSS selector rejects. React 19 uses underscores instead.
+  // Keep the part that is valid in an id, and both work.
+  const id = `inet-henge-${useId().replaceAll(/[^\w-]/g, "")}`;
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const diagram = new Diagram(`#${idRef.current}`, data, options as any);
+    const diagram = new Diagram(`#${id}`, data, options as any);
     if (onRendered) {
       diagram.on("rendered", onRendered);
     }
@@ -102,5 +105,5 @@ export function InetHenge({ data, meta, onRendered, className, style, ...options
     };
   }, [data]);
 
-  return <div className={className} id={idRef.current} style={style} />;
+  return <div className={className} id={id} style={style} />;
 }
