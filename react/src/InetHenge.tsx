@@ -2,6 +2,7 @@
 
 import "./polyfill-self";
 import "./polyfill-cola";
+import "./polyfill-d3";
 
 import { Diagram } from "inet-henge";
 import type { CSSProperties } from "react";
