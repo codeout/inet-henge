@@ -1,6 +1,7 @@
 "use client";
 
 import "./polyfill-self";
+import "./polyfill-cola";
 
 import { Diagram } from "inet-henge";
 import type { CSSProperties } from "react";
