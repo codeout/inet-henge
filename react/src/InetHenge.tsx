@@ -90,7 +90,7 @@ export function InetHenge({ data, meta, onRendered, className, style, ...options
   //
   // React 18 wraps the value in colons, which a CSS selector rejects. React 19 uses underscores instead. Keep the part
   // that is valid in an id, and both work.
-  const id = `inet-henge-${useId().replaceAll(/[^\w-]/g, "")}`;
+  const id = `inet-henge-${useId().replace(/[^\w-]/g, "")}`;
 
   // a changed option has to rebuild it
   const optionsKey = JSON.stringify({ meta, onRendered, ...options }, (_, value) =>

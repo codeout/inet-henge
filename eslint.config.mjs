@@ -106,6 +106,7 @@ export default defineConfig(
       "unicorn/prefer-at": "off", // at() needs es2022, tsconfig targets es2017
       "unicorn/prefer-module": "off",
       "unicorn/prefer-node-protocol": "off",
+      "unicorn/prefer-string-replace-all": "off", // replaceAll() needs es2021, above both tsconfig targets
       "unicorn/prefer-switch": "off",
       "unicorn/prevent-abbreviations": "off",
     },
