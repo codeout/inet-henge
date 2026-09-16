@@ -92,6 +92,11 @@ export function InetHenge({ data, meta, onRendered, className, style, ...options
   // that is valid in an id, and both work.
   const id = `inet-henge-${useId().replaceAll(/[^\w-]/g, "")}`;
 
+  // a changed option has to rebuild it
+  const optionsKey = JSON.stringify({ meta, onRendered, ...options }, (_, value) =>
+    typeof value === "function" || value instanceof RegExp ? String(value) : value,
+  );
+
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const diagram = new Diagram(`#${id}`, data, options as any);
@@ -103,7 +108,10 @@ export function InetHenge({ data, meta, onRendered, className, style, ...options
     return () => {
       diagram.destroy();
     };
-  }, [data]);
+    // optionsKey covers options, meta and onRendered. The rule cannot see that. data stays a reference. Serializing
+    // every node and link on every render costs too much.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, id, optionsKey]);
 
   return <div className={className} id={id} style={style} />;
 }
