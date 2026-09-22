@@ -118,13 +118,6 @@ export abstract class Tooltip {
     return tooltip;
   }
 
-  protected static fill(element: SVGPathElement) {
-    // if no "fill" style is defined
-    if (/\(0,\s*0,\s*0\)/.test(getComputedStyle(element).fill)) {
-      return "#f8f1e9";
-    }
-  }
-
   protected static pathD(x: number, y: number, width: number, height: number) {
     const round = 8;
 

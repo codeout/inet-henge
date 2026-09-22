@@ -28,7 +28,7 @@ export class NodeTooltip extends Tooltip {
   }
 
   protected static appendText(container: SVGGElement) {
-    const path = d3.select(container).append("path") as d3.Selection<NodeTooltip>;
+    const path = (d3.select(container).append("path") as d3.Selection<NodeTooltip>).attr("fill", "#f8f1e9");
     const text = d3.select(container).append("text") as d3.Selection<NodeTooltip>;
 
     NodeTooltip.appendNameValue(text, "node", (d) => d.node.name);
@@ -40,12 +40,7 @@ export class NodeTooltip extends Tooltip {
 
       // add "d" after bbox calculation
       const bbox = this.getBBox();
-      path
-        .attr("d", (d) => NodeTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20))
-        .each(function (this: SVGPathElement) {
-          const fill = NodeTooltip.fill(this);
-          if (fill) d3.select(this).style("fill", fill);
-        });
+      path.attr("d", (d) => NodeTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20));
     });
   }
 }
