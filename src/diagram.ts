@@ -1,7 +1,7 @@
 import "./hack_cola";
 
-import * as cola from "cola";
 import * as d3 from "d3";
+import * as cola from "webcola";
 
 import type { WebColaConstraint } from "../types/WebCola";
 import { Bundle } from "./bundle";

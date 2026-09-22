@@ -29,7 +29,7 @@ module.exports = {
     ],
   },
   externals: {
-    cola: "cola",
+    webcola: "cola",
     d3: "d3",
   },
   devtool: "source-map",
