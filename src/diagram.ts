@@ -84,7 +84,7 @@ class DiagramBase {
     this.options.positionHint = options.positionHint || {};
     this.options.positionConstraints = options.positionConstraints || [];
 
-    this.options.color = d3.scale.category20();
+    this.options.color = options.color || d3.scale.category20();
     this.options.initialTicks = options.initialTicks || 0;
     this.options.maxTicks = options.ticks || 1000;
     // true or 'fixed' (experimental) affects behavior
