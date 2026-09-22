@@ -158,7 +158,8 @@ class NodeBase {
       .attr("height", (d) => d.nodeHeight())
       .attr("rx", 5)
       .attr("ry", 5)
-      .attr("fill", (d) => d.options.color(undefined as unknown as string));
+      // every node passes the same key, which gives every node the same color
+      .attr("fill", (d) => d.options.color("node"));
   }
 
   static tick(node: d3.Selection<Node>) {

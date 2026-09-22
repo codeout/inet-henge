@@ -79,8 +79,7 @@ export class GroupBase {
       .attr("ry", 8)
       .attr("width", (d) => d.groupWidth())
       .attr("height", (d) => d.groupHeight())
-      // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>"
-      // somehow.
+      // the index is the key, which gives each group its own color in render order
       .attr("fill", (d, i) => d.options.color(i.toString()));
 
     group.append("text").text((d) => d.name);
