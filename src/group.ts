@@ -81,7 +81,7 @@ export class GroupBase {
       .attr("height", (d) => d.groupHeight())
       // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>"
       // somehow.
-      .style("fill", (d, i) => d.options.color(i.toString()));
+      .attr("fill", (d, i) => d.options.color(i.toString()));
 
     group.append("text").text((d) => d.name);
 

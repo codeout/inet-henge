@@ -158,7 +158,7 @@ class NodeBase {
       .attr("height", (d) => d.nodeHeight())
       .attr("rx", 5)
       .attr("ry", 5)
-      .style("fill", (d) => d.options.color(undefined as unknown as string));
+      .attr("fill", (d) => d.options.color(undefined as unknown as string));
   }
 
   static tick(node: d3.Selection<Node>) {
