@@ -1,20 +1,12 @@
 import * as d3 from "d3";
 
-import type { Color } from "./diagram";
 import type { MetaDataType } from "./meta_data";
 import { MetaData } from "./meta_data";
 import type { NodePosition } from "./position_cache";
+import type { Color, NodeDataType } from "./types/inet-henge";
 import { classify } from "./util";
 
 export type Constructor = (data: NodeDataType, id: number, options: NodeOptions) => void;
-
-export type NodeDataType = {
-  name: string;
-  group: string[];
-  icon: string;
-  meta: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-  class: string;
-};
 
 export type NodeOptions = {
   width: number;

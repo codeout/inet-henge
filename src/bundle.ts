@@ -1,6 +1,7 @@
 import type * as d3 from "d3";
 
-import type { Link, LinkDataType } from "./link";
+import type { Link } from "./link";
+import type { LinkDataType } from "./types/inet-henge";
 
 export class Bundle {
   // bundle group in the whole graph

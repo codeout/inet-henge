@@ -9,5 +9,5 @@
     "sourceMap": true,
     "rootDir": "."
   },
-  "include": ["src/*", "types/*"]
+  "include": ["src/**/*", "types/*"]
 }

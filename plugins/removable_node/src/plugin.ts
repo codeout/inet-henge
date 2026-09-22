@@ -2,9 +2,10 @@ import * as d3 from "d3";
 
 import type { Group } from "../../../src/group";
 import type { Link } from "../../../src/link";
-import type { Constructor as NodeConstructor, NodeDataType, NodeOptions } from "../../../src/node";
+import type { Constructor as NodeConstructor, NodeOptions } from "../../../src/node";
 import { Node } from "../../../src/node";
 import type { PluginClass } from "../../../src/plugin";
+import type { NodeDataType } from "../../../src/types/inet-henge";
 import { classify } from "../../../src/util";
 
 type Options = {

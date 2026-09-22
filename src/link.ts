@@ -5,15 +5,8 @@ import type { MetaDataType } from "./meta_data";
 import { MetaData } from "./meta_data";
 import { Node } from "./node";
 import type { LinkPosition } from "./position_cache";
+import type { LinkDataType } from "./types/inet-henge";
 import { classify } from "./util";
-
-export type LinkDataType = {
-  source: string;
-  target: string;
-  bundle?: number | string;
-  meta: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-  class: string;
-};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type LinkWidthFunction = (meta: Record<string, any>) => number;

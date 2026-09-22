@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-import type { HrefFunction } from "./diagram";
+import type { HrefFunction } from "./types/inet-henge";
 
 type TooltipOptions = {
   offsetX?: number;

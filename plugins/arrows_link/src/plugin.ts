@@ -1,10 +1,11 @@
 import * as d3 from "d3";
 
 import type { Group } from "../../../src/group";
-import type { Constructor as LinkConstructor, LinkDataType, LinkOptions } from "../../../src/link";
+import type { Constructor as LinkConstructor, LinkOptions } from "../../../src/link";
 import { Link } from "../../../src/link";
 import type { Node } from "../../../src/node";
 import type { PluginClass } from "../../../src/plugin";
+import type { LinkDataType } from "../../../src/types/inet-henge";
 
 class ArrowsLink extends Link {
   public readonly source!: number | Node;

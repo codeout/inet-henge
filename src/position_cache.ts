@@ -1,10 +1,10 @@
 import md5 from "crypto-js/md5";
 import type * as d3 from "d3";
 
-import type { InetHengeDataType } from "./diagram";
 import type { Group } from "./group";
 import type { Link } from "./link";
 import type { Node } from "./node";
+import type { InetHengeDataType } from "./types/inet-henge";
 
 export type GroupPosition = { x: number; y: number; width: number; height: number };
 export type NodePosition = { x: number; y: number };

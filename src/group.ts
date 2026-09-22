@@ -1,8 +1,8 @@
 import * as d3 from "d3";
 
-import type { Color } from "./diagram";
 import type { Node } from "./node";
 import type { GroupPosition } from "./position_cache";
+import type { Color } from "./types/inet-henge";
 import { classify } from "./util";
 
 export type GroupOptions = {

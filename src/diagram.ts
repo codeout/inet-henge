@@ -3,26 +3,21 @@ import "./hack_cola";
 import * as d3 from "d3";
 import * as cola from "webcola";
 
-import type { WebColaConstraint } from "../types/WebCola";
 import { Bundle } from "./bundle";
 import type { GroupOptions } from "./group";
 import { Group } from "./group";
-import type { LinkDataType, LinkWidthFunction } from "./link";
+import type { LinkWidthFunction } from "./link";
 import { Link } from "./link";
 import { LinkTooltip } from "./link_tooltip";
-import type { NodeDataType, NodeOptions } from "./node";
+import type { NodeOptions } from "./node";
 import { Node } from "./node";
 import { NodeTooltip } from "./node_tooltip";
 import type { PluginClass } from "./plugin";
 import type { NodePosition } from "./position_cache";
 import { PositionCache } from "./position_cache";
+import type { Color, HrefFunction, InetHengeDataType } from "./types/inet-henge";
+import type { WebColaConstraint } from "./types/webcola";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type HrefFunction = (object: any, type?: "node" | "link") => string;
-export type InetHengeDataType = { nodes: NodeDataType[]; links: LinkDataType[] };
-// Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>"
-// somehow.
-export type Color = d3.scale.Ordinal<string, string>;
 type PositionHint = {
   nodeCallback?: (node: Node) => NodePosition;
 };
