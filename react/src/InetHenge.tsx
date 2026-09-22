@@ -58,6 +58,9 @@ export type PositionConstraint = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type DistanceOption = number | ((cola: any) => number);
 
+// what the component hands to Diagram: every prop but the ones the component itself consumes
+export type DiagramOptions = Omit<InetHengeProps, "data" | "meta" | "onRendered" | "className" | "style">;
+
 export type InetHengeProps = {
   data: string | InetHengeDataType;
   meta?: string[];
@@ -98,8 +101,7 @@ export function InetHenge({ data, meta, onRendered, className, style, ...options
   );
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const diagram = new Diagram(`#${id}`, data, options as any);
+    const diagram = new Diagram(`#${id}`, data, options);
     if (onRendered) {
       diagram.on("rendered", onRendered);
     }
