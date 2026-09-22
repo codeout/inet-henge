@@ -22,6 +22,21 @@
     "url": "http://github.com/codeout"
   },
   "main": "inet-henge.js",
+  "files": [
+    "CHANGELOG.md",
+    "inet-henge.js",
+    "inet-henge.js.map",
+    "inet-henge.min.js",
+    "inet-henge.min.js.map",
+    "inet-henge.min.js.LICENSE.txt",
+    "plugins/*/plugin.js",
+    "plugins/*/plugin.js.map",
+    "plugins/*/plugin.min.js",
+    "plugins/*/plugin.min.js.map",
+    "plugins/*/style.css",
+    "plugins/*/README.md",
+    "vendor/cola.min.js"
+  ],
   "scripts": {
     "lint": "npx eslint $INIT_CWD/src",
     "build": "cd $INIT_CWD && npm run clean && npm run dev && npm run prod",

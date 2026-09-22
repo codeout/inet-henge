@@ -2,7 +2,7 @@
 
 Make links bidirectional arrows.
 
-![screenshot](docs/images/screenshot01.png)
+![screenshot](https://raw.githubusercontent.com/codeout/inet-henge/main/plugins/arrows_link/docs/images/screenshot01.png)
 
 
 ## Usage

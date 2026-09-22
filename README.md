@@ -64,7 +64,7 @@ are also available to start a web server.
 
 ## Usage
 
-In example [here](example/shownet.html), load related assets at first:
+In example [here](https://github.com/codeout/inet-henge/blob/main/example/shownet.html), load related assets at first:
 
 - d3.js v3
 - cola.js
@@ -118,7 +118,7 @@ Object is also acceptable:
 
 inet-henge.js renders your network diagram as SVG within `<div id="diagram"></div>`. In the example above the diagram also displays metadata labelled `"interface"` which defined in JSON data.
 
-![Shownet2016 example](example/images/shownet.png)
+![Shownet2016 example](https://raw.githubusercontent.com/codeout/inet-henge/main/example/images/shownet.png)
 
 ### JSON Data
 
@@ -194,7 +194,7 @@ new Diagram("#diagram", "index.json").init("loopback");
 }
 ```
 
-![Label on node](example/images/node_label.png)
+![Label on node](https://raw.githubusercontent.com/codeout/inet-henge/main/example/images/node_label.png)
 
 To place link and interface names:
 
@@ -217,7 +217,7 @@ new Diagram("#diagram", "index.json").init("bandwidth", "intf-name");
   ]
 ```
 
-![Label on link](example/images/link_label.png)
+![Label on link](https://raw.githubusercontent.com/codeout/inet-henge/main/example/images/link_label.png)
 
 ### Node Size
 
@@ -227,7 +227,7 @@ You can change node width and height:
 const diagram = new Diagram("#diagram", "data.json", { nodeWidth: 120, nodeHeight: 30 });
 ```
 
-![Node Size](example/images/node_size.png)
+![Node Size](https://raw.githubusercontent.com/codeout/inet-henge/main/example/images/node_size.png)
 
 Width `60` and heigh `40` (px) by default.
 
@@ -258,7 +258,7 @@ diagram.init("bandwidth");
   ]
 ```
 
-![Link width](example/images/link_width.png)
+![Link width](https://raw.githubusercontent.com/codeout/inet-henge/main/example/images/link_width.png)
 
 :warning: Make sure no stylesheet overrides customized link widths. :warning:
 
@@ -270,7 +270,7 @@ You can specify padding to increase the size of groups (default: 1):
 const diagram = new Diagram("#diagram", "data.json", { groupPadding: 30 });
 ```
 
-![Group Size](example/images/group_size.png)
+![Group Size](https://raw.githubusercontent.com/codeout/inet-henge/main/example/images/group_size.png)
 
 :bulb: Position calculation sometimes gets stuck when increasing `groupPadding`. [initialTicks](#ticks) may help in such cases.
 
@@ -334,7 +334,7 @@ You can display multiple links between nodes by setting `bundle: true` in the co
 </script>
 ```
 
-![Bundle example](example/images/bundle01.png)
+![Bundle example](https://raw.githubusercontent.com/codeout/inet-henge/main/example/images/bundle01.png)
 
 Nodes are connected to each other with a single link by default.
 
@@ -382,7 +382,7 @@ diagram.init("loopback", "interface", "description", "type");
   - Return value should be an object like `{x: 600, y: 330}`.
   - If the callback returns `null`, this means that the node position is unspecified.
 
-![Position hinting](example/images/position_hints.png)
+![Position hinting](https://raw.githubusercontent.com/codeout/inet-henge/main/example/images/position_hints.png)
 
 #### :bulb: How position hinting works
 
@@ -413,7 +413,7 @@ In the example above, `description` and `type` will be displayed.
     { "name": "POP01-ag02", "meta": {"description": "This is a router", "type": "Aggregation"}, "icon": "./images/switch.png" },
 ```
 
-![Metadata tooltip](example/images/tooltip.png)
+![Metadata tooltip](https://raw.githubusercontent.com/codeout/inet-henge/main/example/images/tooltip.png)
 
 :bulb: `tooltip: "hover"` is also available.
 
@@ -478,7 +478,7 @@ You can apply x-axis or y-axis based position constraints to nodes.
 
 Here is [an example](https://codeout.github.io/inet-henge/clos.html).
 
-![Position constraints](example/images/clos.png)
+![Position constraints](https://raw.githubusercontent.com/codeout/inet-henge/main/example/images/clos.png)
 
 ```html
 <script>
@@ -528,7 +528,7 @@ You can display node type based groups in POP-based [Node group](#Node-Group) by
     ...
 ```
 
-![Internal group](example/images/internal_group.png)
+![Internal group](https://raw.githubusercontent.com/codeout/inet-henge/main/example/images/internal_group.png)
 
 ### Bundle Mark
 
@@ -542,7 +542,7 @@ You can show a "tie" over bundled links by `bundle:` definition in each link.
   ]
 ```
 
-![Bundle example](example/images/bundle02.png)
+![Bundle example](https://raw.githubusercontent.com/codeout/inet-henge/main/example/images/bundle02.png)
 
 - Define bundle name as `bundle:` to specify which link belongs to the bundle ( integer or string value )
 - Set `bundle: true` when initializing `Diagram`. See [Display bundles](#display-bundles) section for details.
