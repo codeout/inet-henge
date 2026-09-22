@@ -6,7 +6,7 @@ import "./polyfill-d3";
 
 import { Diagram } from "inet-henge";
 import type { CSSProperties } from "react";
-import { useEffect, useId } from "react";
+import { useEffect, useId, useRef } from "react";
 
 export type NodeDataType = {
   name: string;
@@ -85,6 +85,8 @@ export type InetHengeProps = {
 };
 
 export function InetHenge({ data, meta, onRendered, className, style, ...options }: InetHengeProps) {
+  const container = useRef<HTMLDivElement>(null);
+
   // The id has to survive hydration. Diagram looks the container up by selector, and a selector that matches nothing
   // makes d3 draw nothing at all. useId() returns the same value on the server and on the client.
   //
@@ -101,7 +103,12 @@ export function InetHenge({ data, meta, onRendered, className, style, ...options
   );
 
   useEffect(() => {
-    const diagram = new Diagram(`#${id}`, data, options);
+    // width and height size the svg and the layout. Fall back to the container, which fills its parent.
+    const diagram = new Diagram(`#${id}`, data, {
+      ...options,
+      width: options.width ?? (container.current?.clientWidth || undefined),
+      height: options.height ?? (container.current?.clientHeight || undefined),
+    });
     if (onRendered) {
       diagram.on("rendered", onRendered);
     }
@@ -115,5 +122,5 @@ export function InetHenge({ data, meta, onRendered, className, style, ...options
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, id, optionsKey]);
 
-  return <div className={className} id={id} style={style} />;
+  return <div ref={container} className={className} id={id} style={{ height: "100%", width: "100%", ...style }} />;
 }
