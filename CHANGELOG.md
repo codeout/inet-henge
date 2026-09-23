@@ -42,7 +42,7 @@
 
 ### Fixed
 
-- Link.tick() unexpectedly threw TypeError
+- `Link.tick()` unexpectedly threw `TypeError`
 
 
 ## [1.4.6] - 2024-08-18
@@ -57,14 +57,14 @@
 
 ### Fixed
 
-- Source node was shown in "target" field of LinkTooltip
+- Source node was shown in `target` field of `LinkTooltip`
 
 
 ## [1.4.3] - 2023-09-24
 
 ### Fixed
 
-- Define Diagram.tickCallback to call in custom "tick" event listener
+- Define `Diagram.tickCallback` to call in custom `tick` event listener
 
 
 ## [1.4.2] - 2023-08-21
@@ -85,8 +85,8 @@
 
 ### Added
 
-- "bundle" option of link to show bundle "tie" marks over bundled links
-- "positionConstraints" option of Diagram
+- `bundle` option of link to show bundle "tie" marks over bundled links
+- `positionConstraints` option of `Diagram`
 - Link tooltip
 
 
@@ -101,14 +101,14 @@
 
 ### Added
 
-- Introduce "nodeCallback" option for position hinting
+- Introduce `nodeCallback` option for position hinting
 
 
 ## [1.2.5] - 2022-12-11
 
 ### Added
 
-- Introduce "groupPadding" option to increase the size of groups
+- Introduce `groupPadding` option to increase the size of groups
 
 
 ## [1.2.4] - 2022-12-01
@@ -122,14 +122,14 @@
 
 ### Added
 
-- Introduce "nodeWidth" and "nodeHeight" options of `Diagram`
+- Introduce `nodeWidth` and `nodeHeight` options of `Diagram`
 
 
 ## [1.2.1] - 2022-03-09
 
 ### Added
 
-- Introduce "href" option to show `<a/>` in tooltips
+- Introduce `href` option to show `<a/>` in tooltips
 
 
 ## [1.2.0] - 2021-09-27
@@ -142,7 +142,7 @@
 
 ### Fixed
 
-- Use md5 instead of sha1 for positionCache hash. Bundling crypto results in an unexpectedly huge bundle size.
+- Use md5 instead of sha1 for `positionCache` hash. Bundling crypto results in an unexpectedly huge bundle size.
 
 ### Removed
 
@@ -153,23 +153,23 @@
 
 ### Fixed
 
-- CSS escape to avoid "Uncaught DOMException: Failed to execute 'querySelector' on 'Document'"
+- CSS escape to avoid `Uncaught DOMException: Failed to execute 'querySelector' on 'Document'`
 
 
 ## [1.1.0] - 2020-11-09
 
 ### Added
 
-- Introduce "initialTicks" option for unconstrained initial layout iterations.
+- Introduce `initialTicks` option for unconstrained initial layout iterations.
 
 
 ## [1.0.2] - 2020-06-29
 
 ### Added
 
-- Create an npm package of inet-henge so that users can use it in other projects, even customize and rebuild.
-- Rewrote all .js with .ts to reuse in typescript projects.
-- Update the build environment, which was .js + babel + browserify, with .ts + webpack + ts-loader.
+- Create an npm package of `inet-henge` so that users can use it in other projects, even customize and rebuild.
+- Rewrote all `.js` with `.ts` to reuse in typescript projects.
+- Update the build environment, which was `.js` + babel + browserify, with `.ts` + webpack + ts-loader.
 
 
 ## [1.0.0] - 2020-02-25
