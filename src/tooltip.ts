@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-import { HrefFunction } from "./diagram";
+import type { HrefFunction } from "./types/inet-henge";
 
 type TooltipOptions = {
   offsetX?: number;
@@ -17,7 +17,7 @@ export abstract class Tooltip {
     private eventType: string,
     options: TooltipOptions = {},
   ) {
-    this.offsetX = options.offsetX !== undefined ? options.offsetX : 30;
+    this.offsetX = options.offsetX === undefined ? 30 : options.offsetX;
     this.visibility = "hidden";
   }
 
@@ -33,14 +33,14 @@ export abstract class Tooltip {
     return `tooltip ${(this.constructor as typeof Tooltip).type}-tooltip ${this.objectId()}`;
   }
 
-  // Object id which has this tooltip
+  // object id which has this tooltip
   protected abstract objectId(escape?: boolean): string;
 
   private setVisibility(visibility: string | null) {
     this.visibility = visibility === "visible" ? "visible" : "hidden";
   }
 
-  // This doesn't actually toggle visibility, but returns string for toggled visibility
+  // this doesn't actually toggle visibility, but returns string for toggled visibility
   private toggleVisibility() {
     this.visibility = this.visibility === "hidden" ? "visible" : "hidden";
     return this.visibility;
@@ -48,7 +48,7 @@ export abstract class Tooltip {
 
   private toggleVisibilityCallback(element: SVGGElement) {
     return () => {
-      // Do nothing for dragging
+      // do nothing for dragging
       if ((d3.event as MouseEvent).defaultPrevented) {
         return;
       }
@@ -75,7 +75,7 @@ export abstract class Tooltip {
     d3.select(`#${this.objectId(true)}`).on("mouseleave.tooltip", this.toggleVisibilityCallback(element));
   }
 
-  // Make tooltip selectable
+  // make tooltip selectable
   private disableZoom(element: SVGGElement) {
     d3.select(element).on("mousedown.tooltip", () => {
       (d3.event as MouseEvent).stopPropagation();
@@ -88,7 +88,7 @@ export abstract class Tooltip {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static render<T extends Tooltip>(layer: d3.Selection<any>, tooltips: T[]) {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    // eslint-disable-next-line @typescript-eslint/no-this-alias,unicorn/no-this-assignment
     const cls = this;
     const tooltip = layer
       .selectAll(`.tooltip.${cls.type}-tooltip`)
@@ -116,13 +116,6 @@ export abstract class Tooltip {
     });
 
     return tooltip;
-  }
-
-  protected static fill(element: SVGPathElement) {
-    // If no "fill" style is defined
-    if (getComputedStyle(element).fill.match(/\(0,\s*0,\s*0\)/)) {
-      return "#f8f1e9";
-    }
   }
 
   protected static pathD(x: number, y: number, width: number, height: number) {

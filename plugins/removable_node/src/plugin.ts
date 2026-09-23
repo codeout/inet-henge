@@ -1,9 +1,11 @@
 import * as d3 from "d3";
 
-import { Group } from "../../../src/group";
-import { Link } from "../../../src/link";
-import { Constructor as NodeConstructor, Node, NodeDataType, NodeOptions } from "../../../src/node";
-import { PluginClass } from "../../../src/plugin";
+import type { Group } from "../../../src/group";
+import type { Link } from "../../../src/link";
+import type { Constructor as NodeConstructor, NodeOptions } from "../../../src/node";
+import { Node } from "../../../src/node";
+import type { PluginClass } from "../../../src/plugin";
+import type { NodeDataType } from "../../../src/types/inet-henge";
 import { classify } from "../../../src/util";
 
 type Options = {
@@ -56,7 +58,7 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
 
     RemovableNodePlugin.configureRemovableNodes();
 
-    // Copy methods
+    // copy methods
     const nodeProto = nodeClass.prototype as unknown as RemovableNode;
     nodeProto.toggleSelected = RemovableNode.prototype.toggleSelected;
     nodeProto.reset = RemovableNode.prototype.reset;
@@ -69,11 +71,13 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
   private static configureRemovableNodes() {
     d3.select("body").on("keydown", () => {
       switch ((d3.event as KeyboardEvent).key) {
-        case RemovableNodePlugin.showKey:
+        case RemovableNodePlugin.showKey: {
           RemovableNodePlugin.show();
           break;
-        case RemovableNodePlugin.hideKey:
+        }
+        case RemovableNodePlugin.hideKey: {
           RemovableNodePlugin.hide();
+        }
       }
     });
   }
@@ -84,7 +88,7 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
   private static configureRemovableNode(element: SVGGElement) {
     const d3Element = d3.select(element);
     d3Element.on("click.removableNode", function (this: SVGGElement, d: RemovableNode) {
-      // Do nothing for dragging
+      // do nothing for dragging
       if ((d3.event as MouseEvent).defaultPrevented) {
         return;
       }
@@ -114,7 +118,7 @@ export const RemovableNodePlugin: PluginClass = class RemovableNodePlugin {
   private static hide() {
     d3.selectAll(".node").style("display", (d: RemovableNode) => {
       if (d.selected) {
-        // Hide connected elements
+        // hide connected elements
         RemovableNodePlugin.hideLinks(d.name);
         RemovableNodePlugin.hideToolTips(d.name);
         return "none";

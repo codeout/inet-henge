@@ -1,9 +1,11 @@
 import * as d3 from "d3";
 
-import { Group } from "../../../src/group";
-import { Constructor as LinkConstructor, Link, LinkDataType, LinkOptions } from "../../../src/link";
-import { Node } from "../../../src/node";
-import { PluginClass } from "../../../src/plugin";
+import type { Group } from "../../../src/group";
+import type { Constructor as LinkConstructor, LinkOptions } from "../../../src/link";
+import { Link } from "../../../src/link";
+import type { Node } from "../../../src/node";
+import type { PluginClass } from "../../../src/plugin";
+import type { LinkDataType } from "../../../src/types/inet-henge";
 
 class ArrowsLink extends Link {
   public readonly source!: number | Node;
@@ -18,9 +20,9 @@ class ArrowsLink extends Link {
   }
 
   length() {
-    return Math.sqrt(
-      ((this.source as Node).x - (this.target as Node).x) ** 2 +
-        ((this.source as Node).y - (this.target as Node).y) ** 2,
+    return Math.hypot(
+      (this.source as Node).x - (this.target as Node).x,
+      (this.source as Node).y - (this.target as Node).y,
     );
   }
 
@@ -53,7 +55,7 @@ export const ArrowsLinkPlugin: PluginClass = class ArrowsLinkPlugin {
       });
     } as LinkConstructor);
 
-    // Copy methods
+    // copy methods
     linkClass.tick = ArrowsLink.tick;
     (linkClass.prototype as unknown as ArrowsLink).length = ArrowsLink.prototype.length;
     (linkClass.prototype as unknown as ArrowsLink).x2 = ArrowsLink.prototype.x2;
@@ -83,7 +85,7 @@ export const ArrowsLinkPlugin: PluginClass = class ArrowsLinkPlugin {
   private static appendMarker(element: SVGLineElement) {
     d3.select(element).attr(
       "marker-end",
-      // For consistency with #links :nth-child(odd), it's one-based
+      // for consistency with #links :nth-child(odd), it's one-based
       (d: ArrowsLink) => (d.id % 2 === 0 ? "url(#marker-odd)" : "url(#marker-even)"),
     );
   }

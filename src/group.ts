@@ -1,8 +1,8 @@
 import * as d3 from "d3";
 
-import { Color } from "./diagram";
-import { Node } from "./node";
-import { GroupPosition } from "./position_cache";
+import type { Node } from "./node";
+import type { GroupPosition } from "./position_cache";
+import type { Color } from "./types/inet-henge";
 import { classify } from "./util";
 
 export type GroupOptions = {
@@ -15,7 +15,7 @@ export type Constructor = (name: string, options: GroupOptions) => void;
 export class GroupBase {
   private padding: number;
 
-  // Not appropriately defined in @types/d3/index.d.ts
+  // not appropriately defined in @types/d3/index.d.ts
   private bounds: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   constructor(
@@ -46,7 +46,7 @@ export class GroupBase {
       groups[key].push(node);
     };
 
-    nodes.forEach((node) => {
+    for (const node of nodes) {
       let result = null;
 
       if (pattern) {
@@ -57,8 +57,8 @@ export class GroupBase {
       }
 
       // Node type based group
-      node.group.forEach((name) => register(name, node, String(result)));
-    });
+      for (const name of node.group) register(name, node, String(result));
+    }
 
     return Object.values(groups);
   }
@@ -79,8 +79,8 @@ export class GroupBase {
       .attr("ry", 8)
       .attr("width", (d) => d.groupWidth())
       .attr("height", (d) => d.groupHeight())
-      // Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-      .style("fill", (d, i) => d.options.color(i.toString()));
+      // the index is the key, which gives each group its own color in render order
+      .attr("fill", (d, i) => d.options.color(i.toString()));
 
     group.append("text").text((d) => d.name);
 
@@ -168,7 +168,7 @@ const Pluggable = (Base: typeof EventableGroup) => {
       super(name, options);
 
       for (const constructor of Group.pluginConstructors) {
-        // Call Pluggable at last as constructor may call methods defined in other classes
+        // call Pluggable at last as constructor may call methods defined in other classes
         constructor.bind(this)(name, options);
       }
     }

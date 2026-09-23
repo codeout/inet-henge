@@ -6,7 +6,7 @@ Hide and show by key inputs.
 2. Hit "d" to hide selected nodes
 3. Hit "escape" to show hidden nodes
 
-![screenshot](docs/images/screenshot01.gif)
+![screenshot](https://raw.githubusercontent.com/codeout/inet-henge/main/plugins/removable_node/docs/images/screenshot01.gif)
 
 
 ## Usage

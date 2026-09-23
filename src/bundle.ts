@@ -1,9 +1,10 @@
-import * as d3 from "d3";
+import type * as d3 from "d3";
 
-import { Link, LinkDataType } from "./link";
+import type { Link } from "./link";
+import type { LinkDataType } from "./types/inet-henge";
 
 export class Bundle {
-  // Bundle group in the whole graph
+  // bundle group in the whole graph
   // {
   //   "[<source node id>, <target node id>, \"<bundle id>\"]": [<link id>, ...],
   // }
@@ -15,7 +16,7 @@ export class Bundle {
   private color: string;
   private width: number;
   private space: number;
-  private _shiftMultiplier: number | undefined;
+  private _shiftMultiplier?: number;
 
   constructor(
     links: Link[],
@@ -77,7 +78,7 @@ export class Bundle {
 
   // sort by bundle with preserving order
   static sortByBundle(links: LinkDataType[]) {
-    return links.sort((a, b) => {
+    return [...links].sort((a, b) => {
       if (a.bundle && !b.bundle) return -1;
       if (!a.bundle && b.bundle) return 1;
       if (!a.bundle || !b.bundle) return 0;

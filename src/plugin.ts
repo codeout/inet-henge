@@ -1,6 +1,6 @@
-import { Group } from "./group";
-import { Link } from "./link";
-import { Node } from "./node";
+import type { Group } from "./group";
+import type { Link } from "./link";
+import type { Node } from "./node";
 
 export interface PluginClass {
   load(

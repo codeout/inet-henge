@@ -1,23 +1,23 @@
 import "./hack_cola";
 
-import * as cola from "cola";
 import * as d3 from "d3";
+import * as cola from "webcola";
 
-import { WebColaConstraint } from "../types/WebCola";
 import { Bundle } from "./bundle";
-import { Group, GroupOptions } from "./group";
-import { Link, LinkDataType, LinkWidthFunction } from "./link";
+import type { GroupOptions } from "./group";
+import { Group } from "./group";
+import type { LinkWidthFunction } from "./link";
+import { Link } from "./link";
 import { LinkTooltip } from "./link_tooltip";
-import { Node, NodeDataType, NodeOptions } from "./node";
+import type { NodeOptions } from "./node";
+import { Node } from "./node";
 import { NodeTooltip } from "./node_tooltip";
-import { PluginClass } from "./plugin";
-import { NodePosition, PositionCache } from "./position_cache";
+import type { PluginClass } from "./plugin";
+import type { NodePosition } from "./position_cache";
+import { PositionCache } from "./position_cache";
+import type { Color, HrefFunction, InetHengeDataType } from "./types/inet-henge";
+import type { WebColaConstraint } from "./types/webcola";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type HrefFunction = (object: any, type?: "node" | "link") => string;
-export type InetHengeDataType = { nodes: NodeDataType[]; links: LinkDataType[] };
-// Fix @types/d3/index.d.ts. Should be "d3.scale.Ordinal<number, string>" but "d3.scale.Ordinal<string, string>" somehow
-export type Color = d3.scale.Ordinal<string, string>;
 type PositionHint = {
   nodeCallback?: (node: Node) => NodePosition;
 };
@@ -26,7 +26,7 @@ type PositionConstraint = {
   nodesCallback: (nodes: Node[]) => Node[][];
 };
 type DiagramOptionType = {
-  // Options publicly available
+  // options publicly available
   width: number;
   height: number;
   nodeWidth: number;
@@ -43,7 +43,7 @@ type DiagramOptionType = {
   tooltip: string;
   href: HrefFunction;
 
-  // Internal options
+  // internal options
   selector: string;
   urlOrData: string | InetHengeDataType;
   groupPattern: RegExp | undefined;
@@ -64,11 +64,14 @@ class DiagramBase {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cola: any;
   private uniqueUrl!: string;
-  private positionCache: PositionCache | undefined;
+  private positionCache?: PositionCache;
   private indicator!: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   private initialTranslate!: [number, number];
   private initialScale!: number;
   private svg!: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  private svgRoot?: d3.Selection<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  private renderTimer?: ReturnType<typeof setTimeout>;
+  private dataRequest?: d3.Xhr;
 
   constructor(container: string, urlOrData: string | InetHengeDataType, options: DiagramOptionType) {
     options ||= {} as DiagramOptionType;
@@ -81,12 +84,12 @@ class DiagramBase {
     this.options.positionHint = options.positionHint || {};
     this.options.positionConstraints = options.positionConstraints || [];
 
-    this.options.color = d3.scale.category20();
+    this.options.color = options.color || d3.scale.category20();
     this.options.initialTicks = options.initialTicks || 0;
     this.options.maxTicks = options.ticks || 1000;
-    // NOTE: true or 'fixed' (experimental) affects behavior
+    // true or 'fixed' (experimental) affects behavior
     this.options.positionCache = "positionCache" in options ? options.positionCache : true;
-    // NOTE: This is an experimental option
+    // this is an experimental option
     this.options.bundle = "bundle" in options ? options.bundle : false;
     this.options.tooltip = options.tooltip;
 
@@ -103,12 +106,14 @@ class DiagramBase {
     this.displayLoadMessage();
 
     if (typeof this.options.urlOrData === "object") {
-      setTimeout(() => {
-        // Run asynchronously
+      // Keep the handle. destroy() has to cancel a render that has not run yet.
+      this.renderTimer = setTimeout(() => {
+        // run asynchronously
         this.render(this.options.urlOrData as InetHengeDataType);
       });
     } else {
-      d3.json(this.url(), (error, data) => {
+      // Keep the handle. destroy() has to abort a response that has not arrived yet.
+      this.dataRequest = d3.json(this.url(), (error, data) => {
         if (error) {
           console.error(error);
           this.showMessage(`Failed to load "${this.url()}"`);
@@ -129,12 +134,15 @@ class DiagramBase {
 
   initSvg() {
     this.zoom = d3.behavior.zoom();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const container: d3.Selection<any> = d3
+    // keep the root. destroy() removes this element, and nothing else the container holds
+    this.svgRoot = d3
       .select(this.options.selector)
       .append("svg")
       .attr("width", this.options.width)
-      .attr("height", this.options.height)
+      .attr("height", this.options.height);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const container: d3.Selection<any> = this.svgRoot
       .append("g")
       .call(this.zoom.on("zoom", () => this.zoomCallback(container)))
       .append("g");
@@ -184,8 +192,8 @@ class DiagramBase {
       this.applyConstraints(this.options.positionConstraints, nodes);
       this.setDistance(this.cola);
 
-      // Start to update Link.source and Link.target with Node object after
-      // initial layout iterations without any constraints.
+      // start to update Link.source and Link.target with Node object after initial layout iterations without any
+      // constraints
       this.cola.start(this.options.initialTicks);
 
       const groupLayer = this.svg.append("g").attr("id", "groups");
@@ -229,9 +237,9 @@ class DiagramBase {
       this.configureTick(group, node, link);
 
       this.positionCache = PositionCache.load(data, this.options.groupPattern);
-      if (this.options.positionCache && this.positionCache) {
-        // NOTE: Evaluate only when positionCache: true or 'fixed', and
-        //       when the stored position cache matches a pair of given data and pop
+      if (this.options.positionCache && this.positionCache?.fits(group, node, link)) {
+        // evaluate only when positionCache: true or 'fixed', and when the stored position cache matches a pair of given
+        // data and pop, and when it holds a position for every rendered element
         Group.setPosition(group, this.positionCache.group);
         Node.setPosition(node, this.positionCache.node);
         Link.setPosition(link, this.positionCache.link);
@@ -266,15 +274,15 @@ class DiagramBase {
       const nodeTooltip = NodeTooltip.render<NodeTooltip>(tooltipLayer, nodeTooltips);
       const linkTooltip = LinkTooltip.render<LinkTooltip>(tooltipLayer, linkTooltips);
 
-      // NOTE: This is an experimental option
+      // this is an experimental option
       if (this.options.positionCache === "fixed") {
         this.cola.on("end", () => {
           this.savePosition(group, node, link);
         });
       }
-    } catch (e) {
-      this.showMessage(e instanceof Error ? e.message : String(e));
-      throw e;
+    } catch (error) {
+      this.showMessage(error instanceof Error ? error.message : String(error));
+      throw error;
     }
   }
 
@@ -289,13 +297,18 @@ class DiagramBase {
 
     this.svg.attr(name, value);
 
-    const transform = d3.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
-    this.zoom.scale(transform.scale[0]); // NOTE: Assuming ky = kx
+    const transform = d3.transform(this.svg.attr("transform")); // FIXME: this is valid only for d3.js v3
+    this.zoom.scale(transform.scale[0]); // assuming ky = kx
     this.zoom.translate(transform.translate);
   }
 
   destroy() {
-    d3.select("body svg").remove();
+    // A render scheduled by init() still runs after the elements it draws into are gone. It then reads properties of
+    // nodes that no longer exist. Drop it.
+    clearTimeout(this.renderTimer);
+    this.dataRequest?.abort();
+
+    this.svgRoot?.remove();
     Node.reset();
     Link.reset();
     Bundle.reset();
@@ -312,9 +325,8 @@ class DiagramBase {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private linkDistance(distance: number | ((cola: any) => number)) {
-    if (typeof distance === "function") return distance;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    else return (cola: any) => cola.linkDistance(distance);
+    return typeof distance === "function" ? distance : (cola: any) => cola.linkDistance(distance);
   }
 
   private url() {
@@ -322,7 +334,7 @@ class DiagramBase {
       return this.uniqueUrl;
     }
 
-    this.uniqueUrl = `${this.options.urlOrData}?${new Date().getTime()}`;
+    this.uniqueUrl = `${this.options.urlOrData}?${Date.now()}`;
     return this.uniqueUrl;
   }
 
@@ -333,8 +345,7 @@ class DiagramBase {
     path?: d3.Selection<Link>,
     label?: d3.Selection<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
   ) {
-    // this.cola.on() overrides existing listener, not additionally register it.
-    // May need to call it manually.
+    // this.cola.on() overrides existing listener, not additionally register it. May need to call it manually.
     this.tickCallback = () => {
       Node.tick(node);
       Link.tick(link, path, label);
@@ -385,8 +396,8 @@ class DiagramBase {
   }
 
   private saveInitialTranslate() {
-    const transform = d3.transform(this.svg.attr("transform")); // FIXME: This is valid only for d3.js v3
-    this.initialScale = transform.scale[0]; // NOTE: Assuming ky = kx
+    const transform = d3.transform(this.svg.attr("transform")); // FIXME: this is valid only for d3.js v3
+    this.initialScale = transform.scale[0]; // assuming ky = kx
     this.initialTranslate = transform.translate;
   }
 

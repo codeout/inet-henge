@@ -14,17 +14,16 @@ export class MetaData {
   private slice(keys: string[]) {
     if (!this.data) return [];
 
-    if (this.extraKey) return this.sliceWithExtraKey(keys);
-    else return this.sliceWithoutExtraKey(keys);
+    return this.extraKey ? this.sliceWithExtraKey(keys) : this.sliceWithoutExtraKey(keys);
   }
 
   private sliceWithExtraKey(keys: string[]) {
     const data: MetaDataType[] = [];
     const extraKey = this.extraKey as string;
 
-    keys.forEach((k) => {
+    for (const k of keys) {
       if (this.data[k] && this.data[k][extraKey]) data.push({ class: k, value: this.data[k][extraKey] });
-    });
+    }
 
     return data;
   }
@@ -32,9 +31,9 @@ export class MetaData {
   private sliceWithoutExtraKey(keys: string[]) {
     const data: MetaDataType[] = [];
 
-    keys.forEach((k) => {
+    for (const k of keys) {
       if (this.data[k]) data.push({ class: k, value: this.data[k] });
-    });
+    }
 
     return data;
   }

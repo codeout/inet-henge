@@ -34,7 +34,7 @@
 .link text.hover:not(.short) tspan {
   fill: #00b0e8;
   font-weight: bold;
-  visibility: visible !important;
+  visibility: visible;
 }
 
 .link text.hover tspan {

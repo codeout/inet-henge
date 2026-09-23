@@ -1,10 +1,10 @@
 import md5 from "crypto-js/md5";
-import * as d3 from "d3";
+import type * as d3 from "d3";
 
-import { InetHengeDataType } from "./diagram";
-import { Group } from "./group";
-import { Link } from "./link";
-import { Node } from "./node";
+import type { Group } from "./group";
+import type { Link } from "./link";
+import type { Node } from "./node";
+import type { InetHengeDataType } from "./types/inet-henge";
 
 export type GroupPosition = { x: number; y: number; width: number; height: number };
 export type NodePosition = { x: number; y: number };
@@ -28,7 +28,7 @@ export class PositionCache {
     public pop?: RegExp,
     md5?: string,
   ) {
-    // NOTE: properties below can be undefined
+    // properties below can be undefined
     this.cachedMd5 = md5;
   }
 
@@ -61,21 +61,21 @@ export class PositionCache {
     data = structuredClone(data || this.data) as ExtendedInetHengeDataType;
     data.pop = String(pop || this.pop);
     if (data.pop === "undefined") {
-      data.pop = "null"; // NOTE: unify undefined with null
+      data.pop = "null"; // unify undefined with null
     }
 
     if (data.nodes) {
-      data.nodes.forEach((i) => {
+      for (const i of data.nodes) {
         const partial = i as Partial<typeof i>;
         delete partial.icon;
         delete partial.meta;
-      });
+      }
     }
     if (data.links) {
-      data.links.forEach((i) => {
+      for (const i of data.links) {
         const partial = i as Partial<typeof i>;
         delete partial.meta;
-      });
+      }
     }
 
     return md5(JSON.stringify(data)).toString();
@@ -125,6 +125,13 @@ export class PositionCache {
     });
 
     return position;
+  }
+
+  // True when the cache holds one position for every element in these selections
+  fits(group: d3.Selection<Group>, node: d3.Selection<Node>, link: d3.Selection<Link>) {
+    return (
+      this.group?.length === group.size() && this.node?.length === node.size() && this.link?.length === link.size()
+    );
   }
 
   private match(data: InetHengeDataType, pop: RegExp | undefined) {

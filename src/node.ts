@@ -1,19 +1,12 @@
 import * as d3 from "d3";
 
-import { Color } from "./diagram";
-import { MetaData, MetaDataType } from "./meta_data";
-import { NodePosition } from "./position_cache";
+import type { MetaDataType } from "./meta_data";
+import { MetaData } from "./meta_data";
+import type { NodePosition } from "./position_cache";
+import type { Color, NodeDataType } from "./types/inet-henge";
 import { classify } from "./util";
 
 export type Constructor = (data: NodeDataType, id: number, options: NodeOptions) => void;
-
-export type NodeDataType = {
-  name: string;
-  group: string[];
-  icon: string;
-  meta: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-  class: string;
-};
 
 export type NodeOptions = {
   width: number;
@@ -130,7 +123,7 @@ class NodeBase {
       .attr("x", (d) => d.xForText());
 
     text.each((d) => {
-      // Show meta only when "tooltip" option is not configured
+      // show meta only when "tooltip" option is not configured
       if (!d.options.tooltip) {
         Node.appendMetaText(text, d.metaList);
       }
@@ -138,14 +131,14 @@ class NodeBase {
   }
 
   private static appendMetaText(container: d3.Selection<Node>, meta: MetaDataType[]) {
-    meta.forEach((m) => {
+    for (const m of meta) {
       container
         .append("tspan")
         .attr("x", (d) => d.xForText())
         .attr("dy", (d) => d.tspanOffset)
         .attr("class", m.class)
         .text(m.value);
-    });
+    }
   }
 
   private static appendImage(container: SVGGElement) {
@@ -165,7 +158,8 @@ class NodeBase {
       .attr("height", (d) => d.nodeHeight())
       .attr("rx", 5)
       .attr("ry", 5)
-      .style("fill", (d) => d.options.color(undefined as unknown as string));
+      // every node passes the same key, which gives every node the same color
+      .attr("fill", (d) => d.options.color("node"));
   }
 
   static tick(node: d3.Selection<Node>) {
@@ -232,7 +226,7 @@ const Pluggable = (Base: typeof EventableNode) => {
       super(data, id, options);
 
       for (const constructor of Node.pluginConstructors) {
-        // Call Pluggable at last as constructor may call methods defined in other classes
+        // call Pluggable at last as constructor may call methods defined in other classes
         constructor.bind(this)(data, id, options);
       }
     }

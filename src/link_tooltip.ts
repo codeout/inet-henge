@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 
-import { Link } from "./link";
-import { Node } from "./node";
+import type { Link } from "./link";
+import type { Node } from "./node";
 import { Tooltip } from "./tooltip";
 import { classify } from "./util";
 
@@ -31,36 +31,31 @@ export class LinkTooltip extends Tooltip {
   }
 
   protected static appendText(container: SVGGElement) {
-    const path = d3.select(container).append("path") as d3.Selection<LinkTooltip>;
+    const path = (d3.select(container).append("path") as d3.Selection<LinkTooltip>).attr("fill", "#f8f1e9");
     const text = d3.select(container).append("text") as d3.Selection<LinkTooltip>;
 
     LinkTooltip.appendNameValue(text, "source", (d) => (d.link.source as Node).name);
     text.each(function (d) {
-      d.link.sourceMeta.forEach((m) => {
+      for (const m of d.link.sourceMeta) {
         LinkTooltip.appendNameValue(text, m.class, m.value, false);
-      });
+      }
     });
 
     LinkTooltip.appendNameValue(text, "target", (d) => (d.link.target as Node).name, true);
     text.each(function (d) {
-      d.link.targetMeta.forEach((m) => {
+      for (const m of d.link.targetMeta) {
         LinkTooltip.appendNameValue(text, m.class, m.value, false);
-      });
+      }
     });
 
     text.each(function (this: SVGTextElement, d: LinkTooltip) {
-      d.link.metaList.forEach((m, i) => {
+      for (const [i, m] of d.link.metaList.entries()) {
         LinkTooltip.appendNameValue(text, m.class, m.value, i === 0);
-      });
+      }
 
-      // Add "d" after bbox calculation
+      // add "d" after bbox calculation
       const bbox = this.getBBox();
-      path
-        .attr("d", (d) => LinkTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20))
-        .each(function (this: SVGPathElement) {
-          const fill = LinkTooltip.fill(this);
-          if (fill) d3.select(this).style("fill", fill);
-        });
+      path.attr("d", (d) => LinkTooltip.pathD(d.offsetX, 0, bbox.width + 40, bbox.height + 20));
     });
   }
 }
