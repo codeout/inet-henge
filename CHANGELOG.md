@@ -1,3 +1,22 @@
+## [1.5.0] - 2026-09-23
+
+### Added
+
+- `color` option of `Diagram` to choose the fill color of nodes and groups
+- React component, published separately as `inet-henge-react`
+
+### Fixed
+
+- `Link.setPosition()` threw `TypeError` when the saved position cache held fewer entries than the diagram
+- A render scheduled by `init()` ran after `destroy()` and threw on elements that were already gone
+- A stylesheet could not override the fill of `.node rect`, `.group rect` and `.tooltip > path` without `!important`
+- `destroy()` removed every svg in the container, not only the one it created
+
+### Removed
+
+- `src/`, `types/`, `example/`, `plugins/*/src/`, the build configuration and the screenshots from the published package
+
+
 ## [1.4.10] - 2026-09-15
 
 ### Fixed
