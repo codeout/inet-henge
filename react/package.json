@@ -1,6 +1,6 @@
 {
   "name": "inet-henge-react",
-  "version": "1.4.10",
+  "version": "0.1.0",
   "description": "React component for inet-henge network diagrams.",
   "license": "MIT",
   "type": "module",
